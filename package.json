@@ -1,0 +1,43 @@
+{
+    "name": "counsel",
+    "version": "0.0.1",
+    "author": "Timon Schenzel",
+    "license": "MIT",
+    "private": true,
+    "main": "index.js",
+    "bin": {
+        "counsel": "./src/counsel.js"
+    },
+    "scripts": {
+        "test": "node src/counsel.js",
+        "reporting-tests": "npm test @reporting-test",
+        "all-tests": "npm test && npm run reporting-tests"
+    },
+    "dependencies": {
+        "auto-loader": "^0.2.0",
+        "chalk": "^2.3.0",
+        "cheerio": "^1.0.0-rc.2",
+        "cli-highlight": "^1.2.3",
+        "cli-truncate": "^1.1.0",
+        "cmd-shim": "^2.0.2",
+        "code-excerpt": "^2.1.0",
+        "colors": "^1.1.2",
+        "concordance": "^3.0.0",
+        "diff": "^3.4.0",
+        "equal-length": "^1.0.1",
+        "figures": "^2.0.0",
+        "highlight": "^0.2.4",
+        "indent-string": "^3.2.0",
+        "is-html": "^1.1.0",
+        "jsdom": "^11.3.0",
+        "jsdom-global": "^3.0.2",
+        "moment": "^2.19.3",
+        "prettier": "^1.10.2",
+        "pretty-ms": "^3.0.1",
+        "sinon": "^4.1.2",
+        "stack-trace": "0.0.10",
+        "vue": "^2.5.2",
+        "vue-template-compiler": "^2.5.2",
+        "vue-test-utils": "^1.0.0-beta.3"
+    }
+}
