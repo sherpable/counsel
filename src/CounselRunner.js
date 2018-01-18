@@ -4,7 +4,7 @@ module.exports = class CounselRunner
 	{
         require('jsdom-global')();
 
-		this.configFile = 'counsel.js';
+		this.configFile = 'counselrc.js';
 
         this.serviceProviders = {};
 
@@ -124,45 +124,24 @@ module.exports = class CounselRunner
 
         await this.reporter.beforeBoot();
 
-        // Load vue specific stuff
-        /**
-         * Load VueComponentTestCase class.
-         *
-         * @type {Object}
-         */
-        global.VueComponentTestCase = require('./VueComponentTestCase');
-
-        /**
-         * Load VueComponentTester class.
-         *
-         * @type {Object}
-         */
-        global.VueComponentTester = require('./VueComponentTester');
-
-        /**
-         * Load VueTestUtils class.
-         *
-         * @type {Object}
-         */
-        global.vueTestUtils = require('vue-test-utils');
-
-        /**
-         * Load Vue.
-         *
-         * @type {Object}
-         */
-        if (! this.config.vue.require) {
-            this.config.vue.require = () => {
-                require('vue');
+        if (this.config.vue) {
+            // Load vue specific stuff
+            global.VueComponentTestCase = require('./VueComponentTestCase');
+            global.VueComponentTester = require('./VueComponentTester');
+            global.vueTestUtils = require('vue-test-utils');
+            if (! this.config.vue.require) {
+                this.config.vue.require = () => {
+                    require('vue');
+                }
             }
+
+            global.Vue = global[this.config.vue] = this.config.vue.require();
+
+            Vue.config.productionTip = false;
+            Vue.config.debug = false;
+            Vue.config.silent = true;
+            Vue.config.devtools = false;
         }
-
-        global.Vue = global[this.config.vue] = this.config.vue.require();
-
-        Vue.config.productionTip = false;
-        Vue.config.debug = false;
-        Vue.config.silent = true;
-        Vue.config.devtools = false;
 
 		try {
 			if (this.config.bootstrap) {
@@ -171,6 +150,7 @@ module.exports = class CounselRunner
 		} catch (error) {
             if (error instanceof Error && error.code === 'MODULE_NOT_FOUND') {
                 console.error(`  ${this.serviceProviders.chalk.red(this.serviceProviders.figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
+                console.log(error);
             } else {
                 console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel bootstrap error`));
                 console.log(error);
