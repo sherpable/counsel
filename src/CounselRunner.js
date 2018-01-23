@@ -125,6 +125,10 @@ module.exports = class CounselRunner
         await this.reporter.beforeBoot();
 
         if (this.config.vue) {
+            const hook = require('vue-node');
+            const { join } = require('path');
+            hook(join(__dirname, 'webpack.config.js'));
+
             // Load vue specific stuff
             global.VueComponentTestCase = require('./VueComponentTestCase');
             global.VueComponentTester = require('./VueComponentTester');

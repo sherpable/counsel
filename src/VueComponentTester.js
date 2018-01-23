@@ -16,6 +16,7 @@ module.exports = class VueComponentTester
         this.componentName = template.match(/<([^\s>]+)(\s|>)+/)[1];
 
         this.component = Vue.options.components[this.componentName];
+        // console.log(this.component);
 
         if (! this.component) {
             throw new Error(`Component [${this.componentName}] don't exists.`);
