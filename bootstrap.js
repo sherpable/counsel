@@ -1,14 +1,5 @@
 window.Vue = require('vue');
 window.moment = require('moment');
-const browserEnv = require('browser-env');
-
-browserEnv();
-
-let helloWorldComponent = require('./VueComponents/HelloWorld.vue');
-const Constructor = Vue.extend(helloWorldComponent);
-const vm = new Constructor();
-console.log(vm);
-Vue.component('vue-hello-world', helloWorldComponent);
 
 Vue.component('hello-world', {
     template: `

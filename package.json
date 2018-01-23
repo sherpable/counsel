@@ -33,6 +33,7 @@
         "jsdom": "^11.3.0",
         "jsdom-global": "^3.0.2",
         "moment": "^2.19.3",
+        "node-hook": "^1.0.0",
         "prettier": "^1.10.2",
         "pretty-ms": "^3.0.1",
         "sinon": "^4.1.2",

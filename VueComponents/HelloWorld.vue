@@ -1,14 +1,14 @@
 <template>
-    <p>{{ greeting }} World!</p>
+    <p>{{ greeting }}!</p>
 </template>
 
 <script>
     module.exports = {
-        data() {
-            return {
-                greeting: 'Hello',
-            };
-        }
+        props: {
+            greeting: {
+                default: 'Hello World',
+            }
+        },
     }
 </script>
 

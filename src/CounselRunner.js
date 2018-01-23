@@ -19,6 +19,7 @@ module.exports = class CounselRunner
             sinon: 'sinon',
             stackTrace: 'stack-trace',
             chalk: 'chalk',
+            nodeHook: 'node-hook',
             annotations: './utilities/annotations',
             assertionResult: './assertions/AssertionResult',
             reporter: './reporters/Reporter',
@@ -125,9 +126,18 @@ module.exports = class CounselRunner
         await this.reporter.beforeBoot();
 
         if (this.config.vue) {
-            const hook = require('vue-node');
-            const { join } = require('path');
-            hook(join(__dirname, 'webpack.config.js'));
+            this.serviceProviders.nodeHook.hook('.vue', (source, filename) => {
+                
+                let rawComponent = this.serviceProviders.cheerio.load(source);
+                let component = rawComponent('script').html();
+                let template = rawComponent('template').html();
+
+                return component.replace('module.exports = {', 'module.exports = { template: `' + template + '`,');
+            });
+
+            // const hook = require('vue-node');
+            // const { join } = require('path');
+            // hook(join(__dirname, 'webpack.config.js'));
 
             // Load vue specific stuff
             global.VueComponentTestCase = require('./VueComponentTestCase');
