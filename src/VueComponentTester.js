@@ -16,7 +16,6 @@ module.exports = class VueComponentTester
         this.componentName = template.match(/<([^\s>]+)(\s|>)+/)[1];
 
         this.component = Vue.options.components[this.componentName];
-        // console.log(this.component);
 
         if (! this.component) {
             throw new Error(`Component [${this.componentName}] don't exists.`);
@@ -71,15 +70,16 @@ module.exports = class VueComponentTester
             }
         }
 
-        let propsRegex = new RegExp(`<${this.componentName}\s?([^\>]+)(|>)+`, 'igm');
-        this.rawProps = propsRegex.exec(template);
+        this.props = this.parseProps();
+        // let propsRegex = new RegExp(`<${this.componentName}\s?([^\>]+)(|>)+`, 'igm');
+        // this.rawProps = propsRegex.exec(template);
 
-        if (this.rawProps && this.rawProps[1]) {
-            this.rawProps = this.rawProps[1];
-            this.props = this.parseProps();
-        } else {
-            this.rawProps = null;
-        }
+        // if (this.rawProps && this.rawProps[1]) {
+        //     this.rawProps = this.rawProps[1];
+        //     this.props = this.parseProps();
+        // } else {
+        //     this.rawProps = null;
+        // }
 
         this.config.slots = this.slots;
 
@@ -93,25 +93,16 @@ module.exports = class VueComponentTester
     parseProps()
     {
         let props = {};
+        let template = this.parsedTemplate;
+        let rawProps = template(this.componentName).attr();
 
-        this.rawProps = this.rawProps.replace(/\s/g, '');
-        this.rawProps = this.rawProps.replace(/"/g, '" ');
-        this.rawProps = this.rawProps.replace(/=" /g, '="');
-
-        this.rawProps.split(' ').map(prop => {
-            return prop.split('=');
-        }).forEach(prop => {
-            if (! prop[0]) {
-                return;
-            }
-
-            if (prop[0].includes(':')) {
-                let propName = prop[0].replace(':', '');
-                props[propName] = this.propsOverride[propName];
+        for (let attributeName in rawProps) {
+            if (attributeName.startsWith(':')) {
+                props[attributeName.replace(':', '')] = this.propsOverride[attributeName.replace(':', '')];
             } else {
-                props[prop[0]] = prop[1].replace(/"/g, '');
+                props[attributeName] = rawProps[attributeName];
             }
-        });
+        }
 
         return props;
     }

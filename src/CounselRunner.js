@@ -127,17 +127,13 @@ module.exports = class CounselRunner
 
         if (this.config.vue) {
             this.serviceProviders.nodeHook.hook('.vue', (source, filename) => {
-                
+
                 let rawComponent = this.serviceProviders.cheerio.load(source);
                 let component = rawComponent('script').html();
                 let template = rawComponent('template').html();
 
                 return component.replace('module.exports = {', 'module.exports = { template: `' + template + '`,');
             });
-
-            // const hook = require('vue-node');
-            // const { join } = require('path');
-            // hook(join(__dirname, 'webpack.config.js'));
 
             // Load vue specific stuff
             global.VueComponentTestCase = require('./VueComponentTestCase');
@@ -289,6 +285,7 @@ module.exports = class CounselRunner
                 }
             } catch (error) {
                 if (error.message.startsWith('[vue-test-utils]')) {
+                    console.log('\n');
                     console.error(this.serviceProviders.chalk.red(`  Vue utils error`));
                     console.error(error);
 

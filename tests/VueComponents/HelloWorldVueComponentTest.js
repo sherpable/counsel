@@ -5,10 +5,18 @@ module.exports = class HelloWorldVueComponentTest extends VueComponentTestCase
     {
 		Vue.component('hello-world-dot-vue-component', require('../../VueComponents/HelloWorld.vue'));
 
-        let component = this.render('<hello-world-dot-vue-component greeting="Hello Vue Component"></hello-world-dot-vue-component>');
-        component.assertSee('Hello Vue Component!');
+        let componentWithDefaultGreeting = this.render('<hello-world-dot-vue-component></hello-world-dot-vue-component>');
+        componentWithDefaultGreeting.assertSee('Hello World!');
 
-        let component2 = this.render('<hello-world-dot-vue-component></hello-world-dot-vue-component>');
-        component2.assertSee('Hello World!');
+        dump(componentWithDefaultGreeting.toHtml());
+
+        let componentWithInlineGreeting = this.render('<hello-world-dot-vue-component greeting="Hello Vue Component"></hello-world-dot-vue-component>');
+        componentWithInlineGreeting.assertSee('Hello Vue Component!');
+
+        let greeting = 'Hello World';
+        let componentWithBindGreeting = this.render('<hello-world-dot-vue-component :greeting="greeting"></hello-world-dot-vue-component>', {
+            greeting
+        });
+        componentWithBindGreeting.assertSee('Hello World!');
     }
 }
