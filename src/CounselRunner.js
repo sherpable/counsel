@@ -4,7 +4,7 @@ module.exports = class CounselRunner
 	{
         require('jsdom-global')();
 
-		this.configFile = 'counselrc.js';
+		this.configFile = 'counsel.config.js';
 
         this.serviceProviders = {};
 
@@ -59,7 +59,7 @@ module.exports = class CounselRunner
 		if (this.serviceProviders.fs.existsSync(this.configFile)) {
 			this.config = require(this.root + this.configFile);
 		} else {
-            this.config = require('./defaultConfig');
+            this.config = require('./counsel.config');
         }
 
         if (this.config.reporter) {
