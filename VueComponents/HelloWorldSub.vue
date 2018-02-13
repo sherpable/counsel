@@ -1,5 +1,8 @@
 <template>
-    <i>{{ greeting }}!</i>
+    <div>
+        <i>{{ greeting }}!</i>
+        <hello-world-sub-sub greeting="Sub Sub Component"></hello-world-sub-sub>
+    </div>
 </template>
 
 <script>

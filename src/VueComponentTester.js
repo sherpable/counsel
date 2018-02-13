@@ -1,6 +1,6 @@
 module.exports = class VueComponentTester
 {
-    constructor(testCaseInstance, template, props = {})
+    constructor(testCaseInstance, template, props = {}, parentComponent = false)
     {
         this.parsedTemplate = counsel.serviceProviders.cheerio.load(template);
 
@@ -12,10 +12,18 @@ module.exports = class VueComponentTester
         this.config = {};
         this.config.stubs = {};
         this.slots = {};
+        this.children = {};
         this.tester = testCaseInstance;
         this.componentName = template.match(/<([^\s>]+)(\s|>)+/)[1];
 
-        this.component = Vue.options.components[this.componentName];
+        if (parentComponent) {
+            this.component = parentComponent.sealedOptions.components[this.componentName];
+        } else {
+            this.component = Vue.options.components[this.componentName];
+        }
+
+        // console.log(Vue.options.components['hello-world-dot-vue-component'].sealedOptions);
+        // process.exit();
 
         if (! this.component) {
             throw new Error(`Component [${this.componentName}] don't exists.`);
@@ -24,7 +32,12 @@ module.exports = class VueComponentTester
         let testComponent = this.component;
 
         // Stub child components
-        let componentTemplate = counsel.serviceProviders.cheerio.load(this.component.options.template);
+        let componentTemplate = null;
+        if (this.component.template) {
+            componentTemplate = counsel.serviceProviders.cheerio.load(this.component.template);
+        } else {
+            componentTemplate = counsel.serviceProviders.cheerio.load(this.component.options.template);
+        }
 
         let componentRootHtml = componentTemplate('body').children().first().html();
 
@@ -32,11 +45,21 @@ module.exports = class VueComponentTester
             let childComponentName = element.tagName;
 
             if (childComponentName) {
-                let stub = Vue.options.components[childComponentName];
+                let stub = null;
+
+                if (childComponentName == 'hello-world-sub') {
+                    stub = this.component.sealedOptions.components[childComponentName];
+                }
+
+                if (! stub) {
+                    Vue.options.components[childComponentName];
+                }
 
                 if (stub) {
-                    let childComponentWrapper = vueTestUtils.mount(stub);
-                    this.config.stubs[childComponentName] = childComponentWrapper.html();
+                    // let childComponentWrapper = vueTestUtils.mount(stub);
+                    let childComponent = new VueComponentTester(this.tester, `<${childComponentName}>${stub.template}</${childComponentName}>`, stub.props, this.component);
+                    this.children[childComponentName] = childComponent;
+                    this.config.stubs[childComponentName] = childComponent.toHtml();
                 }
             }
         });
@@ -54,7 +77,8 @@ module.exports = class VueComponentTester
             }
         });
 
-        if (this.defaultSlot) {
+        // Need to remove this ! parentComponent check for default slots in sub-components
+        if (this.defaultSlot && ! parentComponent) {
             let defaultSlotParentName = (componentTemplate('slot').not('[name]').parent()[0].name);
 
             let cleanComponentTemplate = this.component.options.template.replace(/\s+/g, '');

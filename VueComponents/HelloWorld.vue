@@ -15,9 +15,9 @@
             }
         },
 
-        components: [
-            HelloWorldSub
-        ],
+        components: {
+            'hello-world-sub': HelloWorldSub,
+        },
     }
 </script>
 
