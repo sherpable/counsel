@@ -6,11 +6,17 @@
 </template>
 
 <script>
+    let HelloWorldSubSub = require('./HelloWorldSubSub.vue');
+
     module.exports = {
         props: {
             greeting: {
                 default: 'Hello Sub World',
             }
+        },
+
+        components: {
+            'hello-world-sub-sub': HelloWorldSubSub,
         },
     }
 </script>

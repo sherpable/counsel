@@ -16,10 +16,14 @@ module.exports = class VueComponentTester
         this.tester = testCaseInstance;
         this.componentName = template.match(/<([^\s>]+)(\s|>)+/)[1];
 
-        if (parentComponent) {
+        if (parentComponent && parentComponent.sealedOptions) {
             this.component = parentComponent.sealedOptions.components[this.componentName];
         } else {
             this.component = Vue.options.components[this.componentName];
+        }
+
+        if (! this.component && parentComponent.components[this.componentName]) {
+            this.component = parentComponent.components[this.componentName];
         }
 
         // console.log(Vue.options.components['hello-world-dot-vue-component'].sealedOptions);
@@ -41,14 +45,19 @@ module.exports = class VueComponentTester
 
         let componentRootHtml = componentTemplate('body').children().first().html();
 
+        // console.log(this.componentName);
+        // console.log(this.component);
+
         counsel.serviceProviders.cheerio(componentRootHtml).each((index, element) => {
             let childComponentName = element.tagName;
 
             if (childComponentName) {
                 let stub = null;
 
-                if (childComponentName == 'hello-world-sub') {
+                if (this.component.sealedOptions && this.component.sealedOptions.components[childComponentName]) {
                     stub = this.component.sealedOptions.components[childComponentName];
+                } else if (this.component.components) {
+                    stub = this.component.components[childComponentName];
                 }
 
                 if (! stub) {
@@ -159,6 +168,11 @@ module.exports = class VueComponentTester
     {
         this.wrapper.update();
         return this.wrapper.html();
+    }
+
+    dd()
+    {
+        dd(this.toHtml());
     }
 
     assertEmitted(eventName)
