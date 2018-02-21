@@ -20,6 +20,6 @@ module.exports = class PageTest extends VueComponentTestCase
             </view-presentation>
         `, { product: { id: 1, name: 'Product 1' } });
 
-        dd(component.toHtml());
+        console.log(component.toHtml());
     }
 }

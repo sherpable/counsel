@@ -22,7 +22,7 @@ module.exports = class VueComponentTester
             this.component = Vue.options.components[this.componentName];
         }
 
-        if (! this.component && parentComponent.components[this.componentName]) {
+        if (! this.component && parentComponent.components && parentComponent.components[this.componentName]) {
             this.component = parentComponent.components[this.componentName];
         }
 
