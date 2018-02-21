@@ -1,0 +1,25 @@
+module.exports = class PageTest extends VueComponentTestCase
+{
+    /** @test */
+    it_is_able_to_render_a_page_component()
+    {
+        let component = this.render(`
+            <view-presentation>
+                <app-layout>
+                    <template slot="title">Nodue</template>
+                    <template slot="slogan">{{ product.name }}</template>
+
+                    <div>
+                        <h2>{{ product.name }}&nbsp;&mdash;&nbsp;#{{ product.id }}</h2>
+                        <p>Product name is {{ product.name }}</p>
+                        <hr>
+                        <button class="button is-primary" @click="log">Log something</button>
+                        <hr>
+                    </div>
+                </app-layout>
+            </view-presentation>
+        `, { product: { id: 1, name: 'Product 1' } });
+
+        dd(component.toHtml());
+    }
+}
