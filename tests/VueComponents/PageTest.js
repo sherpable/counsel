@@ -7,11 +7,11 @@ module.exports = class PageTest extends VueComponentTestCase
             <view-presentation>
                 <app-layout>
                     <template slot="title">Nodue</template>
-                    <template slot="slogan">{{ product.name }}</template>
+                    <template slot="slogan">PRODUCT NAME</template>
 
                     <div>
-                        <h2>{{ product.name }}&nbsp;&mdash;&nbsp;#{{ product.id }}</h2>
-                        <p>Product name is {{ product.name }}</p>
+                        <h2>PRODUCT NAME&nbsp;&mdash;&nbsp;#PRODUCT ID</h2>
+                        <p>Product name is PRODUCT NAME</p>
                         <hr>
                         <button class="button is-primary" @click="log">Log something</button>
                         <hr>

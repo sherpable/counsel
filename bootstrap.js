@@ -187,7 +187,7 @@ Vue.component('app-layout', {
             <div class="container">
 
                 <slot name="nav">
-                    <n-nav></n-nav>
+                    <nav></nav>
                 </slot>
 
                 <slot></slot>
@@ -196,4 +196,12 @@ Vue.component('app-layout', {
             </div>
         </div>
     `,
+});
+
+Vue.component('footer-layout', {
+    template: '<footer>Footer</footer>',
+});
+
+Vue.component('template', {
+    template: '<div><slot></slot></div>',
 });
