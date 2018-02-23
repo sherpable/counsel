@@ -78,16 +78,22 @@ module.exports = class VueComponentTester
         this.parsedTemplate(this.componentName).children().each((index, element) => {
             let tagName = element.tagName;
             let child = counsel.serviceProviders.cheerio(element);
+            let childHtml = `<${tagName}>${child.html()}</${tagName}>`;
+
+            if (Vue.options.components[tagName]) {
+                childHtml = Vue.options.components[tagName].sealedOptions.template;
+                childHtml = childHtml.replace('<slot></slot>', this.parsedTemplate(this.componentName).find(tagName).html());
+                childHtml = childHtml.replace('<footer-layout></footer-layout>', Vue.options.components['footer-layout'].sealedOptions.template);
+            }
 
             if (child.attr('slot')) {
-                this.slots[child.attr('slot')] = `<${tagName}>${child.html()}</${tagName}>`;
+                this.slots[child.attr('slot')] = childHtml;
             } else {
-                this.defaultSlot += `<${tagName}>${child.html()}</${tagName}>`;
+                this.defaultSlot += childHtml;
             }
         });
 
-        // Need to remove this ! parentComponent check for default slots in sub-components
-        if (this.defaultSlot && ! parentComponent) {
+        if (this.defaultSlot) {
             let defaultSlotParentName = (componentTemplate('slot').not('[name]').parent()[0].name);
 
             let cleanComponentTemplate = this.component.options.template.replace(/\s+/g, '');
@@ -120,6 +126,7 @@ module.exports = class VueComponentTester
 
         this.vm = this.wrapper.vm;
 
+        this.wrapper.setData({ name: 'Product 1' });
         this.wrapper.setProps(this.props);
     }
 
