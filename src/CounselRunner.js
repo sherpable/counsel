@@ -138,6 +138,8 @@ module.exports = class CounselRunner
             // Load vue specific stuff
             global.VueComponentTestCase = require('./VueComponentTestCase');
             global.VueComponentTester = require('./VueComponentTester');
+            global.VueTemplateParser = require('./VueTemplateParser');
+            global.VueComponentTestWrapper = require('./VueComponentTestWrapper');
             global.vueTestUtils = require('vue-test-utils');
             if (! this.config.vue.require) {
                 this.config.vue.require = () => {
