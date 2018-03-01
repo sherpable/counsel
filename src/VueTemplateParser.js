@@ -15,7 +15,14 @@ module.exports = class VueTemplateParser
         this.componentName = null;
         this.componentTemplate = null;
         this.parsedComponentTemplate = null;
-        this.testComponent = null;
+        this.result = {
+            component: null,
+            config: {
+                slots: {
+                    default: null,
+                },
+            },
+        };
     }
 
     static parse(template)
@@ -26,7 +33,9 @@ module.exports = class VueTemplateParser
             parser[task]();
         });
 
-        return parser.testComponent;
+        parser.result.component = parser.component;
+
+        return parser.result;
     }
 
     getComponentName()
@@ -66,17 +75,40 @@ module.exports = class VueTemplateParser
 
     parseChildNodes()
     {
-        let rootTagName = this.parsedComponentTemplate.root().children().first()[0].name;
+        this.defaultSlot = '';
 
-        this.parsedComponentTemplate(rootTagName).children().each((index, element) => {
-            if (element.name == 'slot') {
-                this.testComponent = this.parsedTemplate(this.componentName).html();
+        let defaultSlot = '';
+
+        this.parsedTemplate(this.componentName).children().each((index, element) => {
+            let tagName = element.name;
+            let child = counsel.serviceProviders.cheerio(element);
+            let childHtml = `<${tagName}>${child.html()}</${tagName}>`;
+
+            if (Vue.options.components[tagName]) {
+                this.result.
+            }
+
+            if (child.attr('slot')) {
+                this.result.config.slots[child.attr('slot')] = childHtml;
+            } else {
+                defaultSlot += childHtml;
             }
         });
 
-        this.parsedTemplate(this.componentName).children().each((index, element) => {
-            let tagName = element.tagName;
-            // dd(tagName);
-        });
+        if (defaultSlot) {
+            let defaultSlotParentName = (this.parsedComponentTemplate('slot').not('[name]').parent()[0].name);
+
+            let cleanComponentTemplate = this.componentTemplate.replace(/\s+/g, '');
+            let cleanSlotParentHtml = counsel.serviceProviders.cheerio.html(this.parsedComponentTemplate('slot').not('[name]').parent()).replace(/\s+/g, '');
+
+            if (cleanSlotParentHtml != cleanComponentTemplate) {
+                this.parsedComponentTemplate('slot').not('[name]').parent().replaceWith('<slot></slot>');
+                this.component.options.template = this.parsedComponentTemplate('body').html();
+
+                this.result.config.slots.default = `<${defaultSlotParentName}>${defaultSlot}</${defaultSlotParentName}>`;
+            } else {
+                this.result.config.slots.default = defaultSlot;
+            }
+        }
     }
 }

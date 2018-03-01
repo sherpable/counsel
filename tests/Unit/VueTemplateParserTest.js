@@ -5,22 +5,20 @@ module.exports = class VueTemplateParserTest extends TestCase
     {
         let vueTemplateParser = VueTemplateParser.parse(`<single-slot><h1>Test</h1></single-slot>`);
 
-        console.log(vueTemplateParser);
-
-        // this.assertEquals({
-        //     component: Vue.options.components['single-slot'],
-        //     config: {
-        //         slots: {
-        //             default: `<div>Test</div>`,
-        //         },
-        //     },
-        // }, vueTemplateParser);
+        this.assertEquals({
+            component: Vue.options.components['single-slot'],
+            config: {
+                slots: {
+                    default: `<h1>Test</h1>`,
+                },
+            },
+        }, vueTemplateParser);
     }
 
     /** @test */
     it_is_able_to_parse_named_slots()
     {
-        let vueTemplateParser = new VueTemplateParser(`
+        let vueTemplateParser = VueTemplateParser.parse(`
             <named-slot>
                 <h1 slot="header">Here might be a page title</h1>
 
@@ -35,12 +33,9 @@ module.exports = class VueTemplateParserTest extends TestCase
             component: Vue.options.components['named-slot'],
             config: {
                 slots: {
-                    default: `
-                        <p>A paragraph for the main content.</p>
-                        <p>Another one.</p>
-                    `,
-                    header: ` <h1>Here might be a page title</h1>`,
-                    footer: `<p>Here's some contact info</p>`,
+                    default: `<main><p>A paragraph for the main content.</p><p>Another one.</p></main>`,
+                    header: `<h1>Here might be a page title</h1>`,
+                    footer: `<p>Here&apos;s some contact info</p>`,
                 },
             },
         }, vueTemplateParser);
@@ -49,7 +44,7 @@ module.exports = class VueTemplateParserTest extends TestCase
     /** @test */
     it_is_able_to_parse_child_nodes()
     {
-        let vueTemplateParser = new VueTemplateParser(`
+        let vueTemplateParser = VueTemplateParser.parse(`
             <view-presentation>
                 <app-layout>
                     <template slot="title">Nodue</template>
