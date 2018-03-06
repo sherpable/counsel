@@ -79,14 +79,37 @@ module.exports = class VueTemplateParser
 
         let defaultSlot = '';
 
+        this.parsedComponentTemplate.root().children().first().children().each((index, element) => {
+            let child = counsel.serviceProviders.cheerio(element);
+
+            console.log(element.name);
+
+            if(element.name == 'slot' && ! child.attr('name')) {
+                this.result.config.slots.default = this.parsedTemplate(this.componentName).html();
+            }
+
+            if (element.name == 'slot' && child.attr('name')) {
+                dd('foo');
+                // console.log(this.parseTemplate(`[slot="{child.attr('slot')}"]`));
+                process.exit();
+                this.result.config.slots[child.attr('slot')] = this.parseTemplate(`[slot="{child.attr('slot')}"]`);
+            }
+        });
+process.exit();
+        return;
+
         this.parsedTemplate(this.componentName).children().each((index, element) => {
             let tagName = element.name;
             let child = counsel.serviceProviders.cheerio(element);
             let childHtml = `<${tagName}>${child.html()}</${tagName}>`;
 
-            if (Vue.options.components[tagName]) {
-                this.result.
-            }
+            // if (Vue.options.components[tagName]) {
+            //     let childComponent = new VueComponentTestWrapper(
+            //         VueTemplateParser.parse(childHtml)
+            //     );
+            //     console.log(childComponent);
+            //     process.exit();
+            // }
 
             if (child.attr('slot')) {
                 this.result.config.slots[child.attr('slot')] = childHtml;
