@@ -2,6 +2,8 @@ module.exports = class VueTemplateParser
 {
     constructor(template)
     {
+        this.validHtmlTags = require('html-tags');
+
         this.tasks = [
             'getComponentName',
             'parseTemplate',
@@ -40,7 +42,13 @@ module.exports = class VueTemplateParser
 
     getComponentName()
     {
-        this.componentName = this.template.match(/<([^\s>]+)(\s|>)+/)[1];
+        let matches = this.template.match(/<([^\s>]+)(\s|>)+/);
+
+        if (! matches) {
+            return;
+        }
+
+        this.componentName = matches[1];
     }
 
     parseTemplate()
@@ -53,20 +61,31 @@ module.exports = class VueTemplateParser
 
     getComponent()
     {
+        if (! this.componentName) {
+            return;
+        }
+
         this.component = Vue.options.components[this.componentName];
 
-        if (! this.component) {
+        if (! this.component && ! this.isValidHtmlTag()) {
             throw new Error(`Component [${this.componentName}] don't exists.`);
         }
     }
 
     getComponentTemplate()
     {
-        this.componentTemplate = this.component.options.template;
+        if (! this.isValidHtmlTag() && this.componentName) {
+            this.componentTemplate = this.component.options.template;
+        }
     }
 
     parseComponentTemplate()
     {
+        if (! this.componentTemplate) {
+            this.parsedComponentTemplate = counsel.serviceProviders.cheerio.load(`<${this.componentName}></${this.componentName}`);
+            return;
+        }
+
         this.parsedComponentTemplate = counsel.serviceProviders.cheerio.load(this.componentTemplate, {
             withDomLvl1: false,
             xmlMode: true,
@@ -82,20 +101,32 @@ module.exports = class VueTemplateParser
         this.parsedComponentTemplate.root().children().first().children().each((index, element) => {
             let child = counsel.serviceProviders.cheerio(element);
 
-            console.log(element.name);
+            let children = child.children();
 
-            if(element.name == 'slot' && ! child.attr('name')) {
-                this.result.config.slots.default = this.parsedTemplate(this.componentName).html();
-            }
-
-            if (element.name == 'slot' && child.attr('name')) {
-                dd('foo');
-                // console.log(this.parseTemplate(`[slot="{child.attr('slot')}"]`));
-                process.exit();
-                this.result.config.slots[child.attr('slot')] = this.parseTemplate(`[slot="{child.attr('slot')}"]`);
+            if (children.length > 0) {
+                // let childComponent = new VueComponentTestWrapper(
+                //     VueTemplateParser.parse(child.html())
+                // );
             }
         });
-process.exit();
+
+        let defaultSlotElement = this.parsedTemplate(this.componentName);
+
+        this.parsedComponentTemplate.root().find('slot[name]').each((index, element) => {
+            let child = counsel.serviceProviders.cheerio(element);
+            let namedSlotElement = this.parsedTemplate(`[slot="${child.attr('name')}"]`);
+            let namedSlotName = namedSlotElement[0].name;
+            let namedSlotHtml = `<${namedSlotName}>${namedSlotElement.html()}</${namedSlotName}>`;
+            
+            defaultSlotElement.find(`${namedSlotName}[slot="${child.attr('name')}"]`).remove();
+
+            this.result.config.slots[child.attr('name')] = VueTemplateParser.parse(namedSlotHtml);
+        });
+
+        if(defaultSlotElement.length > 0) {
+            this.result.config.slots.default = VueTemplateParser.parse(defaultSlotElement.html());
+        }
+
         return;
 
         this.parsedTemplate(this.componentName).children().each((index, element) => {
@@ -133,5 +164,10 @@ process.exit();
                 this.result.config.slots.default = defaultSlot;
             }
         }
+    }
+
+    isValidHtmlTag()
+    {
+        return this.validHtmlTags.includes(this.componentName);
     }
 }

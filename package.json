@@ -28,6 +28,7 @@
         "equal-length": "^1.0.1",
         "figures": "^2.0.0",
         "highlight": "^0.2.4",
+        "html-tags": "^2.0.0",
         "indent-string": "^3.2.0",
         "is-html": "^1.1.0",
         "jsdom": "^11.3.0",
