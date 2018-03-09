@@ -25,6 +25,8 @@ module.exports = class VueTemplateParser
                 },
             },
         };
+
+        this.htmlResult = null;
     }
 
     static parse(template)
@@ -37,6 +39,10 @@ module.exports = class VueTemplateParser
 
         parser.result.component = parser.component;
 
+        if (parser.htmlResult) {
+            return parser.htmlResult;
+        }
+
         return parser.result;
     }
 
@@ -45,6 +51,8 @@ module.exports = class VueTemplateParser
         let matches = this.template.match(/<([^\s>]+)(\s|>)+/);
 
         if (! matches) {
+            this.htmlResult = this.template;
+
             return;
         }
 
@@ -117,14 +125,14 @@ module.exports = class VueTemplateParser
             let namedSlotElement = this.parsedTemplate(`[slot="${child.attr('name')}"]`);
             let namedSlotName = namedSlotElement[0].name;
             let namedSlotHtml = `<${namedSlotName}>${namedSlotElement.html()}</${namedSlotName}>`;
-            
+
             defaultSlotElement.find(`${namedSlotName}[slot="${child.attr('name')}"]`).remove();
 
-            this.result.config.slots[child.attr('name')] = VueTemplateParser.parse(namedSlotHtml);
+            this.result.config.slots[child.attr('name')] =+ VueTemplateParser.parse(namedSlotHtml);
         });
 
         if(defaultSlotElement.length > 0) {
-            this.result.config.slots.default = VueTemplateParser.parse(defaultSlotElement.html());
+            this.result.config.slots.default =+ VueTemplateParser.parse(defaultSlotElement.html());
         }
 
         return;
