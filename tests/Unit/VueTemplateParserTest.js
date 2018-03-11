@@ -29,7 +29,7 @@ module.exports = class VueTemplateParserTest extends TestCase
             </named-slot>
         `);
 
-        console.log(vueTemplateParser);
+        dd(VueComponentTestWrapper.wrap(vueTemplateParser).toHtml());
 
         // this.assertEquals({
         //     component: Vue.options.components['named-slot'],

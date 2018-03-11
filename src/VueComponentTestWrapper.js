@@ -6,22 +6,18 @@ module.exports = class VueComponentTestWrapper
 
         this.vm = this.wrapper.vm;
 
-        this.wrapper.setData({ name: 'Product 1' });
-        this.wrapper.setProps(this.props);
+        // this.wrapper.setData({ name: 'Product 1' });
+        // this.wrapper.setProps(this.props);
     }
 
-    parseDefaultSlot()
+    static wrap(component)
     {
-
+        return new this(component);
     }
 
-    parseNamedSlots()
+    toHtml()
     {
-
-    }
-
-    parseChildNodes()
-    {
-
+        this.wrapper.update();
+        return this.wrapper.html();
     }
 }
