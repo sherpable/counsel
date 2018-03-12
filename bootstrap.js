@@ -205,3 +205,7 @@ Vue.component('footer-layout', {
 Vue.component('template', {
     template: '<div><slot></slot></div>',
 });
+
+Vue.component('simple-component', {
+    template: '<div><h1>Simple</h1></div>',
+});

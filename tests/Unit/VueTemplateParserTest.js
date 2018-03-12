@@ -29,18 +29,26 @@ module.exports = class VueTemplateParserTest extends TestCase
             </named-slot>
         `);
 
-        dd(VueComponentTestWrapper.wrap(vueTemplateParser).toHtml());
+        this.assertEquals({
+            component: Vue.options.components['named-slot'],
+            config: {
+                slots: {
+                    default: `<main><p>A paragraph for the main content.</p><p>Another one.</p></main>`,
+                    header: `<h1>Here might be a page title</h1>`,
+                    footer: `<p>Here&apos;s some contact info</p>`,
+                },
+            },
+        }, vueTemplateParser);
+    }
 
-        // this.assertEquals({
-        //     component: Vue.options.components['named-slot'],
-        //     config: {
-        //         slots: {
-        //             default: `<main><p>A paragraph for the main content.</p><p>Another one.</p></main>`,
-        //             header: `<h1>Here might be a page title</h1>`,
-        //             footer: `<p>Here&apos;s some contact info</p>`,
-        //         },
-        //     },
-        // }, vueTemplateParser);
+    /** @test */
+    unit_it_is_able_to_render_sub_components()
+    {
+        Vue.component('hello-world-dot-vue-component', require('../../VueComponents/HelloWorld.vue'));
+
+        let vueTemplateParser = VueTemplateParser.parse('<hello-world-dot-vue-component></hello-world-dot-vue-component>');
+
+        // console.log(vueTemplateParser);
     }
 
     /** @test */

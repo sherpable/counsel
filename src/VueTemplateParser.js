@@ -1,10 +1,11 @@
 module.exports = class VueTemplateParser
 {
-    constructor(template, isChild = false)
+    constructor(template, parentComponent = false)
     {
         this.validHtmlTags = require('html-tags');
+        this.minify = require('html-minifier').minify;
 
-        this.isChild = isChild;
+        this.parentComponent = parentComponent;
 
         this.tasks = [
             'getComponentName',
@@ -31,9 +32,9 @@ module.exports = class VueTemplateParser
         this.htmlResult = null;
     }
 
-    static parse(template, isChild = false)
+    static parse(template, parentComponent = false)
     {
-        let parser = new this(template, isChild);
+        let parser = new this(template, parentComponent);
 
         parser.tasks.forEach(task => {
             parser[task]();
@@ -41,11 +42,11 @@ module.exports = class VueTemplateParser
 
         parser.result.component = parser.component;
 
-        if (parser.isChild) {
+        if (parser.parentComponent) {
             return parser.template;
         }
 
-        if (parser.isChild && parser.htmlResult) {
+        if (parser.parentComponent && parser.htmlResult) {
             return parser.htmlResult;
         }
 
@@ -81,6 +82,11 @@ module.exports = class VueTemplateParser
 
         this.component = Vue.options.components[this.componentName];
 
+        if (! this.component && ! this.isValidHtmlTag() && this.parentComponent && this.parentComponent.sealedOptions && this.parentComponent.sealedOptions.components) {
+            console.log(Object.keys(this.parentComponent.sealedOptions.components));
+            this.component = this.parentComponent.sealedOptions.components[this.componentName];
+        }
+
         if (! this.component && ! this.isValidHtmlTag()) {
             throw new Error(`Component [${this.componentName}] don't exists.`);
         }
@@ -89,7 +95,11 @@ module.exports = class VueTemplateParser
     getComponentTemplate()
     {
         if (! this.isValidHtmlTag() && this.componentName) {
-            this.componentTemplate = this.component.options.template;
+            if (this.component.options && this.component.options.template) {
+                this.componentTemplate = this.component.options.template;
+            } else if (this.component.template) {
+                this.componentTemplate = this.component.template;
+            }
         }
     }
 
@@ -117,12 +127,26 @@ module.exports = class VueTemplateParser
         this.parsedComponentTemplate.root().children().first().children().each((index, element) => {
             let child = counsel.serviceProviders.cheerio(element);
 
+            // console.log(element.name);
+
+            if (! this.isValidHtmlTag(element.name)) {
+                // console.log(`<${element.name}>${child.html()}</${element.name}>`);
+                let childComponent = VueTemplateParser.parse(
+                    `<${element.name}>${child.html()}</${element.name}>`,
+                    this.component
+                );
+
+                // console.log(childComponent);
+            }
+
             let children = child.children();
 
             if (children.length > 0) {
                 // let childComponent = new VueComponentTestWrapper(
                 //     VueTemplateParser.parse(child.html())
                 // );
+
+                // console.log(childComponent);
             }
         });
 
@@ -144,7 +168,7 @@ module.exports = class VueTemplateParser
                 defaultSlotElement.find(`${namedSlotName}[slot="${child.attr('name')}"]`).remove();
             }
 
-            this.result.config.slots[child.attr('name')] = VueTemplateParser.parse(namedSlotHtml, true);
+            this.result.config.slots[child.attr('name')] = VueTemplateParser.parse(namedSlotHtml, this.component);
         });
 
         if(defaultSlotElement && defaultSlotElement.length > 0) {
@@ -157,55 +181,26 @@ module.exports = class VueTemplateParser
                 this.component.options.template = this.parsedComponentTemplate.html();
 
                 this.result.config.slots.default += VueTemplateParser.parse(
-                    `<${defaultSlotParentName}>${defaultSlotElement.html()}</${defaultSlotParentName}>`,
-                    true
+                    `<${defaultSlotParentName}>${this.minifyHtml(defaultSlotElement.html())}</${defaultSlotParentName}>`,
+                    this.component
                 );
             } else {
-                this.result.config.slots.default += VueTemplateParser.parse(defaultSlotElement.html(), true);
-            }
-        }
-
-        return;
-
-        this.parsedTemplate(this.componentName).children().each((index, element) => {
-            let tagName = element.name;
-            let child = counsel.serviceProviders.cheerio(element);
-            let childHtml = `<${tagName}>${child.html()}</${tagName}>`;
-
-            // if (Vue.options.components[tagName]) {
-            //     let childComponent = new VueComponentTestWrapper(
-            //         VueTemplateParser.parse(childHtml)
-            //     );
-            //     console.log(childComponent);
-            //     process.exit();
-            // }
-
-            if (child.attr('slot')) {
-                this.result.config.slots[child.attr('slot')] = childHtml;
-            } else {
-                defaultSlot += childHtml;
-            }
-        });
-
-        if (defaultSlot) {
-            let defaultSlotParentName = (this.parsedComponentTemplate('slot').not('[name]').parent()[0].name);
-
-            let cleanComponentTemplate = this.componentTemplate.replace(/\s+/g, '');
-            let cleanSlotParentHtml = counsel.serviceProviders.cheerio.html(this.parsedComponentTemplate('slot').not('[name]').parent()).replace(/\s+/g, '');
-
-            if (cleanSlotParentHtml != cleanComponentTemplate) {
-                this.parsedComponentTemplate('slot').not('[name]').parent().replaceWith('<slot></slot>');
-                this.component.options.template = this.parsedComponentTemplate('body').html();
-
-                this.result.config.slots.default = `<${defaultSlotParentName}>${defaultSlot}</${defaultSlotParentName}>`;
-            } else {
-                this.result.config.slots.default = defaultSlot;
+                this.result.config.slots.default += VueTemplateParser.parse(defaultSlotElement.html(), this.component);
             }
         }
     }
 
-    isValidHtmlTag()
+    minifyHtml(html)
     {
+        return this.minify(html, { collapseWhitespace: true })
+    }
+
+    isValidHtmlTag(name = false)
+    {
+        if (! name) {
+            name = this.componentName;
+        }
+
         return this.validHtmlTags.includes(this.componentName);
     }
 }
