@@ -54,10 +54,19 @@ module.exports = class VueTemplateParserTest extends TestCase
     /** @test */
     it_is_able_to_parse_child_nodes()
     {
+        let foo = VueTemplateParser.parse(`
+            <view-presentation>
+                <simple-component></simple-component>
+            </view-presentation>
+        `);
+
+        // console.log(foo);
+        process.exit();
+
         let vueTemplateParser = VueTemplateParser.parse(`
             <view-presentation>
                 <app-layout>
-                    <div>Hello World</div>
+                    <div>Hello Counsel</div>
 
                     <div><simple-component></simple-component></div>
 
@@ -66,7 +75,7 @@ module.exports = class VueTemplateParserTest extends TestCase
             </view-presentation>
         `);
 
-        console.log(vueTemplateParser);
+        // console.log(vueTemplateParser);
         // console.log(VueComponentTestWrapper.wrap(vueTemplateParser).toHtml());
 
         process.exit();

@@ -66,7 +66,9 @@ module.exports = class VueTemplateParser
 
         this.componentName = matches[1];
 
-        console.log(this.componentName);
+        if (this.componentName.substr(-1) == '/') {
+            this.componentName = this.componentName.slice(0, -1);
+        }
     }
 
     parseTemplate()
@@ -140,12 +142,15 @@ module.exports = class VueTemplateParser
             if (! this.isValidHtmlTag(element.name)) {
                 if (element.name == 'slot') {
                     childTemplate = this.parsedTemplate(this.componentName).html();
+                    // console.log(childTemplate);
                 }
 
                 let childComponentConfig = VueTemplateParser.parse(
                     childTemplate,
                     this.component
                 );
+
+                console.log(childComponentConfig.component);
 
                 if (element.name == 'slot') {
                     this.result.config.slots.default = VueComponentTestWrapper.wrap(childComponentConfig).toHtml();
@@ -158,11 +163,12 @@ module.exports = class VueTemplateParser
             let children = child.children();
 
             if (children.length > 0) {
-                // let childComponent = new VueComponentTestWrapper(
-                //     VueTemplateParser.parse(child.html())
-                // );
-
-                // console.log(childComponent);
+                children.each((index, childElement) => {
+                    // console.log(child.html());
+                    // let childComponent = new VueComponentTestWrapper(
+                    //     VueTemplateParser.parse(child.html())
+                    // );
+                });
             }
         });
 
