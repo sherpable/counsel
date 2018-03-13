@@ -26,6 +26,7 @@ module.exports = class VueTemplateParser
                 slots: {
                     default: null,
                 },
+                stubs: {},
             },
         };
 
@@ -42,7 +43,7 @@ module.exports = class VueTemplateParser
 
         parser.result.component = parser.component;
 
-        if (parser.parentComponent) {
+        if (! parser.component) {
             return parser.template;
         }
 
@@ -64,6 +65,8 @@ module.exports = class VueTemplateParser
         }
 
         this.componentName = matches[1];
+
+        console.log(this.componentName);
     }
 
     parseTemplate()
@@ -83,8 +86,11 @@ module.exports = class VueTemplateParser
         this.component = Vue.options.components[this.componentName];
 
         if (! this.component && ! this.isValidHtmlTag() && this.parentComponent && this.parentComponent.sealedOptions && this.parentComponent.sealedOptions.components) {
-            console.log(Object.keys(this.parentComponent.sealedOptions.components));
             this.component = this.parentComponent.sealedOptions.components[this.componentName];
+        }
+
+        if (! this.component && ! this.isValidHtmlTag() && this.parentComponent && this.parentComponent.components) {
+            this.component = this.parentComponent.components[this.componentName];
         }
 
         if (! this.component && ! this.isValidHtmlTag()) {
@@ -124,19 +130,29 @@ module.exports = class VueTemplateParser
 
         let defaultSlot = '';
 
+        let defaultSlotHtmlElement = null;
+
         this.parsedComponentTemplate.root().children().first().children().each((index, element) => {
             let child = counsel.serviceProviders.cheerio(element);
 
-            // console.log(element.name);
+            let childTemplate = `<${element.name}>${child.html()}</${element.name}>`;
 
             if (! this.isValidHtmlTag(element.name)) {
-                // console.log(`<${element.name}>${child.html()}</${element.name}>`);
-                let childComponent = VueTemplateParser.parse(
-                    `<${element.name}>${child.html()}</${element.name}>`,
+                if (element.name == 'slot') {
+                    childTemplate = this.parsedTemplate(this.componentName).html();
+                }
+
+                let childComponentConfig = VueTemplateParser.parse(
+                    childTemplate,
                     this.component
                 );
 
-                // console.log(childComponent);
+                if (element.name == 'slot') {
+                    this.result.config.slots.default = VueComponentTestWrapper.wrap(childComponentConfig).toHtml();
+                } else if (childComponentConfig.component) {
+                    let childComponent = VueComponentTestWrapper.wrap(childComponentConfig);
+                    this.result.config.stubs[element.name] = childComponent.toHtml();
+                }
             }
 
             let children = child.children();
@@ -161,6 +177,7 @@ module.exports = class VueTemplateParser
         this.parsedComponentTemplate.root().find('slot[name]').each((index, element) => {
             let child = counsel.serviceProviders.cheerio(element);
             let namedSlotElement = this.parsedTemplate(`[slot="${child.attr('name')}"]`);
+
             let namedSlotName = namedSlotElement[0].name;
             let namedSlotHtml = `<${namedSlotName}>${namedSlotElement.html()}</${namedSlotName}>`;
 
@@ -173,6 +190,7 @@ module.exports = class VueTemplateParser
 
         if(defaultSlotElement && defaultSlotElement.length > 0) {
             let defaultSlotParentName = this.parsedComponentTemplate('slot').not('[name]').parent()[0].name;
+
             let cleanComponentTemplate = this.componentTemplate.replace(/\s+/g, '');
             let cleanSlotParentHtml = counsel.serviceProviders.cheerio.html(this.parsedComponentTemplate('slot').not('[name]').parent()).replace(/\s+/g, '');
 
@@ -180,11 +198,13 @@ module.exports = class VueTemplateParser
                 this.parsedComponentTemplate('slot').not('[name]').parent().replaceWith('<slot></slot>');
                 this.component.options.template = this.parsedComponentTemplate.html();
 
-                this.result.config.slots.default += VueTemplateParser.parse(
-                    `<${defaultSlotParentName}>${this.minifyHtml(defaultSlotElement.html())}</${defaultSlotParentName}>`,
-                    this.component
-                );
-            } else {
+                if (! this.result.config.slots.default) {
+                    this.result.config.slots.default += VueTemplateParser.parse(
+                        `<${defaultSlotParentName}>${defaultSlotElement.html()}</${defaultSlotParentName}>`,
+                        this.component
+                    );
+                }
+            } else if (! this.result.config.slots.default) {
                 this.result.config.slots.default += VueTemplateParser.parse(defaultSlotElement.html(), this.component);
             }
         }

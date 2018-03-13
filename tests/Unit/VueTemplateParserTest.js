@@ -48,7 +48,7 @@ module.exports = class VueTemplateParserTest extends TestCase
 
         let vueTemplateParser = VueTemplateParser.parse('<hello-world-dot-vue-component></hello-world-dot-vue-component>');
 
-        // console.log(vueTemplateParser);
+        // console.log(VueComponentTestWrapper.wrap(vueTemplateParser).toHtml());
     }
 
     /** @test */
@@ -57,19 +57,19 @@ module.exports = class VueTemplateParserTest extends TestCase
         let vueTemplateParser = VueTemplateParser.parse(`
             <view-presentation>
                 <app-layout>
-                    <template slot="title">Nodue</template>
-                    <template slot="slogan">{{ name }}</template>
+                    <div>Hello World</div>
 
-                    <div>
-                        <h2>PRODUCT NAME&nbsp;&mdash;&nbsp;#PRODUCT ID</h2>
-                        <p>Product name is {{ name }}</p>
-                        <hr>
-                        <button class="button is-primary">Log something</button>
-                        <hr>
-                    </div>
+                    <div><simple-component></simple-component></div>
+
+                    <h1>Foo</h1>
                 </app-layout>
             </view-presentation>
         `);
+
+        console.log(vueTemplateParser);
+        // console.log(VueComponentTestWrapper.wrap(vueTemplateParser).toHtml());
+
+        process.exit();
 
         this.assertEquals({
             component: Vue.options.components['view-presentation'],
