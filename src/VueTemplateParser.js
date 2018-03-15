@@ -1,75 +1,44 @@
 module.exports = class VueTemplateParser
 {
-    constructor(template, parentComponent = false)
+    constructor(template)
     {
         this.validHtmlTags = require('html-tags');
         this.minify = require('html-minifier').minify;
-
-        this.parentComponent = parentComponent;
 
         this.tasks = [
             'getComponentName',
             'parseTemplate',
             'getComponent',
-            'getComponentTemplate',
-            'parseComponentTemplate',
-            'parseChildNodes',
+            // 'getComponentTemplate',
+            // 'parseComponentTemplate',
+            // 'parseChildNodes',
         ];
 
         this.template = template;
         this.componentName = null;
         this.componentTemplate = null;
         this.parsedComponentTemplate = null;
-        this.result = {
-            component: null,
-            config: {
-                slots: {
-                    default: null,
-                },
-                stubs: {},
-            },
-        };
 
-        this.htmlResult = null;
+        this.config = {
+            slots: {
+                default: '',
+            },
+            stubs: {},
+        };
     }
 
-    static parse(template, parentComponent = false)
+    static parse(template)
     {
-        const renderer = require('vue-server-renderer').createRenderer();
-
-        let vm = new Vue({
-            template
-        });
-
-        let helloWorld = require('../VueComponents/HelloWorld.vue');
-
-        let foo = { template: '<div>Foo</div>' }
-
-        let fooHtml = vueTestUtils.mount(foo).html();
-
-        return vueTestUtils.mount(helloWorld, {
-            stubs: {'foo': fooHtml }
-        });
-
-        // return await renderer.renderToString(vm);
-
-        let parser = new this(template, parentComponent);
+        let parser = new this(template);
 
         parser.tasks.forEach(task => {
             parser[task]();
         });
 
-        parser.result.component = parser.component;
-
-        if (! parser.component) {
-            return parser.template;
-        }
-
-        if (parser.parentComponent && parser.htmlResult) {
-            return parser.htmlResult;
-        }
-
-        return parser.result;
+        return {
+            component: parser.component,
+            config: parser.config,
+        };
     }
 
     getComponentName()

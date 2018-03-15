@@ -5,10 +5,6 @@ module.exports = class VueTemplateParserTest extends TestCase
     {
         let vueTemplateParser = VueTemplateParser.parse(`<single-slot><h1>Test</h1></single-slot>`);
 
-        console.log(vueTemplateParser.html());
-
-        process.exit();
-
         this.assertEquals({
             component: Vue.options.components['single-slot'],
             config: {
@@ -50,9 +46,11 @@ module.exports = class VueTemplateParserTest extends TestCase
     {
         Vue.component('hello-world-dot-vue-component', require('../../VueComponents/HelloWorld.vue'));
 
-        let vueTemplateParser = VueTemplateParser.parse('<hello-world-dot-vue-component></hello-world-dot-vue-component>');
+        let vueTemplateParser = VueComponentTestWrapper.wrap(
+            VueTemplateParser.parse('<hello-world-dot-vue-component greeting="Foo Bar Hello World"></hello-world-dot-vue-component>')
+        );
 
-        // console.log(VueComponentTestWrapper.wrap(vueTemplateParser).toHtml());
+        console.log(vueTemplateParser.html());
     }
 
     /** @test */
