@@ -2,6 +2,7 @@
     <div>
         <p>{{ greeting }}!</p>
         <hello-world-sub></hello-world-sub>
+        <foo></foo>
     </div>
 </template>
 

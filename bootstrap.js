@@ -196,3 +196,7 @@ Vue.component('template', {
 Vue.component('simple-component', {
     template: '<div><h1>Simple</h1></div>',
 });
+
+Vue.component('test', {
+    template: '<div><slot></slot></div>',
+});

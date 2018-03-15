@@ -5,6 +5,10 @@ module.exports = class VueTemplateParserTest extends TestCase
     {
         let vueTemplateParser = VueTemplateParser.parse(`<single-slot><h1>Test</h1></single-slot>`);
 
+        console.log(vueTemplateParser.html());
+
+        process.exit();
+
         this.assertEquals({
             component: Vue.options.components['single-slot'],
             config: {
@@ -52,17 +56,8 @@ module.exports = class VueTemplateParserTest extends TestCase
     }
 
     /** @test */
-    it_is_able_to_parse_child_nodes()
+    async it_is_able_to_parse_child_nodes()
     {
-        let foo = VueTemplateParser.parse(`
-            <view-presentation>
-                <simple-component></simple-component>
-            </view-presentation>
-        `);
-
-        // console.log(foo);
-        process.exit();
-
         let vueTemplateParser = VueTemplateParser.parse(`
             <view-presentation>
                 <app-layout>
@@ -74,6 +69,10 @@ module.exports = class VueTemplateParserTest extends TestCase
                 </app-layout>
             </view-presentation>
         `);
+
+        console.log(vueTemplateParser.html());
+
+        process.exit();
 
         // console.log(vueTemplateParser);
         // console.log(VueComponentTestWrapper.wrap(vueTemplateParser).toHtml());
