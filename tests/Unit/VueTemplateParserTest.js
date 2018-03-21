@@ -1,6 +1,6 @@
 module.exports = class VueTemplateParserTest extends TestCase
 {
-    /** @test */
+    /** @test-skip */
     it_is_able_to_parse_default_slots()
     {
         let vueTemplateParser = VueTemplateParser.parse(`<single-slot><h1>Test</h1></single-slot>`);
@@ -15,7 +15,7 @@ module.exports = class VueTemplateParserTest extends TestCase
         }, vueTemplateParser);
     }
 
-    /** @test */
+    /** @test-skip */
     it_is_able_to_parse_named_slots()
     {
         let vueTemplateParser = VueTemplateParser.parse(`
@@ -41,7 +41,7 @@ module.exports = class VueTemplateParserTest extends TestCase
         }, vueTemplateParser);
     }
 
-    /** @test */
+    /** @test-skip */
     unit_it_is_able_to_render_sub_components()
     {
         Vue.component('hello-world-dot-vue-component', require('../../VueComponents/HelloWorld.vue'));
@@ -49,67 +49,5 @@ module.exports = class VueTemplateParserTest extends TestCase
         let vueTemplateParser = VueComponentTestWrapper.wrap(
             VueTemplateParser.parse('<hello-world-dot-vue-component greeting="Foo Bar Hello World"></hello-world-dot-vue-component>')
         );
-
-        console.log(vueTemplateParser.html());
-    }
-
-    /** @test */
-    async it_is_able_to_parse_child_nodes()
-    {
-        let vueTemplateParser = VueTemplateParser.parse(`
-            <view-presentation>
-                <app-layout>
-                    <div>Hello Counsel</div>
-
-                    <div><simple-component></simple-component></div>
-
-                    <h1>Foo</h1>
-                </app-layout>
-            </view-presentation>
-        `);
-
-        console.log(vueTemplateParser.html());
-
-        process.exit();
-
-        // console.log(vueTemplateParser);
-        // console.log(VueComponentTestWrapper.wrap(vueTemplateParser).toHtml());
-
-        process.exit();
-
-        this.assertEquals({
-            component: Vue.options.components['view-presentation'],
-            config: {
-                slots: {
-                    default: `
-                        <div>
-                            <section class="hero is-primary is-bold">
-                                <div class="hero-body">
-                                    <div class="container">
-                                        <h1 class="title">
-                                            <slot name="title">{{ title }}</slot>
-                                        </h1>
-                                        <h2 class="subtitle">
-                                            <slot name="slogan">{{ slogan }}</slot>
-                                        </h2>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <div class="container">
-
-                                <slot name="nav">
-                                    <nav></nav>
-                                </slot>
-
-                                <slot></slot>
-
-                                <footer-layout></footer-layout>
-                            </div>
-                        </div>
-                    `,
-                },
-            },
-        }, vueTemplateParser);
     }
 }

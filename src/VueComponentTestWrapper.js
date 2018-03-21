@@ -2,7 +2,7 @@ module.exports = class VueComponentTestWrapper
 {
     constructor(testData)
     {
-        this.wrapper = vueTestUtils.mount(testData.component.options, testData.config);
+        this.wrapper = vueTestUtils.mount(testData.component, testData.config);
 
         this.vm = this.wrapper.vm;
     }

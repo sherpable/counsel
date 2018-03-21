@@ -88,7 +88,7 @@ Vue.component('menu-item', {
     `,
 });
 
-Vue.component('menu', {
+Vue.component('my-menu', {
     template: `
         <ul>
             <menu-item v-for="item in items" :key="item" v-text="item"></menu-item>
@@ -199,4 +199,8 @@ Vue.component('simple-component', {
 
 Vue.component('test', {
     template: '<div><slot></slot></div>',
+});
+
+Vue.component('foo', {
+    template: '<h1>Foo</h1>',
 });

@@ -9,9 +9,9 @@ module.exports = class VueTemplateParser
             'getComponentName',
             'parseTemplate',
             'getComponent',
-            // 'getComponentTemplate',
-            // 'parseComponentTemplate',
-            // 'parseChildNodes',
+            'getComponentTemplate',
+            'parseComponentTemplate',
+            'buildStubs',
         ];
 
         this.template = template;
@@ -36,7 +36,7 @@ module.exports = class VueTemplateParser
         });
 
         return {
-            component: parser.component,
+            component: parser.component.options,
             config: parser.config,
         };
     }
@@ -101,7 +101,10 @@ module.exports = class VueTemplateParser
     parseComponentTemplate()
     {
         if (! this.componentTemplate) {
-            this.parsedComponentTemplate = counsel.serviceProviders.cheerio.load(`<${this.componentName}></${this.componentName}`);
+            this.parsedComponentTemplate = counsel.serviceProviders.cheerio.load(`<${this.componentName}></${this.componentName}`, {
+                withDomLvl1: false,
+                xmlMode: true,
+            });
             return;
         }
 
@@ -109,6 +112,11 @@ module.exports = class VueTemplateParser
             withDomLvl1: false,
             xmlMode: true,
         });
+    }
+
+    buildStubs()
+    {
+        this.config.stubs = VueStubParser.parse(this.component, this.parsedComponentTemplate.root().children().first());
     }
 
     parseChildNodes()

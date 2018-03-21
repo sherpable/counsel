@@ -4,7 +4,7 @@ module.exports = class MenuTest extends VueComponentTestCase
     {
         super.beforeEach();
 
-        this.component = this.render('<menu :items="items"></menu>', {
+        this.component = this.render('<my-menu :items="items"></my-menu>', {
             items: ['Foo', 'Bar', 'Baz']
         });
     }
