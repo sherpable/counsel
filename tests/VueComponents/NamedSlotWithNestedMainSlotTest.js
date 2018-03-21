@@ -3,6 +3,18 @@ module.exports = class NamedSlotTest extends VueComponentTestCase
     /** @test */
     it_is_able_render_a_named_slot_component_with_default_slot_in_nested_element()
     {
+        let ViewPresentation = require('../../VueComponents/ViewPresentation.vue');
+        let AppLayout = require('../../VueComponents/AppLayout.vue');
+
+        let appWrapper = vueTestUtils.mount(AppLayout);
+        let viewWrapper = vueTestUtils.mount(ViewPresentation, {
+            slots: {
+                default: appWrapper.html(),
+            }
+        });
+
+        dd(viewWrapper.html());
+
         let component = this.render(`
             <named-slot-with-nested-main-slot>
                 <h1 slot="header">Here might be a page title</h1>
