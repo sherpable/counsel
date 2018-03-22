@@ -174,12 +174,25 @@ Vue.component('app-layout', {
             <section class="hero is-primary is-bold">
                 <div class="hero-body">
                     <div class="container">
+                        <h1 class="title">
+                            <slot name="title">{{ title }}</slot>
+                        </h1>
+                        <h2 class="subtitle">
+                            <slot name="slogan">{{ slogan }}</slot>
+                        </h2>
                     </div>
                 </div>
             </section>
 
             <div class="container">
+
+                <slot name="nav">
+                    <n-nav></n-nav>
+                </slot>
+
                 <slot></slot>
+
+                <footer-layout></footer-layout>
             </div>
         </div>
     `,
@@ -189,17 +202,31 @@ Vue.component('footer-layout', {
     template: '<footer>Footer</footer>',
 });
 
-Vue.component('template', {
-    template: '<div><slot></slot></div>',
-});
-
 Vue.component('simple-component', {
     template: '<div><h1>Simple</h1></div>',
 });
 
-Vue.component('test', {
-    template: '<div><slot></slot></div>',
+Vue.component('n-nav', {
+    template: `
+        <div class="tabs">
+            <ul>
+                <n-nav-item href="/">Home</n-nav-item>
+                <n-nav-item href="/products">Products</n-nav-item>
+                <n-nav-item href="/products/1">Product 1</n-nav-item>
+                <n-nav-item href="/products/2">Product 2</n-nav-item>
+                <n-nav-item href="/products/3">Product 3</n-nav-item>
+                <n-nav-item href="/products/4">Product 4</n-nav-item>
+                <n-nav-item href="/products/5">Product 5</n-nav-item>
+            </ul>
+        </div>
+    `,
 });
+
+Vue.component('n-nav-item', {
+    template: `
+        <li :class="{'is-active': isActive }"><a :href="href"><slot></slot></a></li>
+    `,
+})
 
 Vue.component('foo', {
     template: '<h1>Foo</h1>',
