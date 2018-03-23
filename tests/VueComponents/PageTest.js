@@ -8,7 +8,7 @@ module.exports = class PageTest extends VueComponentTestCase
         const app = new Vue({
           template: `
               <view-presentation>
-                  <app-layout>
+                  <app-layout @foo="eventFooFired">
                       <template slot="title">Nodue</template>
                       <template slot="slogan">{{ name }}</template>
 
@@ -21,19 +21,51 @@ module.exports = class PageTest extends VueComponentTestCase
                       </div>
                   </app-layout>
               </view-presentation>
-          `
+          `,
+
+          data()
+          {
+            return {
+                name: 'Test Product',
+            }
+          },
+
+          methods: {
+            updateProductName(name)
+            {
+                this.$emit('foo', {'foo': 'bar'});
+                this.name = name;
+            },
+
+            // $emit(name, payload)
+            // {
+            //     console.log('fire event!');
+            // },
+
+            eventFooFired(payload)
+            {
+                console.log('event fired!');
+            }
+          }
         });
 
         // let pageComponent = vueTestUtils.mount(app);
         // console.log(pageComponent);
 
-        // renderer.renderToString(app, (err, html) => {
-          // if (err) throw err
-          // console.log(html);
-          // => <div data-server-rendered="true">Hello World</div>
-        // });
+        renderer.renderToString(app, (err, html) => {
+          if (err) throw err
+          console.log(html.replace(' data-server-rendered="true"', ''));
+        });
 
-        // process.exit();
+        app.updateProductName('FOO PRODUCT');
+        process.exit();
+
+        renderer.renderToString(app, (err, html) => {
+          if (err) throw err
+          console.log(html.replace(' data-server-rendered="true"', ''));
+        });
+
+        process.exit();
 
         let viewPresentation = {
             template: `<div><slot></slot></div>`,
