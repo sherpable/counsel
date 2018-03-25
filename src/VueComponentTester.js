@@ -1,133 +1,44 @@
 module.exports = class VueComponentTester
 {
-    constructor(testCaseInstance, template, props = {}, parentComponent = false)
+    constructor(component, testCaseInstance = null)
     {
-        this.parsedTemplate = counsel.serviceProviders.cheerio.load(template);
-
-        template = template.replace(/\r?\n?/g, '');
+        let template = component.template.replace(/\r?\n?/g, '');
         this.template = template;
         this.html = null;
-        this.propsOverride = props;
         this.props = {};
-        this.config = {};
-        this.config.stubs = {};
-        this.slots = {};
-        this.children = {};
         this.tester = testCaseInstance;
         this.componentName = template.match(/<([^\s>]+)(\s|>)+/)[1];
-
-        if (parentComponent && parentComponent.sealedOptions) {
-            this.component = parentComponent.sealedOptions.components[this.componentName];
-        } else {
-            this.component = Vue.options.components[this.componentName];
-        }
-
-        if (! this.component && parentComponent.components && parentComponent.components[this.componentName]) {
-            this.component = parentComponent.components[this.componentName];
-        }
-
-        // console.log(Vue.options.components['hello-world-dot-vue-component'].sealedOptions);
-        // process.exit();
 
         if (! this.component) {
             throw new Error(`Component [${this.componentName}] don't exists.`);
         }
 
-        let testComponent = this.component;
-
-        // Stub child components
-        let componentTemplate = null;
-        if (this.component.template) {
-            componentTemplate = counsel.serviceProviders.cheerio.load(this.component.template);
-        } else {
-            componentTemplate = counsel.serviceProviders.cheerio.load(this.component.options.template);
-        }
-
-        let componentRootHtml = componentTemplate('body').children().first().html();
-
-        // console.log(this.componentName);
-        // console.log(this.component);
-
-        counsel.serviceProviders.cheerio(componentRootHtml).each((index, element) => {
-            let childComponentName = element.tagName;
-
-            if (childComponentName) {
-                let stub = null;
-
-                if (this.component.sealedOptions && this.component.sealedOptions.components[childComponentName]) {
-                    stub = this.component.sealedOptions.components[childComponentName];
-                } else if (this.component.components) {
-                    stub = this.component.components[childComponentName];
-                }
-
-                if (! stub) {
-                    Vue.options.components[childComponentName];
-                }
-
-                if (stub) {
-                    // let childComponentWrapper = vueTestUtils.mount(stub);
-                    let childComponent = new VueComponentTester(this.tester, `<${childComponentName}>${stub.template}</${childComponentName}>`, stub.props, this.component);
-                    this.children[childComponentName] = childComponent;
-                    this.config.stubs[childComponentName] = childComponent.toHtml();
-                }
-            }
-        });
-
-        this.defaultSlot = '';
-
-        this.parsedTemplate(this.componentName).children().each((index, element) => {
-            let tagName = element.tagName;
-            let child = counsel.serviceProviders.cheerio(element);
-            let childHtml = `<${tagName}>${child.html()}</${tagName}>`;
-
-            if (Vue.options.components[tagName]) {
-                childHtml = Vue.options.components[tagName].sealedOptions.template;
-                childHtml = childHtml.replace('<slot></slot>', this.parsedTemplate(this.componentName).find(tagName).html());
-                childHtml = childHtml.replace('<footer-layout></footer-layout>', Vue.options.components['footer-layout'].sealedOptions.template);
-            }
-
-            if (child.attr('slot')) {
-                this.slots[child.attr('slot')] = childHtml;
-            } else {
-                this.defaultSlot += childHtml;
-            }
-        });
-
-        if (this.defaultSlot) {
-            let defaultSlotParentName = (componentTemplate('slot').not('[name]').parent()[0].name);
-
-            let cleanComponentTemplate = this.component.options.template.replace(/\s+/g, '');
-            let cleanSlotParentHtml = counsel.serviceProviders.cheerio.html(componentTemplate('slot').not('[name]').parent()).replace(/\s+/g, '');
-
-            if (cleanSlotParentHtml != cleanComponentTemplate) {
-                componentTemplate('slot').not('[name]').parent().replaceWith('<slot></slot>');
-                this.component.options.template = componentTemplate('body').html();
-
-                this.slots.default = `<${defaultSlotParentName}>${this.defaultSlot}</${defaultSlotParentName}>`;
-            } else {
-                this.slots.default = this.defaultSlot;
-            }
-        }
+        this.component = component;
 
         this.props = this.parseProps();
-        // let propsRegex = new RegExp(`<${this.componentName}\s?([^\>]+)(|>)+`, 'igm');
-        // this.rawProps = propsRegex.exec(template);
 
-        // if (this.rawProps && this.rawProps[1]) {
-        //     this.rawProps = this.rawProps[1];
-        //     this.props = this.parseProps();
-        // } else {
-        //     this.rawProps = null;
-        // }
+       this.component.props = this.props;
 
-        this.config.slots = this.slots;
+        let originBeforeCreate = this.component.beforeCreate;
+        this.component.beforeCreate = function()
+        {
+            let $on = this.$on;
+            let $emit = this.$emit;
 
-        this.wrapper = vueTestUtils.mount(testComponent, this.config);
+            this.$on = (name, callback) => {
+                console.log('Trap $on');
+                $on.bind(this)(name, callback);
+            };
 
-        this.vm = this.wrapper.vm;
+            this.$emit = (name, payload) => {
+                console.log('Trap $emit');
+                $emit.bind(this)(name, payload);
+            };
 
-        this.wrapper.setData({ name: 'Product 1' });
-        this.wrapper.setProps(this.props);
+            originBeforeCreate.bind(this)();
+        }
+
+        this.vm = new Vue(this.component);
     }
 
     parseProps()
@@ -147,142 +58,42 @@ module.exports = class VueComponentTester
         return props;
     }
 
-    setProps(props)
+    static test(component, testCaseInstance = null)
     {
-        this.wrapper.setProps(props);
+        let tester = new this(component, testCaseInstance);
 
-        return this;
-    }
+        return new Proxy(
+            new VueComponentWrapper.wrap(tester.vm),
+            {
+                get(target, property, receiver)
+                {
+                    target.vm.$nextTick();
 
-    static test(testCaseInstance, template, props)
-    {
-        let tester = new this(testCaseInstance, template, props);
-        return tester;
-    }
+                    if (property == 'page') {
+                        return target.vm;
+                    }
 
-    fastForward(timeExpression)
-    {
-        let time = parseFloat(timeExpression);
+                    if (typeof target[property] == 'function') {
+                        return function(...args) {
+                           return target[property](...args);
+                        };
+                    }
 
-        if(timeExpression.substr(timeExpression.length - 2) != 'ms' && timeExpression.substr(timeExpression.length - 1) == 's') {
-            time *= 1000;
-        }
+                    if (target[property] !== undefined) {
+                        return target[property];
+                    }
 
-        this.tester.clock.tick(time);
-    }
+                    if (typeof target.vm[property] == 'function') {
+                        return function(...args) {
+                            return target.vm[property](...args);
+                        };
+                    }
 
-    toHtml()
-    {
-        this.wrapper.update();
-        return this.wrapper.html();
-    }
-
-    dd()
-    {
-        dd(this.toHtml());
-    }
-
-    assertEmitted(eventName)
-    {
-        this.wrapper.update();
-
-        let events = this.wrapper.emitted();
-        let eventNames = Object.keys(events);
-
-        this.tester.assertTrue(eventNames.includes(eventName), `Assert that event [${eventName}] was emitted, but is was not.`);
-    }
-
-    assertSee(expression)
-    {
-        let rawExpression = expression;
-
-        if (typeof expression == 'string') {
-            expression = new RegExp(expression, 'gim');
-        }
-
-        let html = this.toHtml();
-
-        this.tester.assertContains(expression, html, `Assert that "${rawExpression}" should exists on the page, but it was not found.`);
-
-        return this;
-    }
-
-    andSee(expression)
-    {
-        return this.assertSee(expression);
-    }
-
-    see(expression)
-    {
-        return this.assertSee(expression);
-    }
-
-    assertNotSee(expression)
-    {
-        let rawExpression = expression;
-
-        if (typeof expression == 'string') {
-            expression = new RegExp(expression, 'gim');
-        }
-
-        this.tester.assertNotRegExp(expression, this.toHtml(), `Assert that "${rawExpression}" should not exists on the page, but it was found.`);
-    }
-
-    andNotSee(expression)
-    {
-        return this.assertNotSee(expression);
-    }
-
-    notSee(expression)
-    {
-        return this.assertNotSee(expression);
-    }
-
-    async assertVisible(text)
-    {
-        let cheerio = require('cheerio');
-        let html = await this.toHtml();
-        let $ = cheerio.load(html);
-
-        let isVisible = $('div').filter(function() {
-            return $(this).text().trim() === text;
-        }).attr('style') != 'display:none;';
-
-        this.tester.assertTrue(isVisible);
-
-        return this;
-    }
-
-    async assertNotVisible(text)
-    {
-        let cheerio = require('cheerio');
-        let html = await this.toHtml();
-        let $ = cheerio.load(html);
-
-        let isNotVisible = $('div').filter(function() {
-            return $(this).text().trim() === text;
-        }).attr('style') == 'display:none;';
-
-        this.tester.assertTrue(isNotVisible);
-
-        return this;
-    }
-
-    click(selector)
-    {
-        this.find(selector).trigger('click');
-    }
-
-    typeInto(selector, value)
-    {
-        let elementWrapper = this.find(selector);
-
-        elementWrapper.element.value = value;
-        elementWrapper.trigger('input');
-    }
-
-    find(selector)
-    {
-        return this.wrapper.find(selector);
+                    if (target.vm[property] !== undefined) {
+                        return target.vm[property];
+                    }
+                }
+            }
+        );
     }
 }

@@ -137,7 +137,7 @@ module.exports = class CounselRunner
 
             // Load vue specific stuff
             global.VueComponentTestCase = require('./VueComponentTestCase');
-            global.VueComponentTester = require('./VueComponentTesterNew');
+            global.VueComponentTester = require('./VueComponentTester');
             global.VueTemplateParser = require('./VueTemplateParser');
             global.VueComponentTestWrapper = require('./VueComponentTestWrapper');
             global.VueStubParser = require('./VueStubParser');
