@@ -1,15 +1,16 @@
-let Vue = require('vue');
+const renderer = require('vue-server-renderer').createRenderer();
 
 module.exports = class VueComponentWrapper
 {
-	constructor(vm)
+	constructor(testVm, vm)
 	{
+        this.testVm = testVm;
 		this.vm = vm;
 	}
 
-	static wrap(vm)
+	static wrap(testVm, vm)
 	{
-		return new this(vm);
+		return new this(testVm, vm);
 	}
 
     setProps(props)
@@ -30,10 +31,26 @@ module.exports = class VueComponentWrapper
         this.tester.clock.tick(time);
     }
 
-    toHtml()
+    async toHtml()
     {
-        this.wrapper.update();
-        return this.wrapper.html();
+        this.update();
+
+        return await this.renderAsString();
+    }
+
+    async renderAsString()
+    {
+        let html = await renderer.renderToString(this.testVm);
+        return html.replace(' data-server-rendered="true"', '');
+    }
+
+    update()
+    {
+        this.testVm.$nextTick();
+
+        // this.vm.$nextTick();
+
+        return this;
     }
 
     dd()
@@ -43,7 +60,7 @@ module.exports = class VueComponentWrapper
 
     assertEmitted(eventName)
     {
-        this.wrapper.update();
+        this.update();
 
         let events = this.wrapper.emitted();
         let eventNames = Object.keys(events);

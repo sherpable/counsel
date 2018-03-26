@@ -1,26 +1,36 @@
+const cheerio = require('cheerio');
+const VueComponentWrapper = require('./VueComponentWrapper');
+
 module.exports = class VueComponentTester
 {
-    constructor(component, testCaseInstance = null)
+    constructor(template, testCaseInstance = null)
     {
-        let template = component.template.replace(/\r?\n?/g, '');
-        this.template = template;
+        let component = {
+            template,
+        };
+
+        this.parsedTemplate = cheerio.load(template);
+
+        this.template = component.template.replace(/\r?\n?/g, '');
         this.html = null;
         this.props = {};
         this.tester = testCaseInstance;
-        this.componentName = template.match(/<([^\s>]+)(\s|>)+/)[1];
+        this.componentName = this.template.match(/<([^\s>]+)(\s|>)+/)[1];
+
+        this.component = Vue.options.components[this.componentName];
 
         if (! this.component) {
             throw new Error(`Component [${this.componentName}] don't exists.`);
         }
 
-        this.component = component;
+        this.testComponent = this.component;
 
         this.props = this.parseProps();
 
-       this.component.props = this.props;
+        this.testComponent.props = this.props;
 
-        let originBeforeCreate = this.component.beforeCreate;
-        this.component.beforeCreate = function()
+        let originBeforeCreate = this.testComponent.beforeCreate;
+        this.testComponent.sealedOptions.beforeCreate = function beforeCreate()
         {
             let $on = this.$on;
             let $emit = this.$emit;
@@ -35,10 +45,26 @@ module.exports = class VueComponentTester
                 $emit.bind(this)(name, payload);
             };
 
-            originBeforeCreate.bind(this)();
+            if (typeof originBeforeCreate == 'function') {
+                originBeforeCreate.bind(this)();
+            }
         }
 
-        this.vm = new Vue(this.component);
+        this.testComponent.extendOptions.beforeCreate = this.testComponent.sealedOptions.beforeCreate;
+        this.testComponent.options.beforeCreate = this.testComponent.sealedOptions.beforeCreate;
+
+        // this.testComponent.sealedOptions.template = template;
+        // this.testComponent.extendOptions.template = template;
+        // this.testComponent.options.template = template;
+
+        this.testVm = new Vue(component);
+        // this.vm = this.testVm.$options._base.options.components[this.componentName];
+
+        // this.vm = new Vue(this.testComponent);
+        // console.log(this.testVm.$options._base.options);
+        // process.exit();
+
+        this.vm = new Vue(this.testComponent);
     }
 
     parseProps()
@@ -58,16 +84,16 @@ module.exports = class VueComponentTester
         return props;
     }
 
-    static test(component, testCaseInstance = null)
+    static test(template, testCaseInstance = null)
     {
-        let tester = new this(component, testCaseInstance);
+        let tester = new this(template, testCaseInstance);
 
         return new Proxy(
-            new VueComponentWrapper.wrap(tester.vm),
+            VueComponentWrapper.wrap(tester.testVm, tester.vm),
             {
                 get(target, property, receiver)
                 {
-                    target.vm.$nextTick();
+                    // target.testVm.$nextTick();
 
                     if (property == 'page') {
                         return target.vm;
@@ -82,6 +108,9 @@ module.exports = class VueComponentTester
                     if (target[property] !== undefined) {
                         return target[property];
                     }
+
+                    // console.log(target);
+                    // process.exit();
 
                     if (typeof target.vm[property] == 'function') {
                         return function(...args) {
