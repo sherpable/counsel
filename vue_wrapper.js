@@ -10,7 +10,7 @@
     template: `
         <div>
         	<h1>{{ name }}</h1>
-          <slot></slot>
+          	<slot></slot>
         </div>
     `,
 
@@ -49,10 +49,10 @@
   });
 
 
-  const app = VueComponentTester.test('<foo><span>SLOT</span></foo>');
+  const app = VueComponentTester.test('<foo><span>FOO</span></foo>');
 
   // console.log(app);
-  app.updateProductName('Foo');
+  app.updateProductName('Foo product');
 
 
   let html = await app.toHtml();

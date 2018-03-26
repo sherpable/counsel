@@ -57,14 +57,26 @@ module.exports = class VueComponentTester
         // this.testComponent.extendOptions.template = template;
         // this.testComponent.options.template = template;
 
+        // component.methods = this.testComponent.sealedOptions.methods;
+        // component.props = this.testComponent.sealedOptions.props;
+        // component.data = this.testComponent.sealedOptions.data;
+        // component.created = this.testComponent.sealedOptions.created;
+
         this.testVm = new Vue(component);
-        // this.vm = this.testVm.$options._base.options.components[this.componentName];
+        console.log(this.testVm.$children);
+        process.exit();
+        // console.log(this.testVm._renderProxy.$options._base.options.components[this.componentName]);
+        // process.exit();
+        // this.vm = this.testVm._renderProxy._base.options.components[this.componentName];
+        // this.vm = this.testVm._renderProxy.$options._base.options.components[this.componentName];
 
         // this.vm = new Vue(this.testComponent);
-        // console.log(this.testVm.$options._base.options);
+        // console.log(this.testVm);
         // process.exit();
 
         this.vm = new Vue(this.testComponent);
+        // console.log(this.vm);
+        // process.exit();
     }
 
     parseProps()
@@ -96,7 +108,7 @@ module.exports = class VueComponentTester
                     // target.testVm.$nextTick();
 
                     if (property == 'page') {
-                        return target.vm;
+                        return target.testVm;
                     }
 
                     if (typeof target[property] == 'function') {
@@ -112,14 +124,14 @@ module.exports = class VueComponentTester
                     // console.log(target);
                     // process.exit();
 
-                    if (typeof target.vm[property] == 'function') {
+                    if (typeof target.testVm[property] == 'function') {
                         return function(...args) {
-                            return target.vm[property](...args);
+                            return target.testVm[property](...args);
                         };
                     }
 
-                    if (target.vm[property] !== undefined) {
-                        return target.vm[property];
+                    if (target.testVm[property] !== undefined) {
+                        return target.testVm[property];
                     }
                 }
             }
