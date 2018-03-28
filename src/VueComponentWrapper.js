@@ -2,15 +2,14 @@ const renderer = require('vue-server-renderer').createRenderer();
 
 module.exports = class VueComponentWrapper
 {
-	constructor(testVm, vm)
+	constructor(vm)
 	{
-        this.testVm = testVm;
 		this.vm = vm;
 	}
 
-	static wrap(testVm, vm)
+	static wrap(vm)
 	{
-		return new this(testVm, vm);
+		return new this(vm);
 	}
 
     setProps(props)
@@ -40,13 +39,13 @@ module.exports = class VueComponentWrapper
 
     async renderAsString()
     {
-        let html = await renderer.renderToString(this.testVm);
+        let html = await renderer.renderToString(this.vm);
         return html.replace(' data-server-rendered="true"', '');
     }
 
     update()
     {
-        this.testVm.$nextTick();
+        this.vm.$nextTick();
 
         // this.vm.$nextTick();
 

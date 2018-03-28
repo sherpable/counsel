@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const VueComponentWrapper = require('./VueComponentWrapper');
+const bus = new Vue;
 
 module.exports = class VueComponentTester
 {
@@ -53,6 +54,13 @@ module.exports = class VueComponentTester
         this.testComponent.extendOptions.beforeCreate = this.testComponent.sealedOptions.beforeCreate;
         this.testComponent.options.beforeCreate = this.testComponent.sealedOptions.beforeCreate;
 
+        this.testComponent.methods = {};
+
+        this.testComponent.methods.updateProductName = function updateProductName(name)
+        {
+            bus.$emit('updateProductName', name);
+        }
+
         // this.testComponent.sealedOptions.template = template;
         // this.testComponent.extendOptions.template = template;
         // this.testComponent.options.template = template;
@@ -62,19 +70,15 @@ module.exports = class VueComponentTester
         // component.data = this.testComponent.sealedOptions.data;
         // component.created = this.testComponent.sealedOptions.created;
 
-        this.testVm = new Vue(component);
-        console.log(this.testVm.$children);
-        process.exit();
         // console.log(this.testVm._renderProxy.$options._base.options.components[this.componentName]);
         // process.exit();
         // this.vm = this.testVm._renderProxy._base.options.components[this.componentName];
         // this.vm = this.testVm._renderProxy.$options._base.options.components[this.componentName];
 
-        // this.vm = new Vue(this.testComponent);
-        // console.log(this.testVm);
+        this.vm = new Vue(this.testComponent);
+        // console.log(this.vm);
         // process.exit();
 
-        this.vm = new Vue(this.testComponent);
         // console.log(this.vm);
         // process.exit();
     }
@@ -101,14 +105,14 @@ module.exports = class VueComponentTester
         let tester = new this(template, testCaseInstance);
 
         return new Proxy(
-            VueComponentWrapper.wrap(tester.testVm, tester.vm),
+            VueComponentWrapper.wrap(tester.vm),
             {
                 get(target, property, receiver)
                 {
-                    // target.testVm.$nextTick();
+                    // target.vm.$nextTick();
 
                     if (property == 'page') {
-                        return target.testVm;
+                        return target.vm;
                     }
 
                     if (typeof target[property] == 'function') {
@@ -124,14 +128,14 @@ module.exports = class VueComponentTester
                     // console.log(target);
                     // process.exit();
 
-                    if (typeof target.testVm[property] == 'function') {
+                    if (typeof target.vm[property] == 'function') {
                         return function(...args) {
-                            return target.testVm[property](...args);
+                            return target.vm[property](...args);
                         };
                     }
 
-                    if (target.testVm[property] !== undefined) {
-                        return target.testVm[property];
+                    if (target.vm[property] !== undefined) {
+                        return target.vm[property];
                     }
                 }
             }
