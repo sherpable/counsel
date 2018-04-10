@@ -218,7 +218,7 @@ module.exports = class VueComponentTester
             expression = new RegExp(expression, 'gim');
         }
 
-        this.tester.assertNotRegExp(expression, this.toHtml(), `Assert that "${rawExpression}" should not exists on the page, but it was found.`);
+        this.tester.assertNotContains(expression, this.toHtml(), `Assert that "${rawExpression}" should not exists on the page, but it was found.`);
     }
 
     andNotSee(expression)
@@ -254,11 +254,16 @@ module.exports = class VueComponentTester
 
         let isNotVisible = $('div').filter(function() {
             return $(this).text().trim() === text;
-        }).attr('style') == 'display:none;';
+        }).attr('style').replace(/\s/g,'') == 'display:none;';
 
         this.tester.assertTrue(isNotVisible);
 
         return this;
+    }
+
+    async assertHidden(text)
+    {
+        return await this.assertNotVisible(text);
     }
 
     click(selector)
