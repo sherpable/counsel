@@ -169,12 +169,38 @@ module.exports = class CounselRunner
 			process.exit(0);
 		}
 
+        this.loadEnvData();
+
+        this.autoloadFiles();
+
 		this.getTestLocations();
 
         this.loadAssertions();
 
         await this.reporter.afterBoot();
 	}
+
+    loadEnvData()
+    {
+        let envData = this.config.env;
+        
+        if (envData && typeof envData == 'object') {
+            for (let envItem in envData) {
+                process.env[envItem] = envData[envItem];
+            }
+        }
+    }
+
+    autoloadFiles()
+    {
+        let autoloadFiles = this.config.autoload;
+        
+        if (autoloadFiles && typeof autoloadFiles == 'object') {
+            for (let alias in autoloadFiles) {
+                global[alias] = autoloadFiles[alias];
+            }
+        }
+    }
 
     loadServiceProviders()
     {

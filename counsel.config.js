@@ -10,6 +10,12 @@ module.exports = {
 	files: [
 		"tests"
 	],
+    autoload: {
+        TestAutoloadFile: './tests/TestAutoloadFile.js',
+    },
+    env: {
+        'APP_ENV': 'testing',
+    }
     // assertionMacros: {
     //     assertNull: (actual, message) => {
     //         return new Assertion({

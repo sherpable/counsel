@@ -8,5 +8,8 @@ module.exports = {
     },
 	files: [
 		"tests"
-	]
+	],
+    env: {
+        'APP_ENV': 'testing',
+    }
 }
