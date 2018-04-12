@@ -173,6 +173,8 @@ module.exports = class CounselRunner
 
         this.autoloadFiles();
 
+        this.instantiateAutoloadClasses();
+
 		this.getTestLocations();
 
         this.loadAssertions();
@@ -193,11 +195,22 @@ module.exports = class CounselRunner
 
     autoloadFiles()
     {
-        let autoloadFiles = this.config.autoload;
+        let autoloadFiles = this.config.autoloadFiles;
         
         if (autoloadFiles && typeof autoloadFiles == 'object') {
-            for (let alias in autoloadFiles) {
-                global[alias] = autoloadFiles[alias];
+            autoloadFiles.forEach(file => {
+                require(this.root + file);
+            });
+        }
+    }
+
+    instantiateAutoloadClasses()
+    {
+        let autoloadClasses = this.config.autoloadClasses;
+
+        if (autoloadClasses && typeof autoloadClasses == 'object') {
+            for (let alias in autoloadClasses) {
+                global[alias] = new (require(this.root + autoloadClasses[alias]));
             }
         }
     }

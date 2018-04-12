@@ -1,3 +1,1 @@
-module.exports = {
-	'test-autoload-file': true,
-}
+global['test-autoload-file'] = true;
