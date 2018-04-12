@@ -173,7 +173,9 @@ module.exports = class CounselRunner
 
         this.autoloadFiles();
 
-        this.instantiateAutoloadClasses();
+        this.autoloadClasses();
+
+        this.instantiateClasses();
 
 		this.getTestLocations();
 
@@ -204,13 +206,24 @@ module.exports = class CounselRunner
         }
     }
 
-    instantiateAutoloadClasses()
+    autoloadClasses()
     {
         let autoloadClasses = this.config.autoloadClasses;
-
+        
         if (autoloadClasses && typeof autoloadClasses == 'object') {
             for (let alias in autoloadClasses) {
-                global[alias] = new (require(this.root + autoloadClasses[alias]));
+                global[alias] = require(this.root + autoloadClasses[alias]);
+            }
+        }
+    }
+
+    instantiateClasses()
+    {
+        let instantiateClasses = this.config.instantiateClasses;
+
+        if (instantiateClasses && typeof instantiateClasses == 'object') {
+            for (let alias in instantiateClasses) {
+                global[alias] = new (require(this.root + instantiateClasses[alias]));
             }
         }
     }

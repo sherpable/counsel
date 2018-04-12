@@ -1,6 +1,6 @@
 module.exports = class TestAutoloadClassFile
 {
-	isAutoloadClass()
+	isAutoloadedClass()
 	{
 		return true;
 	}

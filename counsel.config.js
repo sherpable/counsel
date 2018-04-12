@@ -16,6 +16,9 @@ module.exports = {
     autoloadClasses: {
         TestAutoloadClassFile: 'tests/TestAutoloadClassFile.js',
     },
+    instantiateClasses: {
+        TestInstantiateClassFile: 'tests/TestInstantiateClassFile.js',
+    },
     env: {
         'APP_ENV': 'testing',
     },

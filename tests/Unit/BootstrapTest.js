@@ -13,9 +13,16 @@ module.exports = class BootstrapTest extends TestCase
     }
 
     /** @test */
+    it_will_autoload_the_specified_classes()
+    {
+        this.assertEquals(TestAutoloadClassFile, require('../TestAutoloadClassFile.js'));
+        this.assertTrue((new TestAutoloadClassFile).isAutoloadedClass());
+    }
+
+    /** @test */
     it_will_instantiate_the_specified_classes()
     {
-        this.assertEquals(TestAutoloadClassFile, new (require('../TestAutoloadClassFile.js')));
-        this.assertTrue(TestAutoloadClassFile.isAutoloadClass());
+        this.assertEquals(TestInstantiateClassFile, new (require('../TestInstantiateClassFile.js')));
+        this.assertTrue(TestInstantiateClassFile.isInstantiatedClass());
     }
 }
