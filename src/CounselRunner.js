@@ -90,7 +90,7 @@ module.exports = class CounselRunner
             console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
             console.error(error);
 
-            process.exit(0);
+            process.exit(2);
         }
     }
 
@@ -166,7 +166,7 @@ module.exports = class CounselRunner
                 console.log(error);
             }
 
-			process.exit(0);
+			process.exit(2);
 		}
 
         this.loadEnvData();
@@ -258,11 +258,18 @@ module.exports = class CounselRunner
             console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
             console.error(error);
 
-            process.exit(0);
+            process.exit(2);
         }
 
         await this.reporter.afterTest();
 	}
+
+    exit()
+    {
+        let statusCode = (counsel.reporter.assertionsFailuresCount > 0) ? 2 : 0;
+
+        process.exit(statusCode);
+    }
 
 	async runTestsInClass(testClass, path, location)
 	{
@@ -341,7 +348,7 @@ module.exports = class CounselRunner
                     console.error(this.serviceProviders.chalk.red(`  Vue utils error`));
                     console.error(error);
 
-                    process.exit(0);
+                    process.exit(2);
                 } else {
                 	let expectedException = testClass.expectedException;
                 	let expectedExceptionMessage = testClass.expectedExceptionMessage;
@@ -429,7 +436,7 @@ module.exports = class CounselRunner
 		let fileLocations = this.config.files;
 
 		if (! fileLocations) {
-			process.exit(0);
+			process.exit(2);
 		}
 
 		fileLocations.forEach(location => {
@@ -458,7 +465,7 @@ module.exports = class CounselRunner
                 console.error(error);
             }
 
-			process.exit(0);
+			process.exit(2);
 		}
 
 		return this.serviceProviders.fileLoader.load(this.path(path));

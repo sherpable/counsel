@@ -13,15 +13,22 @@
     } catch (error) {
         console.error(counsel.serviceProviders.chalk.red(`  ${counsel.serviceProviders.figures.cross} counsel bootstrap error`));
         console.log(error);
+        process.exit(2);
     }
 
     /**
-     * Finally, filter and run all tests found in all the test classes.
+     * Filter and run all tests found in all the test classes.
      */
     try {
         await counsel.test();
     } catch (error) {
         console.error(counsel.serviceProviders.chalk.red(`  ${counsel.serviceProviders.figures.cross} counsel error`));
         console.log(error);
+        process.exit(2);
     }
+
+    /**
+     * Finally, exit with the proper status code
+     */
+    counsel.exit();
 })();
