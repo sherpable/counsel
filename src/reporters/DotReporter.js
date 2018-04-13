@@ -6,7 +6,7 @@ module.exports = class DotReporter extends Reporter
 
         this.assertionsExecuted = -1;
 
-        this.assertionsPerLine = 62;
+        this.assertionsPerLine = 31;
     }
 
     afterEachFailedAssertion(assertion)
