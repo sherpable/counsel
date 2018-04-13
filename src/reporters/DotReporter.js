@@ -36,7 +36,7 @@ module.exports = class DotReporter extends Reporter
         if (this.assertionsExecuted == this.assertionsPerLine) {
             this.assertionsExecuted = 0;
 
-            this.appendLog(` ( ${this.progress}%)\n  `);
+            this.appendLog(` ( ${this.progress}%)\n\n  `);
         }
     }
 
