@@ -34,6 +34,12 @@ module.exports = class CounselRunner
 
 		this.rawFilter = process.env.npm_lifecycle_script;
 
+        if (! this.rawFilter) {
+            this.fullRun = true;
+        } else {
+            this.fullRun = false;
+        }
+
         this.filter = this.parseFilter(this.rawFilter);
         this.filter = process.argv.slice(2)[0];
 
@@ -77,6 +83,8 @@ module.exports = class CounselRunner
             if (typeof reporter == 'function') {
                 this.reporter = reporter;
             }
+
+            this.reporter.fullRun = this.fullRun;
 
             global.dump = (data) => {
                 console.log(this.reporter.beautify(data));
@@ -383,6 +391,8 @@ module.exports = class CounselRunner
 	async runTestsInLocation(location)
 	{
         let testFiles = this.getTestFilesInLocation(this.locations[location]);
+
+        this.reporter.totalTests = Object.keys(testFiles).length;
 
         for (let filePath in testFiles) {
             let testClass = new testFiles[filePath]();

@@ -31,6 +31,8 @@ module.exports = class Reporter
         this.executionTime = null;
         this.executionTimeFormatted = null;
 
+        this.progress = 0;
+
         this.dumpTheme = {
             boolean: this.ansiStyles.yellow,
             circular: this.forceColor.grey('[Circular]'),
@@ -406,6 +408,12 @@ module.exports = class Reporter
     afterEachTest(testName, results, failuresCount)
     {
         this.testsCount++;
+
+        if (! this.fullRun) {
+            return;
+        }
+
+        this.progress = Math.round((this.testsCount / this.totalTests) * 100);
     }
 
     afterEachFailedTest(testName, results, failuresCount)
