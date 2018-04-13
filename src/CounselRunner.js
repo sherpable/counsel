@@ -34,14 +34,13 @@ module.exports = class CounselRunner
 
 		this.rawFilter = process.env.npm_lifecycle_script;
 
-        if (! this.rawFilter) {
+        this.filter = this.getFilter();
+
+        if (! this.filter) {
             this.fullRun = true;
         } else {
             this.fullRun = false;
         }
-
-        this.filter = this.parseFilter(this.rawFilter);
-        this.filter = process.argv.slice(2)[0];
 
         this.annotationFilter = 'test';
 
@@ -112,15 +111,9 @@ module.exports = class CounselRunner
         this.assertions = Assertions;
     }
 
-	parseFilter(rawFilter = '')
+	getFilter()
 	{
-		let searchFilter = rawFilter.match(/"((?:\\.|[^"\\])*)"/);
-
-		if (typeof searchFilter === 'object' && searchFilter !== null) {
-			return searchFilter[1];
-		}
-
-		return null;
+		return process.argv.slice(2)[0];
 	}
 
 	async boot()

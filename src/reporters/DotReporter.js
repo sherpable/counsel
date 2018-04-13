@@ -36,13 +36,13 @@ module.exports = class DotReporter extends Reporter
         if (this.assertionsExecuted == this.assertionsPerLine) {
             this.assertionsExecuted = 0;
 
-            this.appendLog(` ( ${this.progress}%)\n\n  `);
+            this.appendLog(` ( ${this.progress}%)\n  `);
         }
     }
 
     afterTest()
     {
-        if (this.assertionsPerLine < this.assertionsCount) {
+        if (this.fullRun && this.assertionsPerLine < this.assertionsCount) {
             let spaceLeft = '';
             let spacesLeft = (this.assertionsPerLine - this.assertionsExecuted) - 1;
 
