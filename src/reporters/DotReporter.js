@@ -4,37 +4,37 @@ module.exports = class DotReporter extends Reporter
     {
         super();
 
-        this.assertionsExecuted = -1;
+        this.testsExecuted = -1;
 
-        this.assertionsPerLine = 31;
+        this.testsPerLine = 43;
     }
 
-    afterEachFailedAssertion(assertion)
+    afterEachFailedTest(testName, results, failuresCount)
     {
-        super.afterEachFailedAssertion(assertion);
+        super.afterEachFailedTest(testName, results, failuresCount);
 
         this.appendLog(counsel.serviceProviders.chalk.red('x'));
     }
 
-    afterEachPassedAssertion(assertion)
+    afterEachPassedTest(testName, results)
     {
-        super.afterEachPassedAssertion(assertion);
+        super.afterEachPassedTest(testName, results);
 
         this.appendLog(counsel.serviceProviders.chalk.green('.'));
     }
 
-    afterEachAssertion(assertion)
+    afterEachTest(testName, results, failuresCount)
     {
-        super.afterEachAssertion(assertion);
+        super.afterEachTest(testName, results, failuresCount);
 
         if (! this.fullRun) {
             return;
         }
 
-        this.assertionsExecuted++;
+        this.testsExecuted++;
 
-        if (this.assertionsExecuted == this.assertionsPerLine) {
-            this.assertionsExecuted = 0;
+        if (this.testsExecuted == this.testsPerLine) {
+            this.testsExecuted = 0;
 
             this.appendLog(` ( ${this.progress}%)\n  `);
         }
@@ -42,9 +42,9 @@ module.exports = class DotReporter extends Reporter
 
     afterTest()
     {
-        if (this.fullRun && this.assertionsPerLine < this.assertionsCount) {
+        if (this.fullRun && this.testsPerLine < this.totalTests) {
             let spaceLeft = '';
-            let spacesLeft = (this.assertionsPerLine - this.assertionsExecuted) - 1;
+            let spacesLeft = (this.testsPerLine - this.testsExecuted) - 1;
 
             if (spacesLeft > 0) {
                 spaceLeft = ' '.repeat(spacesLeft);

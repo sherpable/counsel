@@ -92,12 +92,14 @@ module.exports = class CoreAssertionsTest extends TestCase
         this.assertEquals('foo', promiseResult);
     }
 
-    async promiseCall()
+    promiseCall()
     {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve('foo');
             }, 1);
+        }).catch(error => {
+            reject(error);
         });
     }
 }

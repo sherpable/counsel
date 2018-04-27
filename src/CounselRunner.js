@@ -244,7 +244,7 @@ module.exports = class CounselRunner
         global.moment = this.serviceProviders.moment;
     }
 
-	async test(callback)
+	async test()
 	{
         await this.reporter.beforeTest();
 
@@ -272,47 +272,20 @@ module.exports = class CounselRunner
         process.exit(statusCode);
     }
 
-	async runTestsInClass(testClass, path, location)
+	async runTestsInClass(testClass, path, testMethods)
 	{
-		let annotations = this.serviceProviders.annotations.getSync(this.path(`${location}/${path}.js`));
-        let invokedSetUp = false;
-        let testClassMethodIsHit = false;
+        // Invoke setUp method if exists
+        if (typeof testClass['setUp'] == 'function') {
+            testClass.name = path + ' -> ' + 'setUp';
+            testClass['setUp']();
+        }
 
         for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
-			let hasCorrectAnnotation = false;
+            if (! testMethods.includes(name)) {
+                continue;
+            }
+
 		    let method = testClass[name];
-
-		    if (typeof annotations[name] == 'object') {
-                hasCorrectAnnotation = annotations[name][this.annotationFilter] === true;
-            }
-
-		    // Default filters:
-		    // 1. Skip constructor
-		    // 2. Only call methods with a 'test' prefix or a correct annotation, by default this will be 'test'
-            if ( ! method instanceof Function || method === testClass || name == 'constructor' || (! name.startsWith('test') && ! hasCorrectAnnotation)) {
-                continue;
-            }
-
-            // If a custom annotation filter is specified,
-            // only run tests with that specific annotation.
-            // This will skip tests with prefix 'test'.
-            if (this.annotationFilter != 'test' && ! hasCorrectAnnotation) {
-                continue;
-            }
-
-            // Apply cli filter
-            if (this.filter && name != this.filter && testClass.constructor.name != this.filter) {
-                continue;
-            }
-
-            testClassMethodIsHit = true;
-
-            // Invoke setUp method if exists
-            if (typeof testClass['setUp'] == 'function' && ! invokedSetUp) {
-                invokedSetUp = true;
-                testClass.name = path + ' -> ' + 'setUp';
-                testClass['setUp']();
-            }
 
             // Invoke beforeEach method if exists
             // @todo: create test for this feature
@@ -325,7 +298,19 @@ module.exports = class CounselRunner
             testClass.assertions.test = { file: path, function: name };
 
             try {
+                await this.reporter.beforeEachTest(path);
+
+                // Run the test
                 await testClass[name]();
+
+                let testFailuresCount = this.reporter.testFailures[path];
+                await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
+
+                if (testFailuresCount > 0) {
+                    await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
+                } else {
+                    await this.reporter.afterEachPassedTest(path, this.reporter.results[path]);
+                }
 
                 if (testClass.expectedException) {
                     Assertions.test = testClass.test;
@@ -375,7 +360,7 @@ module.exports = class CounselRunner
 		}
 
         // Invoke tearDown method
-        if (typeof testClass['tearDown'] == 'function' && testClassMethodIsHit) {
+        if (typeof testClass['tearDown'] == 'function') {
             testClass.name = path + ' -> ' + 'tearDown';
             testClass['tearDown']();
         }
@@ -385,27 +370,107 @@ module.exports = class CounselRunner
 	{
         let testFiles = this.getTestFilesInLocation(this.locations[location]);
 
-        this.reporter.totalTests = Object.keys(testFiles).length;
+        let testClasses = this.parseTestClasses(testFiles, location);
+
+        this.reporter.totalTests = this.getTotalTests(testClasses);
 
         for (let filePath in testFiles) {
+            if (! testClasses[filePath]) {
+                continue;
+            }
+
             let testClass = new testFiles[filePath]();
             testClass.reporter = this.reporter;
             testClass.assertions = this.assertions;
 
-            await this.reporter.beforeEachTest(filePath);
+            // await this.reporter.beforeEachTestClass(filePath);
 
-        	await this.runTestsInClass(testClass, filePath, location);
+        	await this.runTestsInClass(testClass, filePath, testClasses[filePath]);
 
-            let testFailuresCount = this.reporter.testFailures[filePath];
+            // let testFailuresCount = this.reporter.testFailures[filePath];
 
-            await this.reporter.afterEachTest(filePath, this.reporter.results[filePath], testFailuresCount);
+            // await this.reporter.afterEachTestClass(filePath, this.reporter.results[filePath], testFailuresCount);
 
-            if (testFailuresCount > 0) {
-                await this.reporter.afterEachFailedTest(filePath, this.reporter.results[filePath], testFailuresCount);
-            } else {
-                await this.reporter.afterEachPassedTest(filePath, this.reporter.results[filePath]);
+            // if (testFailuresCount > 0) {
+            //     await this.reporter.afterEachFailedTestClass(filePath, this.reporter.results[filePath], testFailuresCount);
+            // } else {
+            //     await this.reporter.afterEachPassedTestClass(filePath, this.reporter.results[filePath]);
+            // }
+        }
+    }
+
+    parseTestClasses(testFiles, location)
+    {
+        let testClasses = [];
+
+        for (let filePath in testFiles) {
+
+            let testClass = testFiles[filePath];
+            let testsInTestClass = this.parseTestClass(testClass, filePath, location);
+
+            if (testsInTestClass.length > 0) {
+                testClasses[filePath] = testsInTestClass;
             }
         }
+
+        return testClasses;
+    }
+
+    parseTestClass(testClassName, path, location)
+    {
+        let tests = [];
+
+        let annotations = this.serviceProviders.annotations.getSync(this.path(`${location}/${path}.js`));
+
+        let possibleTestMethods = [];
+
+        for (let possibleTestMethod in annotations) {
+            possibleTestMethods.push(possibleTestMethod);
+        }
+
+        for (let index in possibleTestMethods) {
+            let name = possibleTestMethods[index];
+
+            let hasCorrectAnnotation = false;
+
+            if (typeof annotations[name] == 'object') {
+                hasCorrectAnnotation = annotations[name][this.annotationFilter] === true;
+            }
+
+            // Default filters:
+            // 1. Skip constructor
+            // 2. Only call methods with a 'test' prefix or a correct annotation, by default this will be 'test'
+            if (name == 'constructor' || (! name.startsWith('test') && ! hasCorrectAnnotation)) {
+                continue;
+            }
+
+            // If a custom annotation filter is specified,
+            // only run tests with that specific annotation.
+            // This will skip tests with prefix 'test'.
+            if (this.annotationFilter != 'test' && ! hasCorrectAnnotation) {
+                continue;
+            }
+
+            // Apply cli filter
+            if (this.filter && name != this.filter && ! path.toLowerCase().includes(this.filter.toLowerCase())) {
+                continue;
+            }
+
+            tests.push(name);
+        }
+
+        return tests;
+    }
+
+    getTotalTests(testClasses)
+    {
+        let totalTests = 0;
+
+        for (let testClass in testClasses) {
+            totalTests += testClasses[testClass].length;
+        }
+
+        return totalTests;
     }
 
     getTestFilesInLocation(object)
