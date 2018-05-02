@@ -255,6 +255,8 @@ module.exports = class CounselRunner
     		for (let location in this.locations) {
     			await this.runTestsInLocation(location);
             }
+
+            await this.reporterTest();
         } catch (error) {
             console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
             console.error(error);
@@ -264,6 +266,21 @@ module.exports = class CounselRunner
 
         await this.reporter.afterTest();
 	}
+
+    async reporterTest()
+    {
+        console.log('');
+        console.log('  ' + this.serviceProviders.chalk.white.bgGreen.bold('                     '));
+        console.log('  ' + this.serviceProviders.chalk.white.bgGreen.bold('   Reporting Tests   '));
+        console.log('  ' + this.serviceProviders.chalk.white.bgGreen.bold('                     '));
+        console.log('');
+
+        // Write 2 spaces before first assertion result
+        process.stdout.write('  ');
+
+        this.getTestLocations(['ReporterTests']);
+        await this.runTestsInLocation('ReporterTests', true);
+    }
 
     exit()
     {
@@ -306,13 +323,12 @@ module.exports = class CounselRunner
 
                 // Fix with test name instead if path
                 let testFailuresCount = this.reporter.testFailures[path];
-                await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
-
                 if (testFailuresCount > 0) {
                     await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
                 } else {
                     await this.reporter.afterEachPassedTest(path, this.reporter.results[path]);
                 }
+                await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
 
                 if (testClass.expectedException) {
                     Assertions.test = testClass.test;
@@ -356,13 +372,12 @@ module.exports = class CounselRunner
                         // After each test with exception
                         // Fix with test name instead if path
                         let testFailuresCount = this.reporter.testFailures[path];
-                        await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
-
                         if (testFailuresCount > 0) {
                             await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
                         } else {
                             await this.reporter.afterEachPassedTest(path, this.reporter.results[path]);
                         }
+                        await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
                     } else {
                         throw error;
                     }
@@ -379,13 +394,15 @@ module.exports = class CounselRunner
         }
 	}
 
-	async runTestsInLocation(location)
+	async runTestsInLocation(location, reportingTests = false)
 	{
         let testFiles = this.getTestFilesInLocation(this.locations[location]);
 
         let testClasses = this.parseTestClasses(testFiles, location);
 
-        this.reporter.totalTests = this.getTotalTests(testClasses);
+        if (! reportingTests) {
+            this.reporter.totalTests = this.getTotalTests(testClasses);
+        }
 
         for (let filePath in testFiles) {
             if (! testClasses[filePath]) {
@@ -512,9 +529,9 @@ module.exports = class CounselRunner
         return testFilePaths;
     }
 
-	getTestLocations()
+	getTestLocations(locations = null)
 	{
-		let fileLocations = this.config.files;
+		let fileLocations = locations || this.config.files;
 
 		if (! fileLocations) {
 			process.exit(2);

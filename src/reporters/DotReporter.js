@@ -4,9 +4,9 @@ module.exports = class DotReporter extends Reporter
     {
         super();
 
-        this.testsExecuted = -1;
+        this.testsExecuted = 0;
 
-        this.testsPerLine = 36;
+        this.testsPerLine = 24;
     }
 
     afterEachFailedTest(testName, results, failuresCount)
@@ -36,23 +36,37 @@ module.exports = class DotReporter extends Reporter
         if (this.testsExecuted == this.testsPerLine) {
             this.testsExecuted = 0;
 
-            this.appendLog(` ( ${this.progress}%)\n  `);
+            this.appendLog(`  ${this.testsCountWithSpace()} / ${this.totalTests} (${this.progressWithSpace()}%)\n  `);
         }
     }
 
     afterTest()
     {
-        if (this.fullRun && this.testsPerLine < this.totalTests) {
+        if (this.fullRun && this.testsExecuted > 0) {
             let spaceLeft = '';
-            let spacesLeft = (this.testsPerLine - this.testsExecuted) - 1;
+            let spacesLeft = this.testsPerLine - this.testsExecuted;
 
             if (spacesLeft > 0) {
                 spaceLeft = ' '.repeat(spacesLeft);
             }
 
-            this.appendLog(`${spaceLeft} (100%)\n`);
+            this.appendLog(`${spaceLeft}  ${this.testsCount} / ${this.totalTests} (100%)\n`);
         }
 
         super.afterTest();
+    }
+
+    progressWithSpace()
+    {
+        let space = ' '.repeat(3 - this.progress.toString().length);
+
+        return `${space}${this.progress}`;
+    }
+
+    testsCountWithSpace()
+    {
+        let space = ' '.repeat(this.totalTests.toString().length - this.testsCount.toString().length);
+
+        return `${space}${this.testsCount}`;
     }
 }
