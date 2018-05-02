@@ -188,7 +188,7 @@ module.exports = class CounselRunner
     loadEnvData()
     {
         let envData = this.config.env;
-        
+
         if (envData && typeof envData == 'object') {
             for (let envItem in envData) {
                 process.env[envItem] = envData[envItem];
@@ -199,7 +199,7 @@ module.exports = class CounselRunner
     autoloadFiles()
     {
         let autoloadFiles = this.config.autoloadFiles;
-        
+
         if (autoloadFiles && typeof autoloadFiles == 'object') {
             autoloadFiles.forEach(file => {
                 require(this.root + file);
@@ -210,7 +210,7 @@ module.exports = class CounselRunner
     autoloadClasses()
     {
         let autoloadClasses = this.config.autoloadClasses;
-        
+
         if (autoloadClasses && typeof autoloadClasses == 'object') {
             for (let alias in autoloadClasses) {
                 global[alias] = require(this.root + autoloadClasses[alias]);
@@ -298,11 +298,13 @@ module.exports = class CounselRunner
             testClass.assertions.test = { file: path, function: name };
 
             try {
+                // Fix with test name instead if path
                 await this.reporter.beforeEachTest(path);
 
                 // Run the test
                 await testClass[name]();
 
+                // Fix with test name instead if path
                 let testFailuresCount = this.reporter.testFailures[path];
                 await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
 
@@ -349,6 +351,17 @@ module.exports = class CounselRunner
                         if(notExpectedException && notExpectedException.name) {
                             Assertions.test = testClass.test;
                             Assertions.assertNotEquals(notExpectedException.name, error.name, `Assert that exception [${notExpectedException.name}] was not thrown, but is was.\n  ${error.stack}`, testClass.error);
+                        }
+
+                        // After each test with exception
+                        // Fix with test name instead if path
+                        let testFailuresCount = this.reporter.testFailures[path];
+                        await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
+
+                        if (testFailuresCount > 0) {
+                            await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
+                        } else {
+                            await this.reporter.afterEachPassedTest(path, this.reporter.results[path]);
                         }
                     } else {
                         throw error;

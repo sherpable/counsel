@@ -6,7 +6,7 @@ module.exports = class DotReporter extends Reporter
 
         this.testsExecuted = -1;
 
-        this.testsPerLine = 43;
+        this.testsPerLine = 36;
     }
 
     afterEachFailedTest(testName, results, failuresCount)
