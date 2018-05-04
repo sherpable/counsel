@@ -255,8 +255,6 @@ module.exports = class CounselRunner
     		for (let location in this.locations) {
     			await this.runTestsInLocation(location);
             }
-
-            await this.reporterTest();
         } catch (error) {
             console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
             console.error(error);
@@ -266,21 +264,6 @@ module.exports = class CounselRunner
 
         await this.reporter.afterTest();
 	}
-
-    async reporterTest()
-    {
-        console.log('');
-        console.log('  ' + this.serviceProviders.chalk.white.bgGreen.bold('                     '));
-        console.log('  ' + this.serviceProviders.chalk.white.bgGreen.bold('   Reporting Tests   '));
-        console.log('  ' + this.serviceProviders.chalk.white.bgGreen.bold('                     '));
-        console.log('');
-
-        // Write 2 spaces before first assertion result
-        process.stdout.write('  ');
-
-        this.getTestLocations(['ReporterTests']);
-        await this.runTestsInLocation('ReporterTests', true);
-    }
 
     exit()
     {
