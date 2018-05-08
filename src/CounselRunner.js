@@ -551,4 +551,9 @@ module.exports = class CounselRunner
 
 		return this.serviceProviders.fileLoader.load(this.path(path));
 	}
+
+    reportToParentProcess(key, value)
+    {
+        console.log(`COUNSEL-CHILD-PARENT-MESSAGE:${key}=${value}`);
+    }
 }

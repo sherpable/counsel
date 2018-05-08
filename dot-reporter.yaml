@@ -1,0 +1,12 @@
+test:
+  Dot reporter output
+perform:
+  src/counsel.js
+expect: |
+  ........................  24 / 48 ( 50%)
+  ........................  48 / 48 (100%)
+  
+  Time: {{executionTimeFormatted}}
+  64 passed, 48 tests
+assertions:
+  status: 0

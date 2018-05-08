@@ -1,32 +1,49 @@
-const { spawnSync } = require('child_process');
-const counselProcess = spawnSync('src/counsel.js');
+const yaml = require('js-yaml');
+const fs = require('fs');
+const formatTime = require('pretty-ms');
+const superchild = require('superchild');
 
-let error = counselProcess.stderr.toString();
-let result = counselProcess.stdout.toString();
+let test = yaml.safeLoad(fs.readFileSync('dot-reporter.yaml', 'utf8'));
 
-let expectedResult = `  ........................  24 / 48 ( 50%)
-  ........................  48 / 48 (100%)
-  
-  Time: {{time}}
-  64 passed, 48 tests
-`;
+console.log(test.test);
 
-expectedResult = expectedResult.split('\n').map((lineContent, lineNumber) => {
-    if (lineContent.startsWith('  Time')) {
-        return result.split('\n')[lineNumber];
+const counselProcess = superchild(test.perform);
+
+let result = [];
+let data = {};
+
+counselProcess.on('stdout_line', function(line) {
+    if (line.trim().startsWith('COUNSEL-CHILD-PARENT-MESSAGE:')) {
+        let plainValue = line.trim().replace('COUNSEL-CHILD-PARENT-MESSAGE:', '');
+        let value = plainValue.split('=');
+        data[value[0]] = value[1];
+
+        return;
     }
 
-    return lineContent;
-}).join('\n');
+    // Maybe need to remove the trim() call
+    // Because of manipulating the output.
+    result.push(line.trim());
+});
 
-// process.exit();
+counselProcess.on('exit', function(status, signal) {
+    let counselResults = {
+        status
+    };
 
-// console.log(result.split('\n'));
-// console.log(expectedResult.split('\n'));
+    for (item in data) {
+        let itemValue = data[item];
 
-// process.exit();
+        test.expect = test.expect.replace(`\{\{${item}\}\}`, itemValue);
+    }
 
-// console.log(expectedResult);
-// console.log(result);
+    if (test.expect.endsWith('\n')) {
+        test.expect = test.expect.substring(0, test.expect.length - 1);
+    }
 
-console.log(result == expectedResult);
+    console.log(result.join('\n') === test.expect);
+
+    for (assertion in test.assertions) {
+        console.log(test.assertions[assertion] === counselResults[assertion]);
+    }
+});
