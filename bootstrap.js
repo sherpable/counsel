@@ -10,7 +10,7 @@ Vue.component('hello-world', {
             {{ text }}
         </div>`,
 
-    props: ['color'],
+    props: ['color', 'foo', 'bar'],
 
     data() {
         return {
