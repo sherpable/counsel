@@ -9,11 +9,12 @@
         "counsel": "./src/counsel.js"
     },
     "scripts": {
-        "test": "node src/counsel.js",
+        "test": "node src/counsel.js && node reporter-tester.js",
         "reporting-tests": "npm test @reporting-test",
         "all-tests": "npm test && npm run reporting-tests"
     },
     "dependencies": {
+        "@vue/test-utils": "^1.0.0-beta.15",
         "auto-loader": "^0.2.0",
         "browser-env": "^3.2.5",
         "chalk": "^2.4.1",
@@ -29,6 +30,7 @@
         "figures": "^2.0.0",
         "highlight": "^0.2.4",
         "indent-string": "^3.2.0",
+        "intitule": "^1.0.3",
         "is-html": "^1.1.0",
         "js-yaml": "^3.11.0",
         "jsdom": "^11.10.0",

@@ -402,6 +402,13 @@ module.exports = class Reporter
         }
     }
 
+    afterIOTests(pass)
+    {
+        if (! pass) {
+            console.log(`IO Tests failed.`);
+        }
+    }
+
     beforeEachTest(testName)
     {
 

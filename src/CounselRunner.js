@@ -20,11 +20,15 @@ module.exports = class CounselRunner
             stackTrace: 'stack-trace',
             chalk: 'chalk',
             nodeHook: 'node-hook',
+            yaml: 'js-yaml',
             annotations: './utilities/annotations',
             assertionResult: './assertions/AssertionResult',
             reporter: './reporters/Reporter',
             testCase: './TestCase',
+            IOTestRunner: './IOTestRunner',
         };
+
+        this.ioTests = [];
 
         this.reporter = null;
 
@@ -126,9 +130,29 @@ module.exports = class CounselRunner
 
         await this.reporter.beforeBoot();
 
-        if (this.config.vue) {
-            this.serviceProviders.nodeHook.hook('.vue', (source, filename) => {
+        // Parse IO (yaml) tests
+        this.serviceProviders.nodeHook.hook('.yaml', (source, filename) => {
+            this.ioTests.push({
+                filename,
+                test: this.serviceProviders.yaml.safeLoad(source),
+            });
 
+            return class {
+                test()
+                {
+                    return this.serviceProviders.yaml.safeLoad(source);
+                }
+
+                filename()
+                {
+                    return filename;
+                }
+            };
+        });
+
+        if (this.config.vue) {
+            // Parse .vue files
+            this.serviceProviders.nodeHook.hook('.vue', (source, filename) => {
                 let rawComponent = this.serviceProviders.cheerio.load(source);
                 let component = rawComponent('script').html();
                 let template = rawComponent('template').html();
@@ -262,8 +286,24 @@ module.exports = class CounselRunner
             process.exit(2);
         }
 
+        // this.runIOTests();
+
         await this.reporter.afterTest();
 	}
+
+    instantiateIOTestRunner()
+    {
+        return new this.serviceProviders.IOTestRunner(this.ioTests);
+    }
+
+    async runIOTests()
+    {
+        this.IOTestRunner = this.instantiateIOTestRunner();
+
+        let IOTestsPasses = this.IOTestRunner.test();
+
+        this.reporter.afterIOTests(IOTestsPasses);
+    }
 
     exit()
     {
@@ -552,8 +592,22 @@ module.exports = class CounselRunner
 		return this.serviceProviders.fileLoader.load(this.path(path));
 	}
 
-    reportToParentProcess(key, value)
+    reportToParentProcess(key, value = null)
     {
-        console.log(`COUNSEL-CHILD-PARENT-MESSAGE:${key}=${value}`);
+        if (process.env.INIT_CWD) {
+            // return;
+        }
+
+        let data = '';
+
+        if (typeof key == 'object') {
+            for (let item in key) {
+                data += `\n${item}=${key[item]}`;
+            }
+        } else {
+            data += `\n${key}=${value}`;
+        }
+
+        console.log(`COUNSEL-CHILD-PARENT-MESSAGE:START${data}\nCOUNSEL-CHILD-PARENT-MESSAGE:END`);
     }
 }
