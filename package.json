@@ -9,7 +9,7 @@
         "counsel": "./src/counsel.js"
     },
     "scripts": {
-        "test": "node src/counsel.js && node reporter-tester.js",
+        "test": "node src/counsel.js",
         "reporting-tests": "npm test @reporting-test",
         "all-tests": "npm test && npm run reporting-tests"
     },

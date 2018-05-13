@@ -286,7 +286,9 @@ module.exports = class CounselRunner
             process.exit(2);
         }
 
-        // this.runIOTests();
+        if(! process.argv.includes('io-test')) {
+            this.runIOTests();
+        }
 
         await this.reporter.afterTest();
 	}
@@ -298,6 +300,18 @@ module.exports = class CounselRunner
 
     async runIOTests()
     {
+        if(! process.argv.includes('io-test')) {
+            const spawn = require('child_process').spawnSync;
+            const child = spawn('src/counsel.js', ['io-test']);
+
+            let result = child.stdout.toString();
+
+            console.log(result);
+            console.log('after io test');
+        }
+
+        return;
+
         this.IOTestRunner = this.instantiateIOTestRunner();
 
         let IOTestsPasses = this.IOTestRunner.test();
@@ -595,7 +609,7 @@ module.exports = class CounselRunner
     reportToParentProcess(key, value = null)
     {
         if (process.env.INIT_CWD) {
-            // return;
+            return;
         }
 
         let data = '';
