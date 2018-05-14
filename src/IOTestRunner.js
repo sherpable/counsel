@@ -11,6 +11,12 @@ module.exports = class IOTestRunner
 		this.chalk = require('chalk');
 		this.figures = require('figures');
 		this.dumper = require('intitule');
+		this.path = require('path');
+
+        this.root = this.path.normalize(
+            process.cwd() + '/'
+        );
+
 		this.dumper.leftMarginSpaces = 4;
 		this.dumper.makeGlobal();
 
@@ -33,9 +39,10 @@ module.exports = class IOTestRunner
 		let testFile = testContext.filename;
 
 		let test = testContext.test;
+		test.test = test.test.trim();
 		test.perform = test.perform.trim();
 
-		process.stdout.write(`  ${this.figures.pointer} ${test.test} (${this.chalk.green(testFile)})`);
+		process.stdout.write(`  ${this.figures.pointer} ${test.test} (${this.chalk.green(testFile.replace(this.root, ''))})`);
 
 		const spawn = require('child_process').spawnSync;
 
@@ -51,7 +58,17 @@ module.exports = class IOTestRunner
 			test.perform = 'ls';
 		}
 
-		const counselProcess = spawn(test.perform, args);
+		let cwd = process.cwd();
+
+		if (test.cwd) {
+			cwd = this.root + test.cwd.trim();
+		}
+
+		console.log(cwd);
+
+		const counselProcess = spawn(test.perform, args, {
+			cwd
+		});
 
 		// Process IO results
 		let result = counselProcess.stdout.toString();
