@@ -36,6 +36,8 @@ module.exports = class CounselRunner
 
 		this.locations = [];
 
+        this.isIoTestProcess = process.argv.includes('io-test');
+
 		this.rawFilter = process.env.npm_lifecycle_script;
 
         this.filter = this.getFilter();
@@ -44,6 +46,12 @@ module.exports = class CounselRunner
             this.fullRun = true;
         } else {
             this.fullRun = false;
+        }
+
+        // Skip filter when running as IO test
+        if(this.isIoTestProcess && this.filter == 'io-test') {
+            this.filter = false;
+            this.fullRun = true;
         }
 
         this.annotationFilter = 'test';
@@ -298,30 +306,22 @@ module.exports = class CounselRunner
         return new this.serviceProviders.IOTestRunner(this.ioTests);
     }
 
-    async runIOTests()
+    runIOTests()
     {
-        if(! process.argv.includes('io-test')) {
-            const spawn = require('child_process').spawnSync;
-            const child = spawn('src/counsel.js', ['io-test']);
-
-            let result = child.stdout.toString();
-
-            console.log(result);
-            console.log('after io test');
+        if (process.argv.includes('io-test')) {
+            return;
         }
-
-        return;
 
         this.IOTestRunner = this.instantiateIOTestRunner();
 
-        let IOTestsPasses = this.IOTestRunner.test();
+        this.IOTestsPasses = this.IOTestRunner.test();
 
-        this.reporter.afterIOTests(IOTestsPasses);
+        this.reporter.afterIOTests(this.IOTestsPasses);
     }
 
     exit()
     {
-        let statusCode = (counsel.reporter.assertionsFailuresCount > 0) ? 2 : 0;
+        let statusCode = (counsel.reporter.assertionsFailuresCount > 0 || this.IOTestsPasses === false) ? 2 : 0;
 
         process.exit(statusCode);
     }
@@ -608,7 +608,7 @@ module.exports = class CounselRunner
 
     reportToParentProcess(key, value = null)
     {
-        if (process.env.INIT_CWD) {
+        if (! this.isIoTestProcess) {
             return;
         }
 

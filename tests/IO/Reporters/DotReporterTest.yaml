@@ -9,4 +9,4 @@ expect: |
   Time: {{executionTimeFormatted}}
   64 passed, 48 tests
 assertions:
-  status: 1
+  status: 0

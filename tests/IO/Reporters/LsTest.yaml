@@ -1,0 +1,23 @@
+test: |
+  "ls" command test
+perform: |
+  ls -al
+expect: |
+  LICENSE
+  README.md
+  ReporterTests
+  VueComponents
+  bootstrap.js
+  counsel.config.js
+  dot-reporter.yaml
+  index.js
+  node-vue.js
+  node_modules
+  package-lock.json
+  package.json
+  reporter-tester.js
+  src
+  tests
+  vue-test.js
+assertions:
+  status: 0
