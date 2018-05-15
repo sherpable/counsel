@@ -56,7 +56,7 @@ module.exports = class IOTestRunner
 
 		process.stdout.write(`  ${this.figures.pointer} ${test.test} (${this.chalk.green(testFile.replace(this.root, ''))})`);
 
-		const spawn = require('child_process').spawnSync;
+		let spawn = require('child_process').spawnSync;
 
 		let cwd = process.cwd();
 
@@ -75,7 +75,12 @@ module.exports = class IOTestRunner
 			args.push('io-test');
 		}
 
-		const counselProcess = spawn(command, args, options);
+
+		let counselProcess = spawn(command, args, options);
+
+		if (test.perform == 'find . -maxdepth 2') {
+			dd(counselProcess.stdout);
+		}
 
 		// Process IO results
 		let result;
