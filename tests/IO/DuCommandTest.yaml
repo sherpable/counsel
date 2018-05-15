@@ -1,0 +1,11 @@
+test: |
+  "du" command test
+platform:
+  - linux
+cwd: doubles/ls-dir
+perform: |
+  du -h --max-depth=1
+expect: |
+  16K ./sub-1
+assertions:
+  status: 0

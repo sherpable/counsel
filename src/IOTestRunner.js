@@ -1,8 +1,9 @@
 module.exports = class IOTestRunner
 {
-	constructor(tests)
+	constructor(tests, reporter)
 	{
 		this.tests = tests;
+		this.reporter = reporter;
 
 		this.pass = true;
 		this.fail = false;
@@ -26,10 +27,21 @@ module.exports = class IOTestRunner
 	test()
 	{
 		this.tests.forEach(test => {
-            this.runTest(test);
+			if (this.testNeedToRunInCurrentPlatform(test)) {
+            	this.runTest(test);
+        	}
         });
 
         return this.pass;
+	}
+
+	testNeedToRunInCurrentPlatform(test)
+	{
+		if (! test.test.platform) {
+			return true;
+		}
+
+		return test.test.platform.includes(process.platform);
 	}
 
 	runTest(testContext)
@@ -46,53 +58,38 @@ module.exports = class IOTestRunner
 
 		const spawn = require('child_process').spawnSync;
 
-		let args = [];
-
-		if (test.perform.startsWith('src/counsel.js')) {
-			args.push('io-test');
-		}
-
-		// Need to parse args
-		if (test.perform == 'ls -al') {
-			args.push('-al');
-			test.perform = 'ls';
-		}
-
 		let cwd = process.cwd();
 
 		if (test.cwd) {
 			cwd = this.root + test.cwd.trim();
 		}
 
-		console.log(cwd);
+		// Parse arguments
+		let args = test.perform.split(' ');
+		let options = {
+			cwd,
+		};
+		let command = args.splice(0, 1)[0];
 
-		const counselProcess = spawn(test.perform, args, {
-			cwd
-		});
+		if (test.perform.startsWith('src/counsel.js')) {
+			args.push('io-test');
+		}
+
+		const counselProcess = spawn(test.perform, args, options);
 
 		// Process IO results
-		let result = counselProcess.stdout.toString();
-		let error = counselProcess.stderr.toString();
+		let result;
+		let error;
+
+		if (counselProcess.stdout) {
+			result = counselProcess.stdout.toString();
+		}
+
+		if (counselProcess.stderr) {
+			error = counselProcess.stderr.toString();
+		}
 
 		let data = {};
-
-		result = result.split('\n').map(line => {
-			// Maybe need to remove the trim() call
-			// Because of manipulating the output.
-			return line.trim();
-		});
-
-		let childParentMessageStart = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
-		let childParentMessageEnd = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
-
-		var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd - 1);
-		childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2);
-
-		// Convert raw child messages into an object
-		childParentMessages.forEach(rawMessage => {
-			let value = rawMessage.split('=');
-			data[value[0]] = value[1];
-		});
 
 		// Run IO assertions
 	    let counselResults = {
@@ -100,25 +97,54 @@ module.exports = class IOTestRunner
 	        signal: counselProcess.signal,
 	    };
 
-	    for (let item in data) {
-	        let itemValue = data[item];
+		if (result) {
+			result = result.split('\n').map(line => {
+				// Maybe need to remove the trim() call
+				// Because of manipulating the output.
+				return line.trim();
+			});
 
-	        test.expect = test.expect.replace(`\{\{${item}\}\}`, itemValue);
-	    }
+			let childParentMessageStart = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
+			let childParentMessageEnd = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
 
-	    // main test
-	    let actual = result.join('\n');
+			var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd - 1);
+			childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2);
 
-	    if (actual === test.expect) {
-	        console.log(this.chalk.green(` ${this.figures.tick}`));
-	    } else {
-	    	this.markFailure();
+			// Convert raw child messages into an object
+			childParentMessages.forEach(rawMessage => {
+				let value = rawMessage.split('=');
+				data[value[0]] = value[1];
+			});
 
-	        console.log(this.chalk.red(` ${this.figures.cross}`));
-	        console.log('');
+		    for (let item in data) {
+		        let itemValue = data[item];
 
-	        console.log(`--- Expected\n${test.expect.split(' ').join(this.chalk.bold.red('.'))}\n+++ Actual\n${actual.split(' ').join(this.chalk.bold.red('.'))}`);
-	    }
+		        test.expect = test.expect.replace(`\{\{${item}\}\}`, itemValue);
+		    }
+
+		    // main test
+		    let actual = result.join('\n');
+
+		    if (actual === test.expect) {
+		        console.log(this.chalk.green(` ${this.figures.tick}`));
+		    } else {
+		    	this.markFailure();
+
+		        console.log(this.chalk.red(` ${this.figures.cross}`));
+		        console.log('');
+
+		        console.log(`--- Expected\n${test.expect.split(' ').join(this.chalk.bold.red('.'))}\n+++ Actual\n${actual.split(' ').join(this.chalk.bold.red('.'))}`);
+		    }
+		} else {
+			this.markFailure();
+
+			console.log(this.chalk.red(` ${this.figures.cross}`));
+			console.log(this.chalk.red(`  No result received from command "${test.perform}"`));
+			console.log(this.chalk.yellow('  Arguments'));
+			dump(args);
+			console.log(this.chalk.yellow('  Options'));
+			dump(options);
+		}
 
 	    if (! test.assertions) {
 	        return;

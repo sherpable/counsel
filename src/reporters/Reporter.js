@@ -402,6 +402,11 @@ module.exports = class Reporter
         }
     }
 
+    beforeIOTests()
+    {
+        
+    }
+
     afterIOTests(pass)
     {
         if (! pass) {

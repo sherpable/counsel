@@ -303,7 +303,7 @@ module.exports = class CounselRunner
 
     instantiateIOTestRunner()
     {
-        return new this.serviceProviders.IOTestRunner(this.ioTests);
+        return new this.serviceProviders.IOTestRunner(this.ioTests, this.reporter);
     }
 
     runIOTests()
@@ -311,6 +311,8 @@ module.exports = class CounselRunner
         if (process.argv.includes('io-test')) {
             return;
         }
+
+        this.reporter.beforeIOTests();
 
         this.IOTestRunner = this.instantiateIOTestRunner();
 
