@@ -5,13 +5,11 @@ perform: |
   find . -maxdepth 2
 expect: |
   .
-  ./.DS_Store
-  ./bar.txt
   ./baz.txt
   ./foo.txt
+  ./bar.txt
   ./sub-1
-  ./sub-1/.DS_Store
-  ./sub-1/sub-sub-1
   ./sub-1/sub1-bar.txt
+  ./sub-1/sub-sub-1
 assertions:
   status: 0

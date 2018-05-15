@@ -7,5 +7,6 @@ perform: |
   du -h --max-depth=1
 expect: |
   16K ./sub-1
+  32K .
 assertions:
   status: 0
