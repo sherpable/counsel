@@ -56,7 +56,7 @@ module.exports = class IOTestRunner
 
 		process.stdout.write(`  ${this.figures.pointer} ${test.test} (${this.chalk.green(testFile.replace(this.root, ''))})`);
 
-		const spawn = require('child_process').spawnSync;
+		let spawn = require('child_process').spawnSync;
 
 		let cwd = process.cwd();
 
@@ -75,7 +75,12 @@ module.exports = class IOTestRunner
 			args.push('io-test');
 		}
 
-		const counselProcess = spawn(test.perform, args, options);
+
+		let counselProcess = spawn(command, args, options);
+
+		if (test.perform == 'find . -maxdepth 2') {
+			dd(counselProcess.stdout);
+		}
 
 		// Process IO results
 		let result;
@@ -100,8 +105,9 @@ module.exports = class IOTestRunner
 		if (result) {
 			result = result.split('\n').map(line => {
 				// Maybe need to remove the trim() call
+				// and don't replace tabs with spaces.
 				// Because of manipulating the output.
-				return line.trim();
+				return line.trim().replace('\t', ' ');
 			});
 
 			let childParentMessageStart = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
@@ -140,6 +146,9 @@ module.exports = class IOTestRunner
 
 			console.log(this.chalk.red(` ${this.figures.cross}`));
 			console.log(this.chalk.red(`  No result received from command "${test.perform}"`));
+
+			console.log(this.chalk.yellow('  Command'));
+			dump(command);
 			console.log(this.chalk.yellow('  Arguments'));
 			dump(args);
 			console.log(this.chalk.yellow('  Options'));
