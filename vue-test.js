@@ -1,6 +1,15 @@
-const spawn = require('child_process').spawnSync;
-const child = spawn('src/counsel.js');
+var spawnSync = require('child_process').spawn;
+var process1 = spawnSync('find', [ '.' ], {
+    cwd: process.cwd() + '/doubles/ls-dir',
+    stdio: 'pipe',
+});
 
-let result = child.stdout.toString();
+let process2 = spawnSync('sort', ['-r'], {
+    stdio: [process1.stdout, 'pipe', 'pipe'],
+});
 
-console.log(result);
+var result = '';
+process2.stdout.on('data', data => result += data);
+process2.on('close', () => console.log(result));
+
+// console.log(process2.stdout.toString());
