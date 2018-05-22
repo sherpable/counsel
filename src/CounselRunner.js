@@ -28,6 +28,14 @@ module.exports = class CounselRunner
             IOTestRunner: './IOTestRunner',
         };
 
+        this.packageJson = require(require('path').resolve(__dirname, '../package.json'));
+
+        this.arguments = this.parseArguments();
+
+        if (this.arguments.config) {
+            this.configFile = this.arguments.config;
+        }
+
         this.ioTests = [];
 
         this.reporter = null;
@@ -61,6 +69,34 @@ module.exports = class CounselRunner
             this.filter = '';
         }
 	}
+
+    parseArguments()
+    {
+        var ArgumentParser = require('argparse').ArgumentParser;
+        var parser = new ArgumentParser({
+          version: this.packageJson.version,
+          addHelp:true,
+          description: `Counsel ${this.packageJson.version}.
+Usage: [options]`,
+        });
+        parser.addArgument(
+          [ '--filter' ],
+          {
+            help: 'Specify a filter.',
+            required: false,
+          },
+        );
+
+        parser.addArgument(
+          [ '--config' ],
+          {
+            help: 'Specify a custom config file.',
+            required: false,
+          }
+        );
+
+        return parser.parseArgs();
+    }
 
     registerServiceProviders(providers)
     {

@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "@vue/test-utils": "^1.0.0-beta.15",
+        "argparse": "^1.0.10",
         "auto-loader": "^0.2.0",
         "browser-env": "^3.2.5",
         "chalk": "^2.4.1",
