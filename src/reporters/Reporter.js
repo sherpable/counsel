@@ -410,7 +410,7 @@ module.exports = class Reporter
     afterIOTests(pass)
     {
         if (! pass) {
-            console.log(`IO Tests failed.`);
+            this.log(`IO Tests failed.`);
         }
     }
 

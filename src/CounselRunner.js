@@ -44,11 +44,13 @@ module.exports = class CounselRunner
 
 		this.locations = [];
 
-        this.isIoTestProcess = process.argv.includes('io-test');
+        // this.isIoTestProcess = process.argv.includes('io-test');
+        this.isIoTestProcess = this.arguments.io_test;
 
 		this.rawFilter = process.env.npm_lifecycle_script;
 
-        this.filter = this.getFilter();
+        // this.filter = this.getFilter();
+        this.filter = this.arguments.filter;
 
         if (! this.filter) {
             this.fullRun = true;
@@ -75,22 +77,27 @@ module.exports = class CounselRunner
         var ArgumentParser = require('argparse').ArgumentParser;
         var parser = new ArgumentParser({
           version: this.packageJson.version,
-          addHelp:true,
+          addHelp: true,
           description: `Counsel ${this.packageJson.version}.
 Usage: [options]`,
         });
         parser.addArgument(
-          [ '--filter' ],
-          {
+          [ '--filter' ], {
             help: 'Specify a filter.',
             required: false,
           },
         );
 
         parser.addArgument(
-          [ '--config' ],
-          {
+          [ '--config' ], {
             help: 'Specify a custom config file.',
+            required: false,
+          }
+        );
+
+        parser.addArgument(
+          [ '--io-test' ], {
+            help: 'Run counsel inside an io-test wrapper.',
             required: false,
           }
         );
@@ -330,11 +337,11 @@ Usage: [options]`,
             process.exit(2);
         }
 
-        if(! process.argv.includes('io-test')) {
+        await this.reporter.afterTest();
+
+        if(! this.isIoTestProcess) {
             this.runIOTests();
         }
-
-        await this.reporter.afterTest();
 	}
 
     instantiateIOTestRunner()
@@ -344,7 +351,7 @@ Usage: [options]`,
 
     runIOTests()
     {
-        if (process.argv.includes('io-test')) {
+        if (this.isIoTestProcess) {
             return;
         }
 
@@ -627,7 +634,7 @@ Usage: [options]`,
 	loadFilesFrom(path)
 	{
         try {
-            if(this.serviceProviders.fs.lstatSync(path).isDirectory() == false) {
+            if (this.serviceProviders.fs.lstatSync(path).isDirectory() == false) {
                 return require(this.path(path));
             }
 		} catch (error) {

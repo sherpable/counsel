@@ -1,5 +1,7 @@
 test: |
   "find" command test
+platform:
+  - linux
 cwd: doubles/ls-dir
 perform: |
   find . -maxdepth 2

@@ -71,16 +71,26 @@ module.exports = class IOTestRunner
 		};
 		let command = args.splice(0, 1)[0];
 
+		args = args.map((value, key) => {
+			if (value.startsWith('--')) {
+				return `${value} ${args[key + 1]}`;
+			}
+		}).filter(value => {
+			return value;
+		});
+		
+		// console.log(args);
+
 		if (test.perform.startsWith('src/counsel.js')) {
-			args.push('io-test');
+			args.push('--io-test true');
 		}
 
 
 		let counselProcess = spawn(command, args, options);
 
-		if (test.perform == 'find . -maxdepth 2') {
-			dd(counselProcess.stdout);
-		}
+		// if (test.perform == 'find . -maxdepth 2') {
+		// 	dd(counselProcess.stdout);
+		// }
 
 		// Process IO results
 		let result;
