@@ -29,7 +29,7 @@ module.exports = class IOTestRunner
 	test()
 	{
 		this.tests.forEach(test => {
-			if (this.testNeedToRunInCurrentPlatform(test)) {
+			if (this.testNeedToRunInCurrentPlatform(test) && test.test.skip !== true) {
             	this.runTest(test);
         	}
         });

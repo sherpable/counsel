@@ -1,5 +1,7 @@
 test: |
   "du" command test
+skip:
+  true
 platform:
   - linux
 cwd: doubles/ls-dir
