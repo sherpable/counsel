@@ -8,6 +8,8 @@ module.exports = class IOTestRunner
 		this.pass = true;
 		this.fail = false;
 
+		this.currentTestFail = false;
+
 		this.yaml = require('js-yaml');
 		this.chalk = require('chalk');
 		this.figures = require('figures');
@@ -46,6 +48,8 @@ module.exports = class IOTestRunner
 
 	runTest(testContext)
 	{
+		this.currentTestFail = false;
+
 		let childParentMessage = false;
 
 		let testFile = testContext.filename;
@@ -71,18 +75,8 @@ module.exports = class IOTestRunner
 		};
 		let command = args.splice(0, 1)[0];
 
-		args = args.map((value, key) => {
-			if (value.startsWith('--')) {
-				return `${value} ${args[key + 1]}`;
-			}
-		}).filter(value => {
-			return value;
-		});
-		
-		// console.log(args);
-
 		if (test.perform.startsWith('src/counsel.js')) {
-			args.push('--io-test true');
+			args.push('--io-test');
 		}
 
 
@@ -123,7 +117,7 @@ module.exports = class IOTestRunner
 			let childParentMessageStart = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
 			let childParentMessageEnd = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
 
-			var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd - 1);
+			var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd);
 			childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2);
 
 			// Convert raw child messages into an object
@@ -190,11 +184,22 @@ module.exports = class IOTestRunner
 	            dump(actual);
 	        }
 	    }
+
+	    if (this.currentTestFail) {
+	    	console.log(this.chalk.yellow('  Command'));
+			dump(command);
+			console.log(this.chalk.yellow('  Arguments'));
+			dump(args);
+			console.log(this.chalk.yellow('  Options'));
+			dump(options);
+	    }
 	}
 
 	markFailure()
 	{
 		this.pass = false;
 		this.fail = true;
+
+		this.currentTestFail = true;
 	}
 }

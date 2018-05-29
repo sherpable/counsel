@@ -32,6 +32,17 @@ module.exports = class CounselRunner
 
         this.arguments = this.parseArguments();
 
+        if (this.arguments.help) {
+            this.optimist.showHelp();
+            process.exit();
+        }
+
+        if (this.arguments.version) {
+            console.log(`Counsel version ${require('chalk').green(this.packageJson.version)}`);
+            process.exit();
+        }
+
+
         if (this.arguments.config) {
             this.configFile = this.arguments.config;
         }
@@ -45,12 +56,16 @@ module.exports = class CounselRunner
 		this.locations = [];
 
         // this.isIoTestProcess = process.argv.includes('io-test');
-        this.isIoTestProcess = this.arguments.io_test;
+        this.isIoTestProcess = this.arguments['io-test'];
 
 		this.rawFilter = process.env.npm_lifecycle_script;
 
         // this.filter = this.getFilter();
         this.filter = this.arguments.filter;
+
+        if (! this.filter) {
+            this.filter = this.arguments._[0];
+        }
 
         if (! this.filter) {
             this.fullRun = true;
@@ -74,35 +89,15 @@ module.exports = class CounselRunner
 
     parseArguments()
     {
-        var ArgumentParser = require('argparse').ArgumentParser;
-        var parser = new ArgumentParser({
-          version: this.packageJson.version,
-          addHelp: true,
-          description: `Counsel ${this.packageJson.version}.
-Usage: [options]`,
-        });
-        parser.addArgument(
-          [ '--filter' ], {
-            help: 'Specify a filter.',
-            required: false,
-          },
-        );
-
-        parser.addArgument(
-          [ '--config' ], {
-            help: 'Specify a custom config file.',
-            required: false,
-          }
-        );
-
-        parser.addArgument(
-          [ '--io-test' ], {
-            help: 'Run counsel inside an io-test wrapper.',
-            required: false,
-          }
-        );
-
-        return parser.parseArgs();
+        this.optimist = require('optimist');
+        
+        return this.optimist.usage('Usage: $0 [-h] [-v] [--config string] [--filter string] [--io-test] filter')
+            .boolean('io-test')
+            .alias('h', 'help').describe('h', 'Show some help.')
+            .alias('v', 'version').describe('v', 'Show counsel\'s verion number.')
+            .alias('c', 'config').describe('c', 'Specify a custom config file.')
+            .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
+            .argv;
     }
 
     registerServiceProviders(providers)
