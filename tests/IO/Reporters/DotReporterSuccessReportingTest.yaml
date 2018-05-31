@@ -1,7 +1,7 @@
 test:
   Dot reporter output
 perform:
-  src/counsel.js --config counsel.config.io.test.js
+  src/counsel.js --config io-tests/configs/dot-reporter-success-reporting-test.js
 expect: |
   ...............           15 / 15 (100%)
 

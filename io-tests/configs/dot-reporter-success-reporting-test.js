@@ -8,7 +8,7 @@ module.exports = {
         referenceName: "Vue"
     },
 	files: [
-		"io-tests"
+		"io-tests/dot-reporter-success-reporting-test"
 	],
     autoloadFiles: [
         'tests/TestAutoloadFile.js',

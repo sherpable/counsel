@@ -97,6 +97,7 @@ module.exports = class CounselRunner
             .alias('v', 'version').describe('v', 'Show counsel\'s verion number.')
             .alias('c', 'config').describe('c', 'Specify a custom config file.')
             .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
+            .alias('s', 'suite').describe('s', 'Filter which suite to run.')
             .argv;
     }
 

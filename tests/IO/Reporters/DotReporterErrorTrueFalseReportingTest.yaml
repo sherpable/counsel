@@ -1,0 +1,34 @@
+test:
+  Dot reporter output
+perform:
+  src/counsel.js --config io-tests/configs/dot-reporter-true-false-error-reporting-test.js
+expect: |
+  xx                        2 / 2 (100%)
+
+
+  x 1) CoreAssertionsTest -> it_is_able_to_assert_true
+  /home/timon/Projects/counsel/io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:6
+
+  5|     {
+  6|         this.assertTrue(false);
+  7|     }
+
+  Value is not truthy:
+
+  false
+
+  x 2) CoreAssertionsTest ->. it_is_able_to_assert_false
+  /home/timon/Projects/counsel/io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:12
+
+  11|     {
+  12|         this.assertFalse(true);
+  13|     }
+
+  Value is not falsy:
+
+  true
+
+  Time: {{executionTimeFormatted}}
+  2 failed, 2 tests
+assertions:
+  status: 2

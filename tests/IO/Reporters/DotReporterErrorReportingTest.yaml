@@ -1,0 +1,213 @@
+test:
+  Dot reporter output
+perform:
+  src/counsel.js --config io-tests/configs/dot-reporter-error-reporting-test.js
+expect: |
+  xxxxxxxxxxxxx             13 / 13 (100%)
+
+
+  x 1) CoreAssertionsTest -> it_is_able_to_assert_true
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:14
+
+  13|     {
+  14|         this.assertTrue(false);
+  15|     }
+
+  Value is not truthy:
+
+  false
+
+  x 2) CoreAssertionsTest ->. it_is_able_to_assert_false
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:20
+
+  19|     {
+  20|         this.assertFalse(true);
+  21|     }
+
+  Value is not falsy:
+
+  true
+
+  x 3) CoreAssertionsTest -> it_is_able_to_assert_equals_with_strings
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:26
+
+  25|     {
+  26|         this.assertEquals('Hello jsUnit', 'Hello World');
+  27|     }
+
+  --- Expected
+  +++ Actual
+  @@ @@
+  -   'Hello.jsUnit'
+  +   'Hello.World'
+  Difference
+  - 'Hello.World'
+  + 'Hello.jsUnit'
+
+  x 4) CoreAssertionsTest -> it_is_able_to_assert_equals_with_arrays
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:32
+
+  31|     {
+  32|         this.assertEquals([1, 2, 3], [2, 3, 4]);
+  33|     }
+
+  --- Expected
+  +++ Actual
+  @@ @@
+  -   Array [
+  1,
+  2,
+  3,
+  ]
+  +   Array [
+  2,
+  3,
+  4,
+  ]
+  Difference
+  [
+  +   1,
+  2,
+  3,
+  -   4,
+  ]
+
+  x 5) CoreAssertionsTest -> it_is_able_to_assert_equals_with_objects
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:38
+
+  37|     {
+  38|         this.assertEquals({a: 1, b: 2, c: 3}, {b: 2, c: 3, d: 4});
+  39|     }
+
+  --- Expected
+  +++ Actual
+  @@.@@
+  -   Object {
+  a: 1,
+  b: 2,
+  c: 3,
+  }
+  +   Object {
+  b: 2,
+  c: 3,
+  d: 4,
+  }
+  Difference
+  {
+  +   a: 1,
+  b: 2,
+  c: 3,
+  -   d: 4,
+  }
+
+  x 6) CoreAssertionsTest -> it_is_able_to_assert_not_equals_with_strings
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:44
+
+  43|     {
+  44|         this.assertNotEquals('Hello.jsUnit', 'Hello.jsUnit');
+  45|     }
+
+  Failed asserting that   'Hello jsUnit' is not equal to   'Hello jsUnit'.
+
+  x 7) CoreAssertionsTest -> it_is_able_to_assert_not_equals_with_arrays
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:50
+
+  49|     {
+  50|         this.assertNotEquals([1, 2, 3], [1, 2, 3]);
+  51|     }
+
+  Failed asserting that   Array [
+  1,
+  2,
+  3,
+  ] is not equal to   Array [
+  1,
+  2,
+  3,
+  ]
+
+  x 8) CoreAssertionsTest -> it_is_able_to_assert_not_equals_with_objects
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:56
+
+  55|     {
+  56|         this.assertNotEquals({a: 1, b: 2, c: 3}, {a: 1, b: 2, c: 3});
+  57|     }
+
+  Failed asserting.that   Object {
+  a: 1,
+  b: 2,
+  c: 3,
+  } is.not equal to   Object {
+  a: 1,
+  b: 2,
+  c: 3,
+  }
+
+  x 9) CoreAssertionsTest -> it_is_able_to_assert_the_count_from_an_array
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:64
+
+  63|
+  64|         this.assertCount(4,.array);
+  65|     }
+
+  Failed.asserting that expected size   4 matches actual size   3.
+
+  x 10) CoreAssertionsTest -> it_is_able_to_assert_the_count_from_an_object
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:72
+
+  71|
+  72|         this.assertCount(3, object);
+  73|     }
+
+  Failed asserting that expected size   3 matches actual size   2.
+
+  x 11) CoreAssertionsTest -> it_is_able_assert_that_a_string_contains_some_string
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:78
+
+  77|     {
+  78|         this.assertContains('bar', 'baz');
+  79|     }
+
+  Value must match expression:
+
+  'baz'
+
+  Regular expression:
+
+  /bar/gim
+
+  x 12) CoreAssertionsTest -> it_is_able_assert_that_a_string_not_contains_some_string
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:84
+
+  83|     {
+  84|         this.assertNotContains('foo', 'foobar');
+  85|     }
+
+  Value must not match expression:
+
+  'foobar'
+
+  Regular expression:
+
+  /foo/gim
+
+  x 13) CoreAssertionsTest -> it_is_able_to_run_async_await_code
+  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:92
+
+  91|
+  92|         this.assertEquals('bar', promiseResult);
+  93|     }
+
+  --- Expected
+  +++ Actual
+  @@ @@
+  -   'bar'
+  +   'foo'
+  Difference
+  - 'foo'
+  + 'bar'
+
+  Time: {{executionTimeFormatted}}
+  13 failed, 13 tests
+assertions:
+  status: 2
