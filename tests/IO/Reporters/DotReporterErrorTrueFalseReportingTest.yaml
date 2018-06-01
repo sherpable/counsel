@@ -7,7 +7,7 @@ expect: |
 
 
   x 1) CoreAssertionsTest -> it_is_able_to_assert_true
-  /home/timon/Projects/counsel/io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:6
+  {{root}}io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:6
 
   5|     {
   6|         this.assertTrue(false);
@@ -18,7 +18,7 @@ expect: |
   false
 
   x 2) CoreAssertionsTest ->. it_is_able_to_assert_false
-  /home/timon/Projects/counsel/io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:12
+  {{root}}io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:12
 
   11|     {
   12|         this.assertFalse(true);
