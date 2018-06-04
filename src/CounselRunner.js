@@ -482,12 +482,14 @@ module.exports = class CounselRunner
             this.reporter.totalTests = this.getTotalTests(testClasses);
         }
 
-        for (let filePath in testFiles) {
+        for (let fileIndex in testFiles) {
+            let filePath = testFiles[fileIndex];
+
             if (! testClasses[filePath]) {
                 continue;
             }
 
-            let testClass = new testFiles[filePath]();
+            let testClass = new (require(filePath));
             testClass.reporter = this.reporter;
             testClass.assertions = this.assertions;
 
@@ -583,28 +585,32 @@ module.exports = class CounselRunner
 
     getTestFilesInLocation(object)
     {
-    	let testFilePaths = {};
+        const glob = require('fast-glob');
 
-        for (let i in object) {
-            if (! object.hasOwnProperty(i)) continue;
+        return glob.sync(['tests/**/*Test.js', 'tests/**/*Test.yaml']);
 
-            if ((typeof object[i]) == 'object') {
-                let flatObject = this.getTestFilesInLocation(object[i]);
-                for (let x in flatObject) {
-                    if (! flatObject.hasOwnProperty(x)) continue;
+    	// let testFilePaths = {};
 
-                    if (x.toLowerCase().endsWith('test')) {
-                        testFilePaths[i + '/' + x] = flatObject[x];
-                    }
-                }
-            } else {
-                if (i.toLowerCase().endsWith('test')) {
-                    testFilePaths[i] = object[i];
-                }
-            }
-        }
+     //    for (let i in object) {
+     //        if (! object.hasOwnProperty(i)) continue;
 
-        return testFilePaths;
+     //        if ((typeof object[i]) == 'object') {
+     //            let flatObject = this.getTestFilesInLocation(object[i]);
+     //            for (let x in flatObject) {
+     //                if (! flatObject.hasOwnProperty(x)) continue;
+
+     //                if (x.toLowerCase().endsWith('test')) {
+     //                    testFilePaths[i + '/' + x] = flatObject[x];
+     //                }
+     //            }
+     //        } else {
+     //            if (i.toLowerCase().endsWith('test')) {
+     //                testFilePaths[i] = object[i];
+     //            }
+     //        }
+     //    }
+
+     //    return testFilePaths;
     }
 
 	getTestLocations(locations = null)

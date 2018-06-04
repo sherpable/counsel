@@ -1,0 +1,11 @@
+test:
+  Dot reporter output
+perform:
+  src/counsel.js --config io-tests/basic-dot-reporter-test.js
+expect: |
+  ...............           15 / 15 (100%)
+
+  Time: {{executionTimeFormatted}}
+  15 passed, 15 tests
+assertions:
+  status: 0
