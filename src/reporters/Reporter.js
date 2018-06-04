@@ -384,7 +384,12 @@ module.exports = class Reporter
         this.executionTime = this.endTime - this.startTime;
         this.executionTimeFormatted = this.formatTime(this.executionTime);
 
-        counsel.reportToParentProcess('executionTimeFormatted', this.executionTimeFormatted);
+        counsel.reportToParentProcess({
+            executionTimeFormatted: this.executionTimeFormatted,
+            root: counsel.root,
+        });
+        // counsel.reportToParentProcess('executionTimeFormatted', this.executionTimeFormatted);
+        // counsel.reportToParentProcess('root', counsel.root);
 
         this.log('');
 

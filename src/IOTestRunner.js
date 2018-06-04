@@ -128,8 +128,8 @@ module.exports = class IOTestRunner
 
 		    for (let item in data) {
 		        let itemValue = data[item];
-
-		        test.expect = test.expect.replace(`\{\{${item}\}\}`, itemValue);
+		        let regex = new RegExp(`\{\{${item}\}\}`, 'g');
+		        test.expect = test.expect.replace(regex, itemValue);
 		    }
 
 		    // main test
