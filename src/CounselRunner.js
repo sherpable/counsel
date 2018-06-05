@@ -482,10 +482,15 @@ module.exports = class CounselRunner
             this.reporter.totalTests = this.getTotalTests(testClasses);
         }
 
-        for (let fileIndex in testFiles) {
-            let filePath = testFiles[fileIndex];
+        for (let testName in testFiles) {
 
-            if (! testClasses[filePath]) {
+            if (! testClasses[testName]) {
+                continue;
+            }
+
+            let filePath = this.path(testFiles[testName]);
+
+            if (filePath.endsWith('.yaml')) {
                 continue;
             }
 
@@ -495,7 +500,7 @@ module.exports = class CounselRunner
 
             // await this.reporter.beforeEachTestClass(filePath);
 
-        	await this.runTestsInClass(testClass, filePath, testClasses[filePath]);
+        	await this.runTestsInClass(testClass, filePath, testClasses[testName]);
 
             // let testFailuresCount = this.reporter.testFailures[filePath];
 
@@ -513,24 +518,25 @@ module.exports = class CounselRunner
     {
         let testClasses = [];
 
-        for (let filePath in testFiles) {
+        for (let fileIndex in testFiles) {
 
-            let testClass = testFiles[filePath];
+            let filePath = testFiles[fileIndex];
+            let testClass = require(this.path(filePath));
             let testsInTestClass = this.parseTestClass(testClass, filePath, location);
 
             if (testsInTestClass.length > 0) {
-                testClasses[filePath] = testsInTestClass;
+                testClasses[fileIndex] = testsInTestClass;
             }
         }
 
         return testClasses;
     }
 
-    parseTestClass(testClassName, path, location)
+    parseTestClass(testClass, path, location)
     {
         let tests = [];
 
-        let annotations = this.serviceProviders.annotations.getSync(this.path(`${location}/${path}.js`));
+        let annotations = this.serviceProviders.annotations.getSync(this.path(`${path}`));
 
         let possibleTestMethods = [];
 
@@ -586,8 +592,25 @@ module.exports = class CounselRunner
     getTestFilesInLocation(object)
     {
         const glob = require('fast-glob');
+        const entriesUnitTests = glob.sync(['tests/**/*Test.js'], {
+            nocase: true,
+        });
 
-        return glob.sync(['tests/**/*Test.js', 'tests/**/*Test.yaml']);
+        const entriesIoTests = glob.sync(['tests/**/*Test.yaml'], {
+            nocase: true,
+        });
+
+        let paths = {};
+
+        entriesUnitTests.forEach(entry => {
+            paths[entry.replace(/\.[^/.]+$/, '')] = entry;
+        });
+
+        entriesIoTests.forEach(entry => {
+            paths[entry.replace(/\.[^/.]+$/, '')] = entry;
+        });
+
+        return paths;
 
     	// let testFilePaths = {};
 
