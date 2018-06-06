@@ -11,7 +11,7 @@ module.exports = class CounselRunner
         this.serviceProvidersList = {
             path: 'path',
             fs: 'fs',
-            fileLoader: 'auto-loader',
+            fileLoader: './utilities/autoloader',
             concordance: 'concordance',
             figures: 'figures',
             cheerio: 'cheerio',
