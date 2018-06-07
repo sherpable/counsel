@@ -28,9 +28,13 @@ module.exports = class IOTestRunner
 
 	test()
 	{
-		this.tests.forEach(test => {
+		this.tests.forEach(async test => {
 			if (this.testNeedToRunInCurrentPlatform(test) && test.test.skip !== true) {
+				await this.reporter.beforeEachIOTest(test);
+
             	this.runTest(test);
+
+            	await this.reporter.afterEachIOTest(test);
         	}
         });
 
@@ -81,10 +85,6 @@ module.exports = class IOTestRunner
 
 
 		let counselProcess = spawn(command, args, options);
-
-		// if (test.perform == 'find . -maxdepth 2') {
-		// 	dd(counselProcess.stdout);
-		// }
 
 		// Process IO results
 		let result;

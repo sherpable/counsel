@@ -114,6 +114,8 @@ module.exports = class CounselRunner
 
 		if (this.serviceProviders.fs.existsSync(this.configFile)) {
 			this.config = require(this.root + this.configFile);
+            // Merge it with the default config
+            this.config = { ...require('./counsel.config'), ...this.config };
 		} else {
             this.config = require('./counsel.config');
         }
@@ -336,7 +338,7 @@ module.exports = class CounselRunner
         await this.reporter.afterTest();
 
         if(! this.isIoTestProcess) {
-            this.runIOTests();
+            await this.runIOTests();
         }
 	}
 
@@ -345,7 +347,7 @@ module.exports = class CounselRunner
         return new this.serviceProviders.IOTestRunner(this.ioTests, this.reporter);
     }
 
-    runIOTests()
+    async runIOTests()
     {
         if (this.isIoTestProcess) {
             return;
@@ -357,7 +359,7 @@ module.exports = class CounselRunner
 
         this.IOTestsPasses = this.IOTestRunner.test();
 
-        this.reporter.afterIOTests(this.IOTestsPasses);
+        await this.reporter.afterIOTests(this.IOTestsPasses);
     }
 
     exit()
@@ -491,19 +493,21 @@ module.exports = class CounselRunner
             testClass.reporter = this.reporter;
             testClass.assertions = this.assertions;
 
-            // await this.reporter.beforeEachTestClass(filePath);
+            let testClassName = testClass.constructor.name;
+
+            await this.reporter.beforeEachTestClass(testClassName, filePath);
 
         	await this.runTestsInClass(testClass, filePath, testClasses[filePath]);
 
-            // let testFailuresCount = this.reporter.testFailures[filePath];
+            let testFailuresCount = this.reporter.testFailures[filePath];
 
-            // await this.reporter.afterEachTestClass(filePath, this.reporter.results[filePath], testFailuresCount);
+            await this.reporter.afterEachTestClass(testClassName, filePath, this.reporter.results[filePath], testFailuresCount);
 
-            // if (testFailuresCount > 0) {
-            //     await this.reporter.afterEachFailedTestClass(filePath, this.reporter.results[filePath], testFailuresCount);
-            // } else {
-            //     await this.reporter.afterEachPassedTestClass(filePath, this.reporter.results[filePath]);
-            // }
+            if (testFailuresCount > 0) {
+                await this.reporter.afterEachFailedTestClass(testClassName, filePath, this.reporter.results[filePath], testFailuresCount);
+            } else {
+                await this.reporter.afterEachPassedTestClass(testClassName, filePath, this.reporter.results[filePath]);
+            }
         }
     }
 
@@ -609,7 +613,7 @@ module.exports = class CounselRunner
 
 	getTestLocations(locations = null)
 	{
-		let fileLocations = locations || this.config.files;
+		let fileLocations = locations || this.config.locations;
 
 		if (! fileLocations) {
 			process.exit(2);
@@ -644,7 +648,7 @@ module.exports = class CounselRunner
 			process.exit(2);
 		}
 
-		return this.serviceProviders.fileLoader.load(this.path(path));
+		return this.serviceProviders.fileLoader.load(this.path(path), {patterns: this.config.patterns});
 	}
 
     reportToParentProcess(key, value = null)

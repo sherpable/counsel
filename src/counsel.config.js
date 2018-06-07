@@ -6,9 +6,15 @@ module.exports = {
         },
         referenceName: 'Vue'
     },
-	files: [
-		"tests"
+	locations: [
+		'tests',
 	],
+    patterns: [
+        'Test.js$',
+        'test.js$',
+        'Test.yaml$',
+        'test.yaml$',
+    ],
     env: {
         'APP_ENV': 'testing',
     }

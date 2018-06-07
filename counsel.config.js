@@ -1,14 +1,8 @@
 module.exports = {
     reporter: './reporters/DotReporter',
 	bootstrap: 'bootstrap',
-	vue: {
-        require: () => {
-            return require('vue');
-        },
-        referenceName: "Vue"
-    },
-	files: [
-		"tests"
+	locations: [
+		'tests',
 	],
     autoloadFiles: [
         'tests/TestAutoloadFile.js',
@@ -18,9 +12,6 @@ module.exports = {
     },
     instantiateClasses: {
         TestInstantiateClassFile: 'tests/TestInstantiateClassFile.js',
-    },
-    env: {
-        'APP_ENV': 'testing',
     },
     // assertionMacros: {
     //     assertNull: (actual, message) => {

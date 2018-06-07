@@ -7,7 +7,7 @@ module.exports = {
         },
         referenceName: "Vue"
     },
-	files: [
+	locations: [
 		"io-tests/dot-reporter-error-reporting-test"
 	],
     autoloadFiles: [

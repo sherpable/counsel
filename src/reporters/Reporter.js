@@ -419,6 +419,26 @@ module.exports = class Reporter
         }
     }
 
+    beforeEachTestClass(className, path)
+    {
+
+    }
+
+    afterEachTestClass(className, path, results, failuresCount)
+    {
+
+    }
+
+    afterEachFailedTestClass(className, path, results, failuresCount)
+    {
+
+    }
+
+    afterEachPassedTestClass(className, path, results)
+    {
+
+    }
+
     beforeEachTest(testName)
     {
 
@@ -491,6 +511,16 @@ module.exports = class Reporter
     afterEachPassedAssertion(assertion)
     {
       this.assertionsPassesCount++;
+    }
+
+    beforeEachIOTest(test)
+    {
+
+    }
+
+    afterEachIOTest(test)
+    {
+
     }
 
     log(message)

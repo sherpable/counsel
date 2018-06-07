@@ -49,14 +49,15 @@ function isFile (filepath) {
 module.exports = Loader;
 // legacy
 module.exports.Loader = Loader;
-function Loader (dir) {
+function Loader (dir, options = []) {
   var tmp = null;
-  if (!(this instanceof Loader)) return new Loader(dir);
+  if (!(this instanceof Loader)) return new Loader(dir, options);
   tmp = dir;
   if (!isDirectory(dir)) { tmp = resolve(dirname(module.parent.id), dir) }
   dir = tmp;
   if (!isDirectory(dir)) { throw new Error("Invalid directory"); }
   this.directory = dir;
+  this.options = options;
 }
 
 /**
@@ -72,8 +73,8 @@ Loader.prototype.__proto__ = EventEmitter.prototype;
  * @param {String} dir
  */
 
-module.exports.load = function (dir) {
-  return new Loader(dir).load();
+module.exports.load = function (dir, options = []) {
+  return new Loader(dir, options).load();
 };
 
 /**
@@ -85,8 +86,9 @@ module.exports.load = function (dir) {
 
 Loader.prototype.load = function () {
   var dir = this.directory;
+  var options = this.options;
   var files = fs.readdirSync(dir);
-  var tree = new Tree(dir, files);
+  var tree = new Tree(dir, files, options);
   return this.emit('load', tree), tree;
 };
 
@@ -99,13 +101,13 @@ Loader.prototype.load = function () {
  */
 
 module.exports.Tree = Tree;
-function Tree (root, children) {
+function Tree (root, children, options = []) {
   var path = null;
   var child = null;
   var i = 0;
 
   // ensure instance
-  if (!(this instanceof Tree)) return new Tree(root, children);
+  if (!(this instanceof Tree)) return new Tree(root, children, options);
 
   if ('string' === typeof root) {
     if (!isDirectory(root)) { throw new Error("`root' is not a directory"); }
@@ -136,11 +138,15 @@ function Tree (root, children) {
     var name = child.replace(ext, '');
 
     if (isDirectory(fpath)) {
-      root[name] = Tree(fpath, readdir(fpath));
+      root[name] = Tree(fpath, readdir(fpath), options);
     } else if (isFile(fpath)) {
-      if (! fpath.endsWith('.js')) {
+
+      let regex = new RegExp(options.patterns.join('|'));
+
+      if (! regex.test(fpath)) {
         return;
       }
+
       define(root, name, {
         enumerable: true,
         get: function () { return require(fpath) }
