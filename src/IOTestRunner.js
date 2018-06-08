@@ -144,6 +144,9 @@ module.exports = class IOTestRunner
 		        console.log('');
 
 		        console.log(`--- Expected\n${test.expect.split(' ').join(this.chalk.bold.red('.'))}\n+++ Actual\n${actual.split(' ').join(this.chalk.bold.red('.'))}`);
+
+		        console.log(this.chalk.yellow('  Difference'));
+		        diff(actual, test.expect);
 		    }
 		} else {
 			this.markFailure();

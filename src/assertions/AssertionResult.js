@@ -105,6 +105,10 @@ module.exports = class AssertionResult
 
     beautify(value)
     {
+        if (counsel.isIoTestProcess) {
+            return value;
+        }
+
         return this.reporter.beautify(value);
     }
 }
