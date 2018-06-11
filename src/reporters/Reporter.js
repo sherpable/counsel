@@ -388,8 +388,6 @@ module.exports = class Reporter
             executionTimeFormatted: this.executionTimeFormatted,
             root: counsel.root,
         });
-        // counsel.reportToParentProcess('executionTimeFormatted', this.executionTimeFormatted);
-        // counsel.reportToParentProcess('root', counsel.root);
 
         this.log('');
 
@@ -417,6 +415,38 @@ module.exports = class Reporter
         if (! pass) {
             this.log(`IO Tests failed.`);
         }
+    }
+
+    beforeEachIOTest(testContext)
+    {
+
+    }
+
+    afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
+    {
+        let failedCount = Object.keys(failedAssertions).length;
+        if (! mainTestPasses) {
+            failedCount++;
+        }
+
+        this.testsFailuresCount += failedCount;
+
+        let passedCount = Object.keys(passedAssertions).length;
+        if (! mainTestPasses) {
+            passedCount++;
+        }
+
+        this.testsPassesCount += passedCount;
+    }
+
+    afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
+    {
+
+    }
+
+    afterEachPassedIOTest(testContext, assertionsCount)
+    {
+
     }
 
     beforeEachTestClass(className, path)
@@ -511,16 +541,6 @@ module.exports = class Reporter
     afterEachPassedAssertion(assertion)
     {
       this.assertionsPassesCount++;
-    }
-
-    beforeEachIOTest(test)
-    {
-
-    }
-
-    afterEachIOTest(test)
-    {
-
     }
 
     log(message)

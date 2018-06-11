@@ -62,7 +62,7 @@ module.exports = class IOTestRunner
 		test.test = test.test.trim();
 		test.perform = test.perform.trim();
 
-		process.stdout.write(`  ${this.figures.pointer} ${test.test} (${this.chalk.green(testFile.replace(this.root, ''))})`);
+		// process.stdout.write(`  ${this.figures.pointer} ${test.test} (${this.chalk.green(testFile.replace(this.root, ''))})`);
 
 		let spawn = require('child_process').spawnSync;
 
@@ -135,67 +135,93 @@ module.exports = class IOTestRunner
 		    // main test
 		    let actual = result.join('\n');
 
+		    let mainTestPassed = null;
+
 		    if (actual === test.expect) {
-		        console.log(this.chalk.green(` ${this.figures.tick}`));
+		    	mainTestPassed = true;
+		    	// this.reporter.afterEachPassedIOTest(testContext);
+		        // console.log(this.chalk.green(` ${this.figures.tick}`));
 		    } else {
-		    	this.markFailure();
+		    	mainTestPassed = false;
+		    	// this.reporter.afterEachFailedIOTest(testContext, actual);
+		    	// this.markFailure();
 
-		        console.log(this.chalk.red(` ${this.figures.cross}`));
-		        console.log('');
+		     //    console.log(this.chalk.red(` ${this.figures.cross}`));
+		     //    console.log('');
 
-		        console.log(`--- Expected\n${test.expect.split(' ').join(this.chalk.bold.red('.'))}\n+++ Actual\n${actual.split(' ').join(this.chalk.bold.red('.'))}`);
+		     //    console.log(`--- Expected\n${test.expect.split(' ').join(this.chalk.bold.red('.'))}\n+++ Actual\n${actual.split(' ').join(this.chalk.bold.red('.'))}`);
 
-		        console.log(this.chalk.yellow('  Difference'));
-		        diff(actual, test.expect);
+		     //    console.log(this.chalk.yellow('  Difference'));
+		     //    diff(actual, test.expect);
 		    }
 		} else {
-			this.markFailure();
+			mainTestPassed = false;
+			// this.reporter.afterEachFailedIOTest(testContext, null);
+			// this.markFailure();
 
-			console.log(this.chalk.red(` ${this.figures.cross}`));
-			console.log(this.chalk.red(`  No result received from command "${test.perform}"`));
+			// console.log(this.chalk.red(` ${this.figures.cross}`));
+			// console.log(this.chalk.red(`  No result received from command "${test.perform}"`));
 
-			console.log(this.chalk.yellow('  Command'));
-			dump(command);
-			console.log(this.chalk.yellow('  Arguments'));
-			dump(args);
-			console.log(this.chalk.yellow('  Options'));
-			dump(options);
+			// console.log(this.chalk.yellow('  Command'));
+			// dump(command);
+			// console.log(this.chalk.yellow('  Arguments'));
+			// dump(args);
+			// console.log(this.chalk.yellow('  Options'));
+			// dump(options);
 		}
 
-	    if (! test.assertions) {
-	        return;
-	    }
+		let failedAssertions = {};
+		let passedAssertions = {};
 
-	    console.log(this.chalk.yellow('  Assertions'));
+	    if (test.assertions.length && mainTestPassed) {
+		    // console.log(this.chalk.yellow('  Assertions'));
 
-	    for (let assertion in test.assertions) {
-	        process.stdout.write(`  - ${assertion}`);
+		    for (let assertion in test.assertions) {
+		        // process.stdout.write(`  - ${assertion}`);
 
-	        if (test.assertions[assertion] === counselResults[assertion]) {
-	            console.log(this.chalk.green(` ${this.figures.tick}`));
-	        } else {
-				this.markFailure();
+		        if (test.assertions[assertion] === counselResults[assertion]) {
+		        	passedAssertions[assertion] = {
+		        		actual: counselResults[assertion],
+		        	};
+		            // console.log(this.chalk.green(` ${this.figures.tick}`));
+		        } else {
+		            let expected = test.assertions[assertion];
+		            let actual = counselResults[assertion];
 
-	            console.log(this.chalk.red(` ${this.figures.cross}`));
+		        	failedAssertions[assertion] = {
+		        		actual,
+		        		expected,
+		        	};
+					// this.markFailure();
 
-	            let expected = test.assertions[assertion];
-	            let actual = counselResults[assertion];
+		   			// console.log(this.chalk.red(` ${this.figures.cross}`));
 
-	            console.log(`    --- Expected`);
-	            dump(expected);
-	            console.log(`    +++ Actual`);
-	            dump(actual);
-	        }
-	    }
+		            // console.log(`    --- Expected`);
+		            // dump(expected);
+		            // console.log(`    +++ Actual`);
+		            // dump(actual);
+		        }
+		    }
+		}
 
-	    if (this.currentTestFail) {
-	    	console.log(this.chalk.yellow('  Command'));
-			dump(command);
-			console.log(this.chalk.yellow('  Arguments'));
-			dump(args);
-			console.log(this.chalk.yellow('  Options'));
-			dump(options);
-	    }
+	  //   if (this.currentTestFail) {
+	  //   	console.log(this.chalk.yellow('  Command'));
+			// dump(command);
+			// console.log(this.chalk.yellow('  Arguments'));
+			// dump(args);
+			// console.log(this.chalk.yellow('  Options'));
+			// dump(options);
+	  //   }
+	  	if (! mainTestPassed) {
+	  		dump('fail');
+	  		this.afterEachFailedIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
+	  	} else {
+	  		dump('pass');
+	  		this.afterEachPassedIOTest(testContext, failedAssertions, Object,keys(failedAssertions).length);
+	  	}
+
+		dump('each');
+	  	this.afterEachIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
 	}
 
 	markFailure()

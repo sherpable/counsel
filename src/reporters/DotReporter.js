@@ -23,6 +23,20 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(counsel.serviceProviders.chalk.green('.'));
     }
 
+    afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
+    {
+        super.afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions);
+
+        this.appendLog(counsel.serviceProviders.chalk.red('x'));
+    }
+
+    afterEachPassedIOTest(testContext, assertionsCount)
+    {
+        super.afterEachPassedIOTest(testContext, assertionsCount);
+
+        this.appendLog(counsel.serviceProviders.chalk.green('.'));
+    }
+
     afterEachTest(testName, results, failuresCount)
     {
         super.afterEachTest(testName, results, failuresCount);
