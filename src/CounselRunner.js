@@ -335,11 +335,11 @@ module.exports = class CounselRunner
             process.exit(2);
         }
 
-        await this.reporter.afterTest();
-
         if(! this.isIoTestProcess) {
             await this.runIOTests();
         }
+
+        await this.reporter.afterTest();
 	}
 
     instantiateIOTestRunner()
@@ -582,7 +582,33 @@ module.exports = class CounselRunner
             totalTests += testClasses[testClass].length;
         }
 
+        totalTests += this.getTotalIOTests();
+
         return totalTests;
+    }
+
+    getTotalIOTests()
+    {
+        let totalIOTests = 0;
+
+        for (let ioTestIndex in this.ioTests) {
+            let ioTest = this.ioTests[ioTestIndex];
+
+            if (! ioTest.test.skip && this.ioTestIsForCurrentPlatform(ioTest)) {
+                totalIOTests++;
+            }
+        }
+
+        return totalIOTests;
+    }
+
+    ioTestIsForCurrentPlatform(testContext)
+    {
+        if (! testContext.test.platform) {
+            return true;
+        }
+
+        return testContext.test.platform.includes(process.platform);
     }
 
     getTestFilesInLocation(object)

@@ -23,7 +23,7 @@ module.exports = class IOTestRunner
 		this.dumper.leftMarginSpaces = 4;
 		this.dumper.makeGlobal();
 
-		console.log('');
+		// console.log('');
 	}
 
 	test()
@@ -32,9 +32,9 @@ module.exports = class IOTestRunner
 			if (this.testNeedToRunInCurrentPlatform(test) && test.test.skip !== true) {
 				await this.reporter.beforeEachIOTest(test);
 
-            	this.runTest(test);
+            	await this.runTest(test);
 
-            	await this.reporter.afterEachIOTest(test);
+            	// await this.reporter.afterEachIOTest(test);
         	}
         });
 
@@ -50,8 +50,10 @@ module.exports = class IOTestRunner
 		return test.test.platform.includes(process.platform);
 	}
 
-	runTest(testContext)
+	async runTest(testContext)
 	{
+		let mainTestPassed = null;
+
 		this.currentTestFail = false;
 
 		let childParentMessage = false;
@@ -83,12 +85,15 @@ module.exports = class IOTestRunner
 			args.push('--io-test');
 		}
 
-
 		let counselProcess = spawn(command, args, options);
 
 		// Process IO results
 		let result;
+		let actual;
 		let error;
+		let failedAssertions = {};
+		let passedAssertions = {};
+		let assertionsPassed = true;
 
 		if (counselProcess.stdout) {
 			result = counselProcess.stdout.toString();
@@ -133,9 +138,9 @@ module.exports = class IOTestRunner
 		    }
 
 		    // main test
-		    let actual = result.join('\n');
+		    actual = result.join('\n');
 
-		    let mainTestPassed = null;
+		    Assertions.assertEquals(test.expect, actual);
 
 		    if (actual === test.expect) {
 		    	mainTestPassed = true;
@@ -170,14 +175,13 @@ module.exports = class IOTestRunner
 			// dump(options);
 		}
 
-		let failedAssertions = {};
-		let passedAssertions = {};
-
-	    if (test.assertions.length && mainTestPassed) {
+	    if (Object.keys(test.assertions).length && mainTestPassed) {
 		    // console.log(this.chalk.yellow('  Assertions'));
 
 		    for (let assertion in test.assertions) {
 		        // process.stdout.write(`  - ${assertion}`);
+
+		        Assertions.assertEquals(counselResults[assertion], test.assertions[assertion]);
 
 		        if (test.assertions[assertion] === counselResults[assertion]) {
 		        	passedAssertions[assertion] = {
@@ -185,12 +189,13 @@ module.exports = class IOTestRunner
 		        	};
 		            // console.log(this.chalk.green(` ${this.figures.tick}`));
 		        } else {
-		            let expected = test.assertions[assertion];
-		            let actual = counselResults[assertion];
+		        	assertionsPassed = false;
+		            let assertionExpected = test.assertions[assertion];
+		            let assertionActual = counselResults[assertion];
 
 		        	failedAssertions[assertion] = {
-		        		actual,
-		        		expected,
+		        		actual: assertionActual,
+		        		expected: assertionExpected,
 		        	};
 					// this.markFailure();
 
@@ -212,16 +217,15 @@ module.exports = class IOTestRunner
 			// console.log(this.chalk.yellow('  Options'));
 			// dump(options);
 	  //   }
-	  	if (! mainTestPassed) {
-	  		dump('fail');
-	  		this.afterEachFailedIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
+
+	  	if (mainTestPassed && assertionsPassed) {
+	  		this.reporter.afterEachPassedIOTest(testContext, passedAssertions);
+	  		this.reporter.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
 	  	} else {
-	  		dump('pass');
-	  		this.afterEachPassedIOTest(testContext, failedAssertions, Object,keys(failedAssertions).length);
+	  		this.reporter.afterEachFailedIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
+	  		this.reporter.afterEachIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
 	  	}
 
-		dump('each');
-	  	this.afterEachIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
 	}
 
 	markFailure()

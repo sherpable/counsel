@@ -437,16 +437,17 @@ module.exports = class Reporter
         }
 
         this.testsPassesCount += passedCount;
+        this.testsCount++;
     }
 
     afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
     {
-
+        // this.afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions);
     }
 
-    afterEachPassedIOTest(testContext, assertionsCount)
+    afterEachPassedIOTest(testContext, passedAssertions)
     {
-
+        // this.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
     }
 
     beforeEachTestClass(className, path)

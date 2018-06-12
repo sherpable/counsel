@@ -30,9 +30,9 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(counsel.serviceProviders.chalk.red('x'));
     }
 
-    afterEachPassedIOTest(testContext, assertionsCount)
+    afterEachPassedIOTest(testContext, passedAssertions)
     {
-        super.afterEachPassedIOTest(testContext, assertionsCount);
+        super.afterEachPassedIOTest(testContext, passedAssertions);
 
         this.appendLog(counsel.serviceProviders.chalk.green('.'));
     }
