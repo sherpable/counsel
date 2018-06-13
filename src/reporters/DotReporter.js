@@ -58,6 +58,18 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(counsel.serviceProviders.chalk.green('.'));
     }
 
+    afterEachIOTestWithoutResults(testContext, testProcess)
+    {
+        super.afterEachIOTestWithoutResults(testContext, testProcess);
+
+        // this.log(counsel.serviceProviders.chalk.yellow('Command'));
+        // this.log(testProcess.command);
+        // this.log(counsel.serviceProviders.chalk.yellow('Arguments'));
+        // this.log(testProcess.args);
+        // this.log(counsel.serviceProviders.chalk.yellow('Options'));
+        // this.log(testProcess.options);
+    }
+
     afterEachTest(testName, results, failuresCount)
     {
         super.afterEachTest(testName, results, failuresCount);

@@ -136,6 +136,7 @@ module.exports = class IOTestRunner
 		    // main test
 		    actual = result.join('\n');
 
+		    Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true };
 		    Assertions.assertEquals(test.expect, actual);
 
 		    if (actual === test.expect) {
@@ -145,7 +146,6 @@ module.exports = class IOTestRunner
 		    } else {
 		    	mainTestPassed = false;
 		    	// this.reporter.afterEachFailedIOTest(testContext, actual);
-		    	// this.markFailure();
 
 		     //    console.log(this.chalk.red(` ${this.figures.cross}`));
 		     //    console.log('');
@@ -156,27 +156,25 @@ module.exports = class IOTestRunner
 		     //    diff(actual, test.expect);
 		    }
 		} else {
+			Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true };
+			Assertions.assertEquals(
+				test.expect, actual,
+				`No result received from command "${test.perform}".`
+			);
 			mainTestPassed = false;
-			// this.reporter.afterEachFailedIOTest(testContext, null);
-			// this.markFailure();
 
-			// console.log(this.chalk.red(` ${this.figures.cross}`));
-			// console.log(this.chalk.red(`  No result received from command "${test.perform}"`));
-
-			// console.log(this.chalk.yellow('  Command'));
-			// dump(command);
-			// console.log(this.chalk.yellow('  Arguments'));
-			// dump(args);
-			// console.log(this.chalk.yellow('  Options'));
-			// dump(options);
+			this.reporter.afterEachIOTestWithoutResults(testContext, {
+				command, args, options,
+			});
 		}
 
-	    if (Object.keys(test.assertions).length && mainTestPassed) {
+	    if (Object.keys(test.assertions).length) {
 		    // console.log(this.chalk.yellow('  Assertions'));
 
 		    for (let assertion in test.assertions) {
 		        // process.stdout.write(`  - ${assertion}`);
 
+				Assertions.test = { name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true };
 		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);
 
 		        if (test.assertions[assertion] === counselResults[assertion]) {
@@ -193,7 +191,6 @@ module.exports = class IOTestRunner
 		        		actual: assertionActual,
 		        		expected: assertionExpected,
 		        	};
-					// this.markFailure();
 
 		   			// console.log(this.chalk.red(` ${this.figures.cross}`));
 
@@ -222,13 +219,5 @@ module.exports = class IOTestRunner
 	  		this.reporter.afterEachIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
 	  	}
 
-	}
-
-	markFailure()
-	{
-		this.pass = false;
-		this.fail = true;
-
-		this.currentTestFail = true;
 	}
 }

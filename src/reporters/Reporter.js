@@ -410,11 +410,9 @@ module.exports = class Reporter
         
     }
 
-    afterIOTests(pass)
+    afterIOTests()
     {
-        if (! pass) {
-            this.log(`IO Tests failed.`);
-        }
+        
     }
 
     beforeEachIOTest(testContext)
@@ -450,9 +448,21 @@ module.exports = class Reporter
         // this.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
     }
 
+    afterEachIOTestWithoutResults(testContext, testProcess)
+    {
+        
+    }
+
     beforeEachTestClass(className, path)
     {
+        if (! this.testFailures[path]) {
+            this.testFailures[path] = {};
+            this.testFailures[path]['functions'] = [];
+        }
 
+        if (! this.testFailures[path]['count']) {
+            this.testFailures[path]['count'] = 0;
+        }
     }
 
     afterEachTestClass(className, path, results, failuresCount)
@@ -470,9 +480,21 @@ module.exports = class Reporter
 
     }
 
-    beforeEachTest(testName)
+    beforeEachTest(testName, functionName)
     {
+        if (! this.testFailures[testName]) {
+            this.testFailures[testName] = {};
+            this.testFailures[testName]['functions'] = [];
+        }
 
+        if (! this.testFailures[testName]['count']) {
+            this.testFailures[testName]['count'] = 0;
+        }
+
+        if (! this.testFailures[testName]['functions'][functionName]) {
+            this.testFailures[testName]['functions'][functionName] = []
+            this.testFailures[testName]['functions'][functionName]['count'] = 0;
+        }
     }
 
     afterEachTest(testName, results, failuresCount)
@@ -496,9 +518,21 @@ module.exports = class Reporter
         this.testsPassesCount++;
     }
 
-    beforeEachAssertion(assertion)
+    beforeEachAssertion(assertion, parameters, test)
     {
+        if (! this.testFailures[test.file]) {
+            this.testFailures[test.file] = {};
+            this.testFailures[test.file]['functions'] = [];
+        }
 
+        if (! this.testFailures[test.file]['count']) {
+            this.testFailures[test.file]['count'] = 0;
+        }
+
+        if (! this.testFailures[test.file]['functions'][test.function]) {
+            this.testFailures[test.file]['functions'][test.function] = []
+            this.testFailures[test.file]['functions'][test.function]['count'] = 0;
+        }
     }
 
     afterEachAssertion(assertion)
@@ -524,13 +558,31 @@ module.exports = class Reporter
 
     afterEachFailedAssertion(assertion)
     {
-        this.testFailures[assertion.test.file]++;
+        let name;
+        let errorLocation;
+
+        if (! this.testFailures[assertion.test.file]) {
+            this.testFailures[assertion.test.file] = {};
+            this.testFailures[assertion.test.file]['functions'] = [];
+        }
+
+        this.testFailures[assertion.test.file]['count']++;
+        this.testFailures[assertion.test.file]['functions'][assertion.test.function]['count']++;
+
         this.assertionsFailuresCount++;
 
+        if (assertion.test.io) {
+            name = `${assertion.test.name} -> ${assertion.test.function}`;
+            errorLocation = assertion.test.file;
+        } else {
+            name = `${assertion.test.file} -> ${assertion.test.function}`;
+            errorLocation = `${assertion.error.fileName}:${assertion.error.lineNumber}`;
+        }
+
         this.errorContent += '\n';
-        this.errorContent += '  ' + counsel.serviceProviders.chalk.red('x') + counsel.serviceProviders.chalk.white(` ${this.assertionsFailuresCount}) ${assertion.test.file} -> ${assertion.test.function}`);
+        this.errorContent += '  ' + counsel.serviceProviders.chalk.red('x') + counsel.serviceProviders.chalk.white(` ${this.assertionsFailuresCount}) ${name}`);
         this.errorContent += '\n';
-        this.errorContent += counsel.serviceProviders.chalk.dim(`  ${assertion.error.fileName}:${assertion.error.lineNumber}`);
+        this.errorContent += counsel.serviceProviders.chalk.dim(`  ${errorLocation}`);
         this.errorContent += '\n';
         this.errorContent += '\n';
         this.errorContent += `  ${this.visualError(assertion)}`;
@@ -541,7 +593,7 @@ module.exports = class Reporter
 
     afterEachPassedAssertion(assertion)
     {
-      this.assertionsPassesCount++;
+        this.assertionsPassesCount++;
     }
 
     log(message)
@@ -582,7 +634,7 @@ module.exports = class Reporter
             return '  ' + value.split('\n').join('\n  ');
         }
 
-        let formatted = this.concordance.format(value, {plugins: [], theme: this.dumpTheme})
+        let formatted = this.concordance.format(value, {plugins: [], theme: this.dumpTheme});
 
         if (typeof value == 'object') {
             if (value.constructor == Array) {

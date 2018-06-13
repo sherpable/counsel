@@ -59,6 +59,8 @@ module.exports = class CounselRunner
 
         this.isIoTestProcess = this.arguments[this.isIOTestMarker];
 
+        this.skipIOTests = this.arguments['skip-io-tests']
+
 		this.rawFilter = process.env.npm_lifecycle_script;
 
         // this.filter = this.getFilter();
@@ -310,6 +312,11 @@ module.exports = class CounselRunner
         for (let serviceProvider in this.serviceProvidersList) {
             this.serviceProviders[serviceProvider] = require(this.serviceProvidersList[serviceProvider]);
         }
+
+        if (this.isIoTestProcess) {
+            // Disable colors for IO tests
+            this.serviceProviders.chalk = require('chalk').constructor({enabled: false, level: 0});
+        }
     }
 
     defineGlobals()
@@ -338,7 +345,7 @@ module.exports = class CounselRunner
             process.exit(2);
         }
 
-        if(! this.isIoTestProcess) {
+        if(! this.isIoTestProcess && ! this.skipIOTests) {
             await this.runIOTests();
         }
 
@@ -356,18 +363,18 @@ module.exports = class CounselRunner
             return;
         }
 
-        this.reporter.beforeIOTests();
+        await this.reporter.beforeIOTests();
 
         this.IOTestRunner = this.instantiateIOTestRunner();
 
-        this.IOTestsPasses = this.IOTestRunner.test();
+        this.IOTestRunner.test();
 
-        await this.reporter.afterIOTests(this.IOTestsPasses);
+        await this.reporter.afterIOTests();
     }
 
     exit()
     {
-        let statusCode = (counsel.reporter.assertionsFailuresCount > 0 || this.IOTestsPasses === false) ? 2 : 0;
+        let statusCode = counsel.reporter.assertionsFailuresCount ? 2 : 0;
 
         process.exit(statusCode);
     }
@@ -398,14 +405,12 @@ module.exports = class CounselRunner
             testClass.assertions.test = { file: path, function: name };
 
             try {
-                // Fix with test name instead if path
-                await this.reporter.beforeEachTest(path);
+                await this.reporter.beforeEachTest(path, name);
 
                 // Run the test
                 await testClass[name]();
 
-                // Fix with test name instead if path
-                let testFailuresCount = this.reporter.testFailures[path];
+                let testFailuresCount = this.reporter.testFailures[path]['functions'][name]['count'];
                 if (testFailuresCount > 0) {
                     await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
                 } else {
@@ -453,8 +458,7 @@ module.exports = class CounselRunner
                         }
 
                         // After each test with exception
-                        // Fix with test name instead if path
-                        let testFailuresCount = this.reporter.testFailures[path];
+                        let testFailuresCount = this.reporter.testFailures[path]['functions'][name]['count'];
                         if (testFailuresCount > 0) {
                             await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
                         } else {
@@ -502,7 +506,7 @@ module.exports = class CounselRunner
 
         	await this.runTestsInClass(testClass, filePath, testClasses[filePath]);
 
-            let testFailuresCount = this.reporter.testFailures[filePath];
+            let testFailuresCount = this.reporter.testFailures[filePath]['count'];
 
             await this.reporter.afterEachTestClass(testClassName, filePath, this.reporter.results[filePath], testFailuresCount);
 

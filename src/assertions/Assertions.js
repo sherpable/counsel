@@ -117,7 +117,7 @@ module.exports = class Assertions
 
 	execute(assertion, parameters)
 	{
-		this.reporter.beforeEachAssertion(assertion, parameters);
+		this.reporter.beforeEachAssertion(assertion, parameters, this.test);
 
 		let assertionResultFileName = assertion.charAt(0).toUpperCase() + assertion.substr(1);
 		let assertionResult = null;

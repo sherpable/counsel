@@ -18,7 +18,7 @@ expect: |
 
   false
 
-  x 2) CoreAssertionsTest ->. it_is_able_to_assert_false
+  x 2) CoreAssertionsTest -> it_is_able_to_assert_false
   /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:20
 
   19|     {
