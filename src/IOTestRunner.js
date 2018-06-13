@@ -118,8 +118,8 @@ module.exports = class IOTestRunner
 			let childParentMessageStart = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
 			let childParentMessageEnd = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
 
-			var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd);
-			childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2);
+			var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd - 3);
+			childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2); // Remove closing item
 
 			// Convert raw child messages into an object
 			childParentMessages.forEach(rawMessage => {
@@ -133,7 +133,7 @@ module.exports = class IOTestRunner
 		        test.expect = test.expect.replace(regex, itemValue);
 		    }
 
-		    // main test
+		    // Main test
 		    actual = result.join('\n');
 
 		    Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true };
@@ -169,11 +169,7 @@ module.exports = class IOTestRunner
 		}
 
 	    if (Object.keys(test.assertions).length) {
-		    // console.log(this.chalk.yellow('  Assertions'));
-
 		    for (let assertion in test.assertions) {
-		        // process.stdout.write(`  - ${assertion}`);
-
 				Assertions.test = { name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true };
 		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);
 
@@ -181,7 +177,6 @@ module.exports = class IOTestRunner
 		        	passedAssertions[assertion] = {
 		        		actual: counselResults[assertion],
 		        	};
-		            // console.log(this.chalk.green(` ${this.figures.tick}`));
 		        } else {
 		        	assertionsPassed = false;
 		            let assertionExpected = test.assertions[assertion];
@@ -191,13 +186,6 @@ module.exports = class IOTestRunner
 		        		actual: assertionActual,
 		        		expected: assertionExpected,
 		        	};
-
-		   			// console.log(this.chalk.red(` ${this.figures.cross}`));
-
-		            // console.log(`    --- Expected`);
-		            // dump(expected);
-		            // console.log(`    +++ Actual`);
-		            // dump(actual);
 		        }
 		    }
 		}

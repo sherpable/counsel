@@ -30,6 +30,8 @@ module.exports = class CounselRunner
 
         this.packageJson = require(require('path').resolve(__dirname, '../package.json'));
 
+        this.version = this.packageJson.version;
+
         this.arguments = this.parseArguments();
 
         if (this.arguments.help) {
@@ -38,9 +40,11 @@ module.exports = class CounselRunner
         }
 
         if (this.arguments.version) {
-            console.log(`Counsel version ${require('chalk').green(this.packageJson.version)}`);
+            console.log(`Counsel version ${require('chalk').green(this.version)}`);
             process.exit();
         }
+
+        console.log(`\n  Counsel ${require('chalk').green(this.version)}\n`);
 
 
         if (this.arguments.config) {
