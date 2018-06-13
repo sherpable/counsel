@@ -6,7 +6,11 @@ module.exports = class DotReporter extends Reporter
 
         this.testsExecuted = 0;
 
-        this.testsPerLine = 24;
+        this.testsPerLine = 34;
+
+        if (counsel.isIoTestProcess) {
+            this.testsPerLine = 24;
+        }
     }
 
     afterEachFailedTest(testName, results, failuresCount)
@@ -21,6 +25,23 @@ module.exports = class DotReporter extends Reporter
         super.afterEachPassedTest(testName, results);
 
         this.appendLog(counsel.serviceProviders.chalk.green('.'));
+    }
+
+    afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
+    {
+        super.afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions);
+
+        if (! this.fullRun) {
+            return;
+        }
+
+        this.testsExecuted++;
+
+        if (this.testsExecuted == this.testsPerLine) {
+            this.testsExecuted = 0;
+
+            this.appendLog(`  ${this.testsCountWithSpace()} / ${this.totalTests} (${this.progressWithSpace()}%)\n  `);
+        }
     }
 
     afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)

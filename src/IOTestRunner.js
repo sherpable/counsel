@@ -81,10 +81,6 @@ module.exports = class IOTestRunner
 		};
 		let command = args.splice(0, 1)[0];
 
-		if (test.perform.startsWith('src/counsel.js')) {
-			args.push('--io-test');
-		}
-
 		let counselProcess = spawn(command, args, options);
 
 		// Process IO results
@@ -181,7 +177,7 @@ module.exports = class IOTestRunner
 		    for (let assertion in test.assertions) {
 		        // process.stdout.write(`  - ${assertion}`);
 
-		        Assertions.assertEquals(counselResults[assertion], test.assertions[assertion]);
+		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);
 
 		        if (test.assertions[assertion] === counselResults[assertion]) {
 		        	passedAssertions[assertion] = {

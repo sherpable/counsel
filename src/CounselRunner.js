@@ -55,8 +55,9 @@ module.exports = class CounselRunner
 
 		this.locations = [];
 
-        // this.isIoTestProcess = process.argv.includes('io-test');
-        this.isIoTestProcess = this.arguments['io-test'];
+        this.isIOTestMarker = 'is-io-test';
+
+        this.isIoTestProcess = this.arguments[this.isIOTestMarker];
 
 		this.rawFilter = process.env.npm_lifecycle_script;
 
@@ -74,7 +75,7 @@ module.exports = class CounselRunner
         }
 
         // Skip filter when running as IO test
-        if(this.isIoTestProcess && this.filter == 'io-test') {
+        if(this.isIoTestProcess && this.filter == this.isIOTestMarker) {
             this.filter = false;
             this.fullRun = true;
         }
@@ -91,13 +92,15 @@ module.exports = class CounselRunner
     {
         this.optimist = require('optimist');
         
-        return this.optimist.usage('Usage: $0 [-h] [-v] [--config string] [--filter string] [--io-test] filter')
-            .boolean('io-test')
+        return this.optimist.usage('Usage: $0 [-h] [-v] [--config string] [--filter string] [--is-io-test] filter')
+            .boolean('is-io-test')
             .alias('h', 'help').describe('h', 'Show some help.')
             .alias('v', 'version').describe('v', 'Show counsel\'s verion number.')
             .alias('c', 'config').describe('c', 'Specify a custom config file.')
             .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
             .alias('s', 'suite').describe('s', 'Filter which suite to run.')
+            .describe('is-io-test', 'Mark the current process as an IO test.')
+            .describe('skip-io-tests', 'Skip all IO tests.')
             .argv;
     }
 
