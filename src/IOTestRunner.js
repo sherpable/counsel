@@ -118,7 +118,7 @@ module.exports = class IOTestRunner
 			let childParentMessageStart = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
 			let childParentMessageEnd = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
 
-			var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd - 3);
+			var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd - 2);
 			childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2); // Remove closing item
 
 			// Convert raw child messages into an object

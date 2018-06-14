@@ -9,7 +9,12 @@ module.exports = class Reporter
         this.prettier = require('prettier');
         this.isHtml = require('is-html');
 
-        this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: true});
+        if (counsel.isIoTestProcess) {
+            this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: false, level: 0});
+        } else {
+            this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: true});
+        }
+        
         this.reporterDate = Date;
 
         this.results = {};

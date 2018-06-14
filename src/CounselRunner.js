@@ -44,8 +44,7 @@ module.exports = class CounselRunner
             process.exit();
         }
 
-        console.log(`\n  Counsel ${require('chalk').green(this.version)}\n`);
-
+        console.log(`  Counsel ${require('chalk').green(this.version)}\n`);
 
         if (this.arguments.config) {
             this.configFile = this.arguments.config;
