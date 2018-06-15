@@ -40,11 +40,11 @@ module.exports = class CounselRunner
         }
 
         if (this.arguments.version) {
-            console.log(`Counsel version ${require('chalk').green(this.version)}`);
+            console.log(`Counsel version ${require('chalk').green(this.version)}.`);
             process.exit();
         }
 
-        console.log(`  Counsel ${require('chalk').green(this.version)}\n`);
+        console.log(`  Counsel ${require('chalk').green(this.version)}.\n`);
 
         if (this.arguments.config) {
             this.configFile = this.arguments.config;

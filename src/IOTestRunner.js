@@ -22,8 +22,6 @@ module.exports = class IOTestRunner
 
 		this.dumper.leftMarginSpaces = 4;
 		this.dumper.makeGlobal();
-
-		// console.log('');
 	}
 
 	test()
@@ -33,8 +31,6 @@ module.exports = class IOTestRunner
 				await this.reporter.beforeEachIOTest(test);
 
             	await this.runTest(test);
-
-            	// await this.reporter.afterEachIOTest(test);
         	}
         });
 
@@ -63,8 +59,6 @@ module.exports = class IOTestRunner
 		let test = testContext.test;
 		test.test = test.test.trim();
 		test.perform = test.perform.trim();
-
-		// process.stdout.write(`  ${this.figures.pointer} ${test.test} (${this.chalk.green(testFile.replace(this.root, ''))})`);
 
 		let spawn = require('child_process').spawnSync;
 
@@ -129,6 +123,9 @@ module.exports = class IOTestRunner
 
 		    for (let item in data) {
 		        let itemValue = data[item];
+		        // Also assign child parent items to the assertions results
+		        // so we can assert against the version number for example
+		        counselResults[item] = itemValue;
 		        let regex = new RegExp(`\{\{${item}\}\}`, 'g');
 		        test.expect = test.expect.replace(regex, itemValue);
 		    }
@@ -206,6 +203,5 @@ module.exports = class IOTestRunner
 	  		this.reporter.afterEachFailedIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
 	  		this.reporter.afterEachIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
 	  	}
-
 	}
 }
