@@ -1,6 +1,6 @@
 test: |
   "ls" command test
-cwd: doubles/ls-dir
+cwd: tests/doubles/ls-dir
 perform: |
   ls
 expect: |
