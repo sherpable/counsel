@@ -8,7 +8,7 @@ module.exports = class DotReporter extends Reporter
 
         this.testsPerLine = 34;
 
-        if (counsel.isIoTestProcess) {
+        if (counsel.isIOTestProcess) {
             this.testsPerLine = 24;
         }
     }

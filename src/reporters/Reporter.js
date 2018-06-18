@@ -9,7 +9,7 @@ module.exports = class Reporter
         this.prettier = require('prettier');
         this.isHtml = require('is-html');
 
-        if (counsel.isIoTestProcess) {
+        if (counsel.isIOTestProcess) {
             this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: false, level: 0});
         } else {
             this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: true});
@@ -353,6 +353,21 @@ module.exports = class Reporter
         };
     }
 
+    testResults()
+    {
+        return {
+            testsCount: this.testsCount,
+            testsPassesCount: this.testsPassesCount,
+            testsFailuresCount: this.testsFailuresCount,
+
+            assertionsCount: this.assertionsCount,
+            assertionsPassesCount: this.assertionsPassesCount,
+            assertionsFailuresCount: this.assertionsFailuresCount,
+
+            progress: this.progress,
+        }
+    }
+
     plainFormat(code)
     {
         return code;
@@ -393,6 +408,8 @@ module.exports = class Reporter
             root: counsel.root,
             version: counsel.version,
             executionTimeFormatted: this.executionTimeFormatted,
+            executionTime: this.executionTime,
+            ...this.testResults(),
         });
 
         this.log('');
@@ -428,29 +445,31 @@ module.exports = class Reporter
 
     afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
     {
-        let failedCount = Object.keys(failedAssertions).length;
-        if (! mainTestPasses) {
-            failedCount++;
-        }
+        // let failedCount = Object.keys(failedAssertions).length;
+        // if (! mainTestPasses) {
+        //     failedCount++;
+        // }
 
-        this.testsFailuresCount += failedCount;
+        
 
-        let passedCount = Object.keys(passedAssertions).length;
-        if (! mainTestPasses) {
-            passedCount++;
-        }
+        // let passedCount = Object.keys(passedAssertions).length;
+        // if (! mainTestPasses) {
+        //     passedCount++;
+        // }
 
-        this.testsPassesCount += passedCount;
+        
         this.testsCount++;
     }
 
-    afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
+    afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions, testProcess)
     {
+        this.testsFailuresCount++;
         // this.afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions);
     }
 
     afterEachPassedIOTest(testContext, passedAssertions)
     {
+        this.testsPassesCount++;
         // this.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
     }
 

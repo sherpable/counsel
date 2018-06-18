@@ -1,10 +1,10 @@
 module.exports = class CounselRunner
 {
-	constructor()
-	{
+    constructor()
+    {
         require('jsdom-global')();
 
-		this.configFile = 'counsel.config.js';
+        this.configFile = 'counsel.config.js';
 
         this.serviceProviders = {};
 
@@ -54,19 +54,24 @@ module.exports = class CounselRunner
 
         this.reporter = null;
 
-		this.config = {};
+        this.config = {};
 
-		this.locations = [];
+        this.locations = [];
 
         this.isIOTestMarker = 'is-io-test';
 
-        this.isIoTestProcess = this.arguments[this.isIOTestMarker];
+        this.asIOTestMarker = 'as-io-test';
 
-        this.skipIOTests = this.arguments['skip-io-tests']
+        this.isIOTestProcess = this.arguments[this.isIOTestMarker];
 
-		this.rawFilter = process.env.npm_lifecycle_script;
+        this.asIOTestProcess = this.arguments[this.asIOTestMarker];
 
-        // this.filter = this.getFilter();
+        this.ioTestFilename = this.arguments['io-test-filename'];
+
+        this.skipIOTests = this.arguments['skip-io-tests'];
+
+        this.rawFilter = process.env.npm_lifecycle_script;
+
         this.filter = this.arguments.filter;
 
         if (! this.filter) {
@@ -79,19 +84,13 @@ module.exports = class CounselRunner
             this.fullRun = false;
         }
 
-        // Skip filter when running as IO test
-        if(this.isIoTestProcess && this.filter == this.isIOTestMarker) {
-            this.filter = false;
-            this.fullRun = true;
-        }
-
         this.annotationFilter = 'test';
 
         if (this.filter && this.filter.startsWith('@')) {
             this.annotationFilter = this.filter.replace('@', '');
             this.filter = '';
         }
-	}
+    }
 
     parseArguments()
     {
@@ -105,6 +104,8 @@ module.exports = class CounselRunner
             .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
             .alias('s', 'suite').describe('s', 'Filter which suite to run.')
             .describe('is-io-test', 'Mark the current process as an IO test.')
+            .describe('as-io-test', 'Run tests normal, but output as if it is an IO test.')
+            .describe('io-test-filename', 'Specify the filename from the current IO test.')
             .describe('skip-io-tests', 'Skip all IO tests.')
             .argv;
     }
@@ -114,24 +115,24 @@ module.exports = class CounselRunner
         this.serviceProvidersList = providers;
     }
 
-	loadConfig()
-	{
+    loadConfig()
+    {
         this.root = this.serviceProviders.path.normalize(
             process.cwd() + '/'
         );
 
-		if (this.serviceProviders.fs.existsSync(this.configFile)) {
-			this.config = require(this.root + this.configFile);
+        if (this.serviceProviders.fs.existsSync(this.configFile)) {
+            this.config = require(this.root + this.configFile);
             // Merge it with the default config
             this.config = { ...require('./counsel.config'), ...this.config };
-		} else {
+        } else {
             this.config = require('./counsel.config');
         }
 
         if (this.config.reporter) {
             this.loadReporter(this.config.reporter);
         }
-	}
+    }
 
     loadReporter(reporter)
     {
@@ -172,13 +173,13 @@ module.exports = class CounselRunner
         this.assertions = Assertions;
     }
 
-	getFilter()
-	{
-		return process.argv.slice(2)[0];
-	}
+    getFilter()
+    {
+        return process.argv.slice(2)[0];
+    }
 
-	async boot()
-	{
+    async boot()
+    {
         this.loadServiceProviders();
 
         this.defineGlobals();
@@ -189,9 +190,22 @@ module.exports = class CounselRunner
 
         // Parse IO (yaml) tests
         this.serviceProviders.nodeHook.hook('.yaml', (source, filename) => {
+            let test = this.serviceProviders.yaml.safeLoad(source);
+
+            // Apply cli filter
+            if (this.filter && (! filename.includes(this.filter) && ! test.test.includes(this.filter))) {
+                return false;
+            }
+
+            // When running an IO test as if it is a normal test,
+            // don't run itself cause that will end in a infinite loop.
+            if (filename == this.ioTestFilename && this.asIOTestProcess) {
+                return false;
+            }
+
             this.ioTests.push({
                 filename,
-                test: this.serviceProviders.yaml.safeLoad(source),
+                test,
             });
 
             return class {
@@ -235,11 +249,11 @@ module.exports = class CounselRunner
             Vue.config.devtools = false;
         }
 
-		try {
-			if (this.config.bootstrap) {
-				require(this.path(this.config.bootstrap));
-			}
-		} catch (error) {
+        try {
+            if (this.config.bootstrap) {
+                require(this.path(this.config.bootstrap));
+            }
+        } catch (error) {
             if (error instanceof Error && error.code === 'MODULE_NOT_FOUND') {
                 console.error(`  ${this.serviceProviders.chalk.red(this.serviceProviders.figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
                 console.log(error);
@@ -248,8 +262,8 @@ module.exports = class CounselRunner
                 console.log(error);
             }
 
-			process.exit(2);
-		}
+            process.exit(2);
+        }
 
         this.loadEnvData();
 
@@ -259,12 +273,12 @@ module.exports = class CounselRunner
 
         this.instantiateClasses();
 
-		this.getTestLocations();
+        this.getTestLocations();
 
         this.loadAssertions();
 
         await this.reporter.afterBoot();
-	}
+    }
 
     loadEnvData()
     {
@@ -316,7 +330,7 @@ module.exports = class CounselRunner
             this.serviceProviders[serviceProvider] = require(this.serviceProvidersList[serviceProvider]);
         }
 
-        if (this.isIoTestProcess) {
+        if (this.isIOTestProcess) {
             // Disable colors for IO tests
             this.serviceProviders.chalk = require('chalk').constructor({enabled: false, level: 0});
         }
@@ -330,16 +344,16 @@ module.exports = class CounselRunner
         global.moment = this.serviceProviders.moment;
     }
 
-	async test()
-	{
+    async test()
+    {
         await this.reporter.beforeTest();
 
         // Write 2 spaces before first assertion result
         process.stdout.write('  ');
 
         try {
-    		for (let location in this.locations) {
-    			await this.runTestsInLocation(location);
+            for (let location in this.locations) {
+                await this.runTestsInLocation(location);
             }
         } catch (error) {
             console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
@@ -348,12 +362,12 @@ module.exports = class CounselRunner
             process.exit(2);
         }
 
-        if(! this.isIoTestProcess && ! this.skipIOTests) {
+        if(! this.isIOTestProcess && ! this.skipIOTests) {
             await this.runIOTests();
         }
 
         await this.reporter.afterTest();
-	}
+    }
 
     instantiateIOTestRunner()
     {
@@ -362,7 +376,7 @@ module.exports = class CounselRunner
 
     async runIOTests()
     {
-        if (this.isIoTestProcess) {
+        if (this.isIOTestProcess) {
             return;
         }
 
@@ -382,8 +396,8 @@ module.exports = class CounselRunner
         process.exit(statusCode);
     }
 
-	async runTestsInClass(testClass, path, testMethods)
-	{
+    async runTestsInClass(testClass, path, testMethods)
+    {
         // Invoke setUp method if exists
         if (typeof testClass['setUp'] == 'function') {
             testClass.name = path + ' -> ' + 'setUp';
@@ -395,7 +409,7 @@ module.exports = class CounselRunner
                 continue;
             }
 
-		    let method = testClass[name];
+            let method = testClass[name];
 
             // Invoke beforeEach method if exists
             // @todo: create test for this feature
@@ -445,9 +459,9 @@ module.exports = class CounselRunner
 
                     process.exit(2);
                 } else {
-                	let expectedException = testClass.expectedException;
-                	let expectedExceptionMessage = testClass.expectedExceptionMessage;
-                	let notExpectedException = testClass.notExpectedException;
+                    let expectedException = testClass.expectedException;
+                    let expectedExceptionMessage = testClass.expectedExceptionMessage;
+                    let notExpectedException = testClass.notExpectedException;
 
                     if ((expectedException && expectedException.name) || (notExpectedException && notExpectedException.name)) {
                         if (expectedException && expectedException.name) {
@@ -475,17 +489,17 @@ module.exports = class CounselRunner
 
                 testClass['cleanupAfterSingleTestMethod']();
             }
-		}
+        }
 
         // Invoke tearDown method
         if (typeof testClass['tearDown'] == 'function') {
             testClass.name = path + ' -> ' + 'tearDown';
             testClass['tearDown']();
         }
-	}
+    }
 
-	async runTestsInLocation(location, reportingTests = false)
-	{
+    async runTestsInLocation(location, reportingTests = false)
+    {
         let testFiles = this.getTestFilesInLocation(this.locations[location]);
 
         let testClasses = this.parseTestClasses(testFiles, location);
@@ -507,7 +521,7 @@ module.exports = class CounselRunner
 
             await this.reporter.beforeEachTestClass(testClassName, filePath);
 
-        	await this.runTestsInClass(testClass, filePath, testClasses[filePath]);
+            await this.runTestsInClass(testClass, filePath, testClasses[filePath]);
 
             let testFailuresCount = this.reporter.testFailures[filePath]['count'];
 
@@ -623,7 +637,7 @@ module.exports = class CounselRunner
 
     getTestFilesInLocation(object)
     {
-    	let testFilePaths = {};
+        let testFilePaths = {};
 
         for (let i in object) {
             if (! object.hasOwnProperty(i)) continue;
@@ -647,51 +661,53 @@ module.exports = class CounselRunner
         return testFilePaths;
     }
 
-	getTestLocations(locations = null)
-	{
-		let fileLocations = locations || this.config.locations;
+    getTestLocations(locations = null)
+    {
+        let fileLocations = locations || this.config.locations;
 
-		if (! fileLocations) {
-			process.exit(2);
-		}
+        if (! fileLocations) {
+            process.exit(2);
+        }
 
-		fileLocations.forEach(location => {
-			this.locations[location] = this.loadFilesFrom(location);
-		});
+        fileLocations.forEach(location => {
+            this.locations[location] = this.loadFilesFrom(location);
+        });
 
-		return this.locations;
-	}
+        return this.locations;
+    }
 
-	path(additionalPath)
-	{
-		return this.root + additionalPath;
-	}
+    path(additionalPath)
+    {
+        return this.root + additionalPath;
+    }
 
-	loadFilesFrom(path)
-	{
+    loadFilesFrom(path)
+    {
         try {
             if (this.serviceProviders.fs.lstatSync(path).isDirectory() == false) {
                 return require(this.path(path));
             }
-		} catch (error) {
-			if (error instanceof Error && error.code === 'ENOENT') {
-				console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} Directory [${path}] don't exists.`));
-			} else {
+        } catch (error) {
+            if (error instanceof Error && error.code === 'ENOENT') {
+                console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} Directory [${path}] don't exists.`));
+            } else {
                 console.error(this.serviceProviders.chalk.red(`  counsel error`));
                 console.error(error);
             }
 
-			process.exit(2);
-		}
+            process.exit(2);
+        }
 
-		return this.serviceProviders.fileLoader.load(this.path(path), {patterns: this.config.patterns});
-	}
+        return this.serviceProviders.fileLoader.load(this.path(path), {patterns: this.config.patterns});
+    }
 
     reportToParentProcess(key, value = null)
     {
-        if (! this.isIoTestProcess) {
+        if (! this.isIOTestProcess && ! this.asIOTestProcess) {
             return;
         }
+
+        console.log('');
 
         let data = '';
 

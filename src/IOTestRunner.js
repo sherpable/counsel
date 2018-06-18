@@ -75,6 +75,11 @@ module.exports = class IOTestRunner
 		};
 		let command = args.splice(0, 1)[0];
 
+		if (command.startsWith('src/counsel.js') && args.includes('--as-io-test')) {
+			args.push('--io-test-filename');
+			args.push(testContext.filename);
+		}
+
 		let counselProcess = spawn(command, args, options);
 
 		// Process IO results
@@ -125,7 +130,10 @@ module.exports = class IOTestRunner
 		        let itemValue = data[item];
 		        // Also assign child parent items to the assertions results
 		        // so we can assert against the version number for example
-		        counselResults[item] = itemValue;
+		        counselResults[item] = (parseInt(itemValue) === NaN)
+		        	? itemValue
+		        	: parseInt(itemValue);
+
 		        let regex = new RegExp(`\{\{${item}\}\}`, 'g');
 		        test.expect = test.expect.replace(regex, itemValue);
 		    }
@@ -200,7 +208,14 @@ module.exports = class IOTestRunner
 	  		this.reporter.afterEachPassedIOTest(testContext, passedAssertions);
 	  		this.reporter.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
 	  	} else {
-	  		this.reporter.afterEachFailedIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
+			// console.log(this.chalk.yellow('  Command'));
+			// dump(command);
+			// console.log(this.chalk.yellow('  Arguments'));
+			// dump(args);
+			// console.log(this.chalk.yellow('  Options'));
+			// dump(options);
+
+	  		this.reporter.afterEachFailedIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions, {command, args, options});
 	  		this.reporter.afterEachIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
 	  	}
 	}

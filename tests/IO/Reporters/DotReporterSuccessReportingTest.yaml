@@ -11,4 +11,10 @@ expect: |
   15 passed, 15 tests
 assertions:
   status: 0
-  version: 0.0.1
+  assertionsCount: 15
+  assertionsFailuresCount: 0
+  assertionsPassesCount: 15
+  testsCount: 15
+  testsFailuresCount: 0
+  testsPassesCount: 15
+  progress: 100

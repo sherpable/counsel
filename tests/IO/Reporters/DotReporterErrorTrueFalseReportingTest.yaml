@@ -34,3 +34,10 @@ expect: |
   2 failed, 2 tests
 assertions:
   status: 2
+  assertionsCount: 2
+  assertionsFailuresCount: 2
+  assertionsPassesCount: 0
+  testsCount: 2
+  testsFailuresCount: 2
+  testsPassesCount: 0
+  progress: 100

@@ -105,7 +105,7 @@ module.exports = class AssertionResult
 
     beautify(value)
     {
-        if (counsel.isIoTestProcess) {
+        if (counsel.isIOTestProcess) {
             return value;
         }
 
