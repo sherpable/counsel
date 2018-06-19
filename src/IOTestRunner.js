@@ -162,6 +162,11 @@ module.exports = class IOTestRunner
 		    }
 		} else {
 			Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true };
+
+			if (test.expect == 'undefined') {
+				test.expect = undefined;
+			}
+
 			Assertions.assertEquals(
 				test.expect, actual,
 				`No result received from command "${test.perform}".`
@@ -173,7 +178,7 @@ module.exports = class IOTestRunner
 			});
 		}
 
-	    if (Object.keys(test.assertions).length) {
+	    if (result && Object.keys(test.assertions).length) {
 		    for (let assertion in test.assertions) {
 				Assertions.test = { name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true };
 		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);

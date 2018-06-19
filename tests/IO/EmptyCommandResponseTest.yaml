@@ -1,0 +1,7 @@
+test: |
+  Empty command response logging
+perform: |
+  foo
+expect: undefined
+assertions:
+  status: 2
