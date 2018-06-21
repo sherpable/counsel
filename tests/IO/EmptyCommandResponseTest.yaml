@@ -1,7 +1,30 @@
 test: |
   Empty command response logging
 perform: |
-  foo
-expect: undefined
+  echo
+expect: |
+  Counsel {{version}}
+
+  x
+
+  x 1) Empty command response logging -> main test
+  {{root}}tests/IO/EmptyCommandResponseTest.yaml
+
+  No result received from command "echo".
+
+  --- Expected
+  +++ Actual
+  @@ @@
+  ---
+  'foobar'
+  +++
+  undefined
+  Difference
+  - undefined
+  + 'foobar'
+
+  Time: 29ms
+  1 passed, 0 tests
+  1 failed, 1 tests
 assertions:
-  status: 2
+  status: 0

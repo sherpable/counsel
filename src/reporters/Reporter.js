@@ -14,6 +14,8 @@ module.exports = class Reporter
         } else {
             this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: true});
         }
+
+        this.output = '';
         
         this.reporterDate = Date;
 
@@ -623,11 +625,13 @@ module.exports = class Reporter
 
     log(message)
     {
+        this.output += message;
         console.log(message);
     }
 
     appendLog(message)
     {
+        this.output += message;
         process.stdout.write(message);
     }
 

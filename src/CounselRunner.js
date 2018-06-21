@@ -203,22 +203,14 @@ module.exports = class CounselRunner
                 return false;
             }
 
-            this.ioTests.push({
+            let ioTest = {
                 filename,
                 test,
-            });
-
-            return class {
-                test()
-                {
-                    return this.serviceProviders.yaml.safeLoad(source);
-                }
-
-                filename()
-                {
-                    return filename;
-                }
             };
+
+            this.ioTests.push(ioTest);
+
+            return ioTest;
         });
 
         if (this.config.vue) {

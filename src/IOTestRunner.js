@@ -106,7 +106,7 @@ module.exports = class IOTestRunner
 	        signal: counselProcess.signal,
 	    };
 
-		if (result) {
+		if (result.trim()) {
 			result = result.split('\n').map(line => {
 				// Maybe need to remove the trim() call
 				// and don't replace tabs with spaces.
@@ -167,15 +167,26 @@ module.exports = class IOTestRunner
 				test.expect = undefined;
 			}
 
-			Assertions.assertEquals(
-				test.expect, actual,
-				`No result received from command "${test.perform}".`
-			);
-			mainTestPassed = false;
+			if (actual == undefined && test.expect != undefined) {
+				Assertions.assertEquals(
+					test.expect, actual,
+					`No result received from command "${test.perform}".`
+				);
 
-			this.reporter.afterEachIOTestWithoutResults(testContext, {
-				command, args, options,
-			});
+				this.reporter.afterEachIOTestWithoutResults(testContext, {
+					command, args, options,
+				});
+
+				mainTestPassed = false;
+			} else {
+				Assertions.assertEquals(
+					test.expect, actual
+				);
+
+				if (test.expect != actual) {
+					mainTestPassed = false;
+				}
+			}
 		}
 
 	    if (result && Object.keys(test.assertions).length) {
