@@ -17,10 +17,4 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
 
         dd(reporter.output);
     }
-
-    /** @test */
-    it_is_able_to_assert_false()
-    {
-        this.assertFalse(false);
-    }
 }
