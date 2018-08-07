@@ -167,7 +167,7 @@ module.exports = class IOTestRunner
 				test.expect = undefined;
 			}
 
-			if (actual == undefined && test.expect != undefined) {
+			if (actual == undefined) {
 				Assertions.assertEquals(
 					test.expect, actual,
 					`No result received from command "${test.perform}".`

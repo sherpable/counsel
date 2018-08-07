@@ -10,11 +10,18 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
         );
 
         ioTest.filename = counsel.path('tests/IO/EmptyCommandResponseTest.yaml');
-        let reporter = new (require('../../src/reporters/Reporter'));
+        let reporter = new (require('../../src/reporters/DotReporter'));
+        reporter.silent = true;
+        let oldReporter = Assertions.reporter;
+        Assertions.reporter = reporter;
         let ioTestRunner = new (require('../../src/IOTestRunner'))([ioTest], reporter);
 
-        let result = await ioTestRunner.runTest(ioTest);
+        await ioTestRunner.runTest(ioTest);
 
-        dd(reporter.output);
+        reporter.afterTest();
+
+        Assertions.reporter = oldReporter;
+
+        this.assertContains(`No result received from command "echo".`, reporter.output);
     }
 }
