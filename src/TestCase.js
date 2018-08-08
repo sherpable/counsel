@@ -112,6 +112,8 @@ module.exports = class TestCase
         Assertions.reporter = reporter;
         let ioTestRunner = new (require('./IOTestRunner'))([ioTest], reporter);
 
+        reporter.beforeTest();
+
         await ioTestRunner.runTest(ioTest);
 
         reporter.afterTest();

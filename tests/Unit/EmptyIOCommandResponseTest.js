@@ -11,7 +11,7 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
 
         this.assertEquals(`x  
   x 1) Empty command response logging -> main test
-  /Users/Timon/Projects/counsel/tests/IO/EmptyCommandResponseTest.yaml
+  ${counsel.root}tests/IO/EmptyCommandResponseTest.yaml
 
   
 
