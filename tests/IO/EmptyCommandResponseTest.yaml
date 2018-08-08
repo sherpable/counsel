@@ -1,7 +1,0 @@
-test: |
-  Empty command response logging
-perform: |
-  echo
-expect: undefined
-assertions:
-  status: 0

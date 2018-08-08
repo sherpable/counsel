@@ -17,14 +17,14 @@ module.exports = class DotReporter extends Reporter
     {
         super.afterEachFailedTest(testName, results, failuresCount);
 
-        this.appendLog(counsel.serviceProviders.chalk.red('x'));
+        this.appendLog(this.forceColor.red('x'));
     }
 
     afterEachPassedTest(testName, results)
     {
         super.afterEachPassedTest(testName, results);
 
-        this.appendLog(counsel.serviceProviders.chalk.green('.'));
+        this.appendLog(this.forceColor.green('.'));
     }
 
     afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
@@ -48,25 +48,25 @@ module.exports = class DotReporter extends Reporter
     {
         super.afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions);
 
-        this.appendLog(counsel.serviceProviders.chalk.red('x'));
+        this.appendLog(this.forceColor.red('x'));
     }
 
     afterEachPassedIOTest(testContext, passedAssertions)
     {
         super.afterEachPassedIOTest(testContext, passedAssertions);
 
-        this.appendLog(counsel.serviceProviders.chalk.green('.'));
+        this.appendLog(this.forceColor.green('.'));
     }
 
     afterEachIOTestWithoutResults(testContext, testProcess)
     {
         super.afterEachIOTestWithoutResults(testContext, testProcess);
 
-        // this.log(counsel.serviceProviders.chalk.yellow('Command'));
+        // this.log(this.forceColor.yellow('Command'));
         // this.log(testProcess.command);
-        // this.log(counsel.serviceProviders.chalk.yellow('Arguments'));
+        // this.log(this.forceColor.yellow('Arguments'));
         // this.log(testProcess.args);
-        // this.log(counsel.serviceProviders.chalk.yellow('Options'));
+        // this.log(this.forceColor.yellow('Options'));
         // this.log(testProcess.options);
     }
 

@@ -399,7 +399,7 @@ module.exports = class Reporter
     afterTest()
     {
         if (this.assertionsCount == 0) {
-            this.log(counsel.serviceProviders.chalk.yellow(`  No tests executed.`));
+            this.log(this.forceColor.yellow(`  No tests executed.`));
             return;
         }
 
@@ -421,13 +421,13 @@ module.exports = class Reporter
             this.log(`  ${this.errorContent} `);
         }
 
-        this.log(counsel.serviceProviders.chalk.dim(`  Time: ${this.executionTimeFormatted}`));
+        this.log(this.forceColor.dim(`  Time: ${this.executionTimeFormatted}`));
         if (this.assertionsPassesCount > 0) {
-            this.log(counsel.serviceProviders.chalk.green(`  ${this.assertionsPassesCount} passed, ${this.testsPassesCount} tests`));
+            this.log(this.forceColor.green(`  ${this.assertionsPassesCount} passed, ${this.testsPassesCount} tests`));
         }
 
         if (this.assertionsFailuresCount > 0) {
-            this.log(counsel.serviceProviders.chalk.red(`  ${this.assertionsFailuresCount} failed, ${this.testsFailuresCount} tests`));
+            this.log(this.forceColor.red(`  ${this.assertionsFailuresCount} failed, ${this.testsFailuresCount} tests`));
         }
     }
 
@@ -608,9 +608,9 @@ module.exports = class Reporter
         }
 
         this.errorContent += '\n';
-        this.errorContent += '  ' + counsel.serviceProviders.chalk.red('x') + counsel.serviceProviders.chalk.white(` ${this.assertionsFailuresCount}) ${name}`);
+        this.errorContent += '  ' + this.forceColor.red('x') + this.forceColor.white(` ${this.assertionsFailuresCount}) ${name}`);
         this.errorContent += '\n';
-        this.errorContent += counsel.serviceProviders.chalk.dim(`  ${errorLocation}`);
+        this.errorContent += this.forceColor.dim(`  ${errorLocation}`);
         this.errorContent += '\n';
         this.errorContent += '\n';
         this.errorContent += `  ${this.visualError(assertion)}`;
@@ -678,11 +678,11 @@ module.exports = class Reporter
 
         if (typeof value == 'object') {
             if (value.constructor == Array) {
-                formatted = counsel.serviceProviders.chalk.magenta('Array ') + formatted;
+                formatted = this.forceColor.magenta('Array ') + formatted;
             }
 
             if (value.constructor == Object) {
-                formatted = counsel.serviceProviders.chalk.magenta('Object ') + formatted;
+                formatted = this.forceColor.magenta('Object ') + formatted;
             }
         }
 
@@ -740,10 +740,10 @@ module.exports = class Reporter
                 const isErrorSource = item.line === line;
 
                 const lineNumber = formatLineNumber(item.line, line) + '|';
-                const coloredLineNumber = isErrorSource ? lineNumber : counsel.serviceProviders.chalk.dim(lineNumber);
+                const coloredLineNumber = isErrorSource ? lineNumber : this.forceColor.dim(lineNumber);
                 const result = `   ${coloredLineNumber} ${item.value}`;
 
-                return isErrorSource ? counsel.serviceProviders.chalk.bgRed(result) : result;
+                return isErrorSource ? this.forceColor.bgRed(result) : result;
             })
             .join('\n');
 

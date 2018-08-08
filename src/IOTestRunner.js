@@ -168,8 +168,7 @@ module.exports = class IOTestRunner
 			}
 
 			if (actual == undefined) {
-				Assertions.assertEquals(
-					test.expect, actual,
+				Assertions.fail(
 					`No result received from command "${test.perform}".`
 				);
 
@@ -189,7 +188,7 @@ module.exports = class IOTestRunner
 			}
 		}
 
-	    if (result && Object.keys(test.assertions).length) {
+	    if (result && test.assertions && Object.keys(test.assertions).length) {
 		    for (let assertion in test.assertions) {
 				Assertions.test = { name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true };
 		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);

@@ -3,25 +3,21 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
     /** @test */
     async it_will_report_proper_about_io_tests_with_an_empty_response()
     {
-        let ioTest = {};
-        
-        ioTest.test = counsel.serviceProviders.yaml.safeLoad(
-            counsel.serviceProviders.fs.readFileSync(counsel.path('tests/IO/EmptyCommandResponseTest.yaml'), 'utf8')
-        );
+        let reporter = await this.executeIOTest({
+            test: 'Empty command response logging',
+            perform: 'echo',
+            expect: undefined,
+        });
 
-        ioTest.filename = counsel.path('tests/IO/EmptyCommandResponseTest.yaml');
-        let reporter = new (require('../../src/reporters/DotReporter'));
-        reporter.silent = true;
-        let oldReporter = Assertions.reporter;
-        Assertions.reporter = reporter;
-        let ioTestRunner = new (require('../../src/IOTestRunner'))([ioTest], reporter);
+        this.assertEquals(`x  
+  x 1) Empty command response logging -> main test
+  /Users/Timon/Projects/counsel/tests/IO/EmptyCommandResponseTest.yaml
 
-        await ioTestRunner.runTest(ioTest);
+  
 
-        reporter.afterTest();
+  No result received from command "echo".
 
-        Assertions.reporter = oldReporter;
 
-        this.assertContains(`No result received from command "echo".`, reporter.output);
+   Time: ${reporter.executionTimeFormatted}  1 failed, 1 tests`, reporter.output);
     }
 }

@@ -97,6 +97,30 @@ module.exports = class TestCase
 		}
 	}
 
+	async executeIOTest(test)
+	{
+        let ioTest = {};
+        
+        ioTest.test = test;
+
+        ioTest.filename = counsel.path('tests/IO/EmptyCommandResponseTest.yaml');
+        let reporter = new (require('./reporters/DotReporter'));
+        reporter.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: false, level: 0});
+
+        reporter.silent = true;
+        let oldReporter = Assertions.reporter;
+        Assertions.reporter = reporter;
+        let ioTestRunner = new (require('./IOTestRunner'))([ioTest], reporter);
+
+        await ioTestRunner.runTest(ioTest);
+
+        reporter.afterTest();
+
+        Assertions.reporter = oldReporter;
+
+        return reporter;
+	}
+
 	visualError(stack = null, name = null)
 	{
 		const codeExcerpt = require('code-excerpt');
