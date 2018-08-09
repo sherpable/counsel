@@ -588,6 +588,7 @@ module.exports = class Reporter
     {
         let name;
         let errorLocation;
+        let additionalInformation = '';
 
         if (! this.testFailures[assertion.test.file]) {
             this.testFailures[assertion.test.file] = {};
@@ -602,6 +603,18 @@ module.exports = class Reporter
         if (assertion.test.io) {
             name = `${assertion.test.name} -> ${assertion.test.function}`;
             errorLocation = assertion.test.file;
+
+            additionalInformation += this.forceColor.yellow('Command');
+            additionalInformation += '\n';
+            additionalInformation += this.beautify(assertion.test.executeInformation.command);
+            additionalInformation += '\n';
+            additionalInformation += '  ' + this.forceColor.yellow('Arguments');
+            additionalInformation += '\n';
+            additionalInformation += this.beautify(assertion.test.executeInformation.args);
+            additionalInformation += '\n';
+            additionalInformation += '  ' + this.forceColor.yellow('Options');
+            additionalInformation += '\n';
+            additionalInformation += this.beautify(assertion.test.executeInformation.options);
         } else {
             name = `${assertion.test.file} -> ${assertion.test.function}`;
             errorLocation = `${assertion.error.fileName}:${assertion.error.lineNumber}`;
@@ -611,6 +624,10 @@ module.exports = class Reporter
         this.errorContent += '  ' + this.forceColor.red('x') + this.forceColor.white(` ${this.assertionsFailuresCount}) ${name}`);
         this.errorContent += '\n';
         this.errorContent += this.forceColor.dim(`  ${errorLocation}`);
+        if (additionalInformation) {
+            this.errorContent += '\n';
+            this.errorContent += '  ' + additionalInformation;
+        }
         this.errorContent += '\n';
         this.errorContent += '\n';
         this.errorContent += `  ${this.visualError(assertion)}`;
@@ -674,7 +691,13 @@ module.exports = class Reporter
             return '  ' + value.split('\n').join('\n  ');
         }
 
-        let formatted = this.concordance.format(value, {plugins: [], theme: this.dumpTheme});
+        let options = {};
+
+        if (! this.silent) {
+            options = {plugins: [], theme: this.dumpTheme};
+        }
+
+        let formatted = this.concordance.format(value, options);
 
         if (typeof value == 'object') {
             if (value.constructor == Array) {
@@ -748,6 +771,7 @@ module.exports = class Reporter
             .join('\n');
 
         errorContent = errorContent.substring(2);
+
         return errorContent;
     }
 }

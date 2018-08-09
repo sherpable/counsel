@@ -1,5 +1,5 @@
 test:
-  Dot reporter output
+  Dot reporter error output
 skip: true
 perform:
   src/counsel.js --config io-tests/configs/dot-reporter-error-reporting-test.js --is-io-test

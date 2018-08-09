@@ -82,6 +82,8 @@ module.exports = class IOTestRunner
 
 		let counselProcess = spawn(command, args, options);
 
+		let executeInformation = {command, args, options};
+
 		// Process IO results
 		let result;
 		let actual;
@@ -141,7 +143,7 @@ module.exports = class IOTestRunner
 		    // Main test
 		    actual = result.join('\n');
 
-		    Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true };
+		    Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true, executeInformation };
 		    Assertions.assertEquals(test.expect, actual);
 
 		    if (actual === test.expect) {
@@ -161,7 +163,7 @@ module.exports = class IOTestRunner
 		     //    diff(actual, test.expect);
 		    }
 		} else {
-			Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true };
+			Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true, executeInformation };
 
 			if (test.expect == 'undefined') {
 				test.expect = undefined;
@@ -190,7 +192,7 @@ module.exports = class IOTestRunner
 
 	    if (result && test.assertions && Object.keys(test.assertions).length) {
 		    for (let assertion in test.assertions) {
-				Assertions.test = { name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true };
+				Assertions.test = { name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true, executeInformation };
 		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);
 
 		        if (test.assertions[assertion] === counselResults[assertion]) {

@@ -44,9 +44,9 @@ module.exports = class DotReporter extends Reporter
         }
     }
 
-    afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
+    afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions, testProcess)
     {
-        super.afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions);
+        super.afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions, testProcess);
 
         this.appendLog(this.forceColor.red('x'));
     }
@@ -61,13 +61,6 @@ module.exports = class DotReporter extends Reporter
     afterEachIOTestWithoutResults(testContext, testProcess)
     {
         super.afterEachIOTestWithoutResults(testContext, testProcess);
-
-        // this.log(this.forceColor.yellow('Command'));
-        // this.log(testProcess.command);
-        // this.log(this.forceColor.yellow('Arguments'));
-        // this.log(testProcess.args);
-        // this.log(this.forceColor.yellow('Options'));
-        // this.log(testProcess.options);
     }
 
     afterEachTest(testName, results, failuresCount)

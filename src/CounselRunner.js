@@ -117,9 +117,11 @@ module.exports = class CounselRunner
 
     loadConfig()
     {
-        this.root = this.serviceProviders.path.normalize(
-            process.cwd() + '/'
+        this.rootWithoutTrailingsSlash = this.serviceProviders.path.normalize(
+            process.cwd()
         );
+
+        this.root = this.rootWithoutTrailingsSlash + '/';
 
         if (this.serviceProviders.fs.existsSync(this.configFile)) {
             this.config = require(this.root + this.configFile);
