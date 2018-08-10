@@ -92,6 +92,18 @@ module.exports = class CounselRunner
         }
     }
 
+    booted()
+    {
+        if (this.arguments['list-suites']) {
+            console.log('  Available test suite(s):');
+            for (let suite in this.config.suites) {
+                console.log(`  - ${suite}`);
+            }
+
+            process.exit();
+        }
+    }
+
     parseArguments()
     {
         this.optimist = require('optimist');
@@ -103,6 +115,7 @@ module.exports = class CounselRunner
             .alias('c', 'config').describe('c', 'Specify a custom config file.')
             .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
             .alias('s', 'suite').describe('s', 'Filter which suite to run.')
+            .alias('ls', 'list-suites').describe('ls', 'Show available test suites.')
             .describe('is-io-test', 'Mark the current process as an IO test.')
             .describe('as-io-test', 'Run tests normal, but output as if it is an IO test.')
             .describe('io-test-filename', 'Specify the filename from the current IO test.')
@@ -658,6 +671,18 @@ module.exports = class CounselRunner
     getTestLocations(locations = null)
     {
         let fileLocations = locations || this.config.locations;
+
+        if (this.arguments['suite']) {
+            fileLocations = [];
+            let suiteLocation = this.config.suites[this.arguments['suite']];
+
+            if (! suiteLocation) {
+                console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} Test suite [${this.arguments['suite']}] don't exists.`));
+                process.exit(2);
+            }
+
+            fileLocations.push(suiteLocation);
+        }
 
         if (! fileLocations) {
             process.exit(2);

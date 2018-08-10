@@ -1,0 +1,14 @@
+test:
+  Counsel list suites command test
+perform:
+  src/counsel.js --list-suites
+expect: |
+  Counsel 0.0.1.
+
+  Available test suite(s):
+  - all
+  - unit
+  - io
+  - vue-components
+assertions:
+  status: 0

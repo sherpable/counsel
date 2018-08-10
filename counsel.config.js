@@ -4,6 +4,12 @@ module.exports = {
 	locations: [
 		'tests',
 	],
+    suites: {
+        all: 'tests',
+        unit: 'tests/Unit',
+        io: 'tests/IO',
+        'vue-components': 'tests/VueComponents',
+    },
     autoloadFiles: [
         'tests/TestAutoloadFile.js',
     ],

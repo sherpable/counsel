@@ -10,6 +10,7 @@
      */
     try {
         await counsel.boot();
+        await counsel.booted();
     } catch (error) {
         console.error(counsel.serviceProviders.chalk.red(`  ${counsel.serviceProviders.figures.cross} counsel bootstrap error`));
         console.log(error);
