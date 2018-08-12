@@ -25,10 +25,16 @@ module.exports = class Reporter
         this.failuresResults = {};
         this.errorContent = '';
 
+        this.incompleteTests = {};
+        this.skippedTests = {};
+
+
         this.testsCount = 0;
         this.testFailures = {};
         this.testsPassesCount = 0;
         this.testsFailuresCount = 0;
+        this.testsIncompleteCount = 0;
+        this.testsSkippedCount = 0;
 
         this.assertionsCount = 0;
         this.assertionsPassesCount = 0;
@@ -362,6 +368,7 @@ module.exports = class Reporter
             testsCount: this.testsCount,
             testsPassesCount: this.testsPassesCount,
             testsFailuresCount: this.testsFailuresCount,
+            testsIncompleteCount: this.testsIncompleteCount,
 
             assertionsCount: this.assertionsCount,
             assertionsPassesCount: this.assertionsPassesCount,
@@ -416,18 +423,39 @@ module.exports = class Reporter
         });
 
         this.log('');
+        this.log('');
 
         if (this.assertionsFailuresCount > 0) {
             this.log(`  ${this.errorContent} `);
         }
 
         this.log(this.forceColor.dim(`  Time: ${this.executionTimeFormatted}`));
+
         if (this.assertionsPassesCount > 0) {
             this.log(this.forceColor.green(`  ${this.assertionsPassesCount} passed, ${this.testsPassesCount} tests`));
         }
 
         if (this.assertionsFailuresCount > 0) {
             this.log(this.forceColor.red(`  ${this.assertionsFailuresCount} failed, ${this.testsFailuresCount} tests`));
+        }
+
+
+        if (this.testsIncompleteCount > 0 || this.testsSkippedCount > 0) {
+            this.appendLog(this.forceColor.yellow(`  OK, but `));
+
+            if (this.testsIncompleteCount > 0) {
+                this.appendLog(this.forceColor.yellow(`${this.testsIncompleteCount} incomplete`));
+            }
+
+            if (this.testsSkippedCount > 0) {
+                if (this.testsIncompleteCount > 0) {
+                    this.appendLog(this.forceColor.yellow(`, `));
+                }
+
+                this.appendLog(this.forceColor.yellow(`${this.testsSkippedCount} skipped`));
+            }
+
+            this.log('');
         }
     }
 
@@ -474,6 +502,28 @@ module.exports = class Reporter
     {
         this.testsPassesCount++;
         // this.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
+    }
+
+    afterEachIncompleteTest(test, message)
+    {
+        this.assertionsCount++;
+
+        this.testsCount++;
+
+        this.testsIncompleteCount++;
+        
+        this.incompleteTests[`${test.file}->${test.function}`] = message;
+    }
+
+    afterEachSkippedTest(test, message)
+    {
+        this.assertionsCount++;
+
+        this.testsCount++;
+
+        this.testsSkippedCount++;
+        
+        this.skippedTests[`${test.file}->${test.function}`] = message;
     }
 
     afterEachIOTestWithoutResults(testContext, testProcess)

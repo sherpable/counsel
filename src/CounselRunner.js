@@ -435,9 +435,12 @@ module.exports = class CounselRunner
                 await testClass[name]();
 
                 let testFailuresCount = this.reporter.testFailures[path]['functions'][name]['count'];
+                let testIncomplete = this.reporter.incompleteTests[`${path}->${name}`];
+                let testSkipped = this.reporter.skippedTests[`${path}->${name}`];
+
                 if (testFailuresCount > 0) {
                     await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
-                } else {
+                } else if (! testIncomplete && ! testSkipped) {
                     await this.reporter.afterEachPassedTest(path, this.reporter.results[path]);
                 }
                 await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);

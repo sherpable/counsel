@@ -27,6 +27,20 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(this.forceColor.green('.'));
     }
 
+    afterEachIncompleteTest(test, message)
+    {
+        super.afterEachIncompleteTest(test, message);
+
+        this.appendLog(this.forceColor.yellow('I'));
+    }
+
+    afterEachSkippedTest(test, message)
+    {
+        super.afterEachSkippedTest(test, message);
+
+        this.appendLog(this.forceColor.blue('S'));
+    }
+
     afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
     {
         super.afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions);
