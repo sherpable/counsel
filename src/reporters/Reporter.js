@@ -423,7 +423,6 @@ module.exports = class Reporter
         });
 
         this.log('');
-        this.log('');
 
         if (this.assertionsFailuresCount > 0) {
             this.log(`  ${this.errorContent} `);
