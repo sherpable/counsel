@@ -1,6 +1,11 @@
 let spawn = require('child_process').spawnSync;
 
-let coverageProcess = spawn('node_modules/.bin/istanbul', ['cover', 'src/counsel.js']);
+let coverageProcess = spawn('node_modules/.bin/nyc', [
+	'--reporter', 'text',
+	'check-coverage',
+	'--lines', '95',
+	'src/counsel.js'
+]);
 
 let result = null;
 
