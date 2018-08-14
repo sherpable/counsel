@@ -36,6 +36,8 @@ module.exports = class Reporter
         this.testsIncompleteCount = 0;
         this.testsSkippedCount = 0;
 
+        this.totalTests = 0;
+
         this.assertionsCount = 0;
         this.assertionsPassesCount = 0;
         this.assertionsFailuresCount = 0;
@@ -505,10 +507,6 @@ module.exports = class Reporter
 
     afterEachIncompleteTest(test, message)
     {
-        this.assertionsCount++;
-
-        this.testsCount++;
-
         this.testsIncompleteCount++;
         
         this.incompleteTests[`${test.file}->${test.function}`] = message;
@@ -516,10 +514,6 @@ module.exports = class Reporter
 
     afterEachSkippedTest(test, message)
     {
-        this.assertionsCount++;
-
-        this.testsCount++;
-
         this.testsSkippedCount++;
         
         this.skippedTests[`${test.file}->${test.function}`] = message;

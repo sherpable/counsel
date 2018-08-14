@@ -34,7 +34,17 @@ module.exports = class CounselRunner
 
         this.arguments = this.parseArguments();
 
+        this.silent = false;
+
+        if (this.arguments.coverage) {
+            this.runCodeCoverage(this.arguments.coverage);
+
+            process.exit();
+        }
+
         if (this.arguments.help) {
+            console.log(`  Counsel ${require('chalk').green(this.version)}.\n`);
+
             this.optimist.showHelp();
             process.exit();
         }
@@ -42,6 +52,10 @@ module.exports = class CounselRunner
         if (this.arguments.version) {
             console.log(`Counsel version ${require('chalk').green(this.version)}.`);
             process.exit();
+        }
+
+        if (this.arguments.silent) {
+            this.silent = true;
         }
 
         console.log(`  Counsel ${require('chalk').green(this.version)}.\n`);
@@ -92,6 +106,51 @@ module.exports = class CounselRunner
         }
     }
 
+    runCodeCoverage(reporterType)
+    {
+        if (! String(reporterType) || typeof reporterType != 'string') {
+            reporterType = 'text-summary';
+        }
+
+        let spawn = require('child_process').spawnSync;
+
+        console.log(`  Running test coverage tool Istanbul: https://istanbul.js.org/.`);
+
+        let coverageProcess = spawn('node_modules/.bin/nyc', [
+            '--reporter', reporterType,
+            'src/counsel.js',
+            '--silent'
+        ]);
+
+        let result = null;
+        let error = null;
+
+        if (coverageProcess.stdout) {
+            result = coverageProcess.stdout.toString();
+        }
+
+        if (coverageProcess.stderr) {
+            error = coverageProcess.stderr.toString();
+        }
+
+        console.log(result);
+
+        console.log(`  Test coverage completed.`);
+
+        let root = require('path').normalize(
+            process.cwd()
+        );
+
+        if (reporterType == 'html') {
+            console.log(`  View results: file://${root}/coverage/index.html`);
+        }
+
+        if (error) {
+            console.log('Error');
+            console.log(error);
+        }
+    }
+
     booted()
     {
         if (this.arguments['list-suites']) {
@@ -108,7 +167,7 @@ module.exports = class CounselRunner
     {
         this.optimist = require('optimist');
         
-        return this.optimist.usage('Usage: $0 [-h] [-v] [--config string] [--filter string] [--is-io-test] filter')
+        return this.optimist
             .boolean('is-io-test')
             .alias('h', 'help').describe('h', 'Show some help.')
             .alias('v', 'version').describe('v', 'Show counsel\'s verion number.')
@@ -116,6 +175,8 @@ module.exports = class CounselRunner
             .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
             .alias('s', 'suite').describe('s', 'Filter which suite to run.')
             .alias('ls', 'list-suites').describe('ls', 'Show available test suites.')
+            .describe('coverage', 'Generate code coverage report. Supported report types: clover, cobertura, html, json-summary, json, lcov, lcovonly, none, teamcity, text-lcov, text-summary, text. Default will be text-summary.')
+            .describe('silent', 'Run in silent mode, this will not display anything. Usefull for running through a test coverage tool.')
             .describe('is-io-test', 'Mark the current process as an IO test.')
             .describe('as-io-test', 'Run tests normal, but output as if it is an IO test.')
             .describe('io-test-filename', 'Specify the filename from the current IO test.')
@@ -160,6 +221,7 @@ module.exports = class CounselRunner
                 this.reporter = reporter;
             }
 
+            this.reporter.silent = this.silent;
             this.reporter.fullRun = this.fullRun;
 
             global.dump = (data) => {
@@ -612,8 +674,9 @@ module.exports = class CounselRunner
     {
         let totalTests = 0;
 
+
         for (let testClass in testClasses) {
-            totalTests += testClasses[testClass].length;
+            totalTests += testClasses[testClass].filter(functionName => functionName != 'test').length;
         }
 
         totalTests += this.getTotalIOTests();

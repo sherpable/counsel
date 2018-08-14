@@ -133,6 +133,7 @@ module.exports = class TestCase
         return reporter;
 	}
 
+	/* istanbul ignore next */
 	visualError(stack = null, name = null)
 	{
 		const codeExcerpt = require('code-excerpt');
