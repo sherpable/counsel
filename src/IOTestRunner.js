@@ -31,6 +31,11 @@ module.exports = class IOTestRunner
 				await this.reporter.beforeEachIOTest(test);
 
             	await this.runTest(test);
+        	} else {
+        		this.reporter.afterEachSkippedIOTest({
+        			file: test.file,
+        			function: test.test.name,
+        		});
         	}
         });
 

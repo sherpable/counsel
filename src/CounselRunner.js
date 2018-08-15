@@ -689,11 +689,7 @@ module.exports = class CounselRunner
         let totalIOTests = 0;
 
         for (let ioTestIndex in this.ioTests) {
-            let ioTest = this.ioTests[ioTestIndex];
-
-            if (! ioTest.test.skip && this.ioTestIsForCurrentPlatform(ioTest)) {
-                totalIOTests++;
-            }
+            totalIOTests++;
         }
 
         return totalIOTests;

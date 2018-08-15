@@ -519,6 +519,13 @@ module.exports = class Reporter
         this.skippedTests[`${test.file}->${test.function}`] = message;
     }
 
+    afterEachSkippedIOTest(test, message)
+    {
+        this.testsCount++;
+        
+        this.afterEachSkippedTest(test, message);
+    }
+
     afterEachIOTestWithoutResults(testContext, testProcess)
     {
         
