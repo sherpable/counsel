@@ -119,6 +119,7 @@ module.exports = class CounselRunner
         let coverageProcess = spawn('node_modules/.bin/nyc', [
             '--reporter', reporterType,
             'src/counsel.js',
+            '--silent'
         ]);
 
         let result = null;

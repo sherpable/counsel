@@ -9,7 +9,8 @@
         "counsel": "./src/counsel.js"
     },
     "scripts": {
-        "test": "node src/counsel.js --coverage && nyc report --reporter=text-lcov > coverage.lcov && codecov"
+        "test": "node src/counsel.js",
+        "coverage": "node src/counsel.js --coverage && nyc report --reporter=text-lcov > coverage.lcov && codecov"
     },
     "nyc": {
         "ignore-class-method": "visualError"
