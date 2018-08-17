@@ -49,6 +49,8 @@ module.exports = class Reporter
 
         this.progress = 0;
 
+        this.indentation = 2;
+
         this.dumpTheme = {
             boolean: this.ansiStyles.yellow,
             circular: this.forceColor.grey('[Circular]'),
@@ -424,7 +426,7 @@ module.exports = class Reporter
             ...this.testResults(),
         });
 
-        this.log('');
+        this.log('\n');
 
         if (this.assertionsFailuresCount > 0) {
             this.log(this.errorContent);
@@ -679,7 +681,7 @@ module.exports = class Reporter
         this.errorContent += '\n';
         this.errorContent += this.forceColor.red('x') + this.forceColor.white(` ${this.assertionsFailuresCount}) ${name}`);
         this.errorContent += '\n';
-        this.errorContent += this.forceColor.dim(`  ${errorLocation}`);
+        this.errorContent += this.forceColor.dim(`${errorLocation}`);
         if (additionalInformation) {
             this.errorContent += '\n';
             this.errorContent += additionalInformation;
@@ -699,13 +701,15 @@ module.exports = class Reporter
 
     log(message = '')
     {
+        message = this.indent(message);
+
         this.output += message;
 
         if (this.silent) {
             return;
         }
 
-        message.split('\n').forEach(message => console.log(`  ${message}`));
+        console.log(message);
     }
 
     appendLog(message)
@@ -717,6 +721,45 @@ module.exports = class Reporter
         }
         
         process.stdout.write(message);
+    }
+
+    indent(message, level = 1, append = false)
+    {
+        let levelSpaces = this.indentation * level;
+        let spaces = levelSpaces;
+
+        let output = '';
+
+        let lineCounter = 0;
+
+        if (typeof message != 'object') {
+            message = message.split('\n');
+        }
+
+        message.forEach(line => {
+            if (lineCounter == 0 && level > 1) {
+                spaces = levelSpaces / 2;
+            } else {
+                spaces = levelSpaces;
+            }
+
+            lineCounter++;
+
+            let lineBreak = '';
+            if (! append) {
+                lineBreak = '\n';
+            }
+
+            output += `${' '.repeat(spaces)}${line}${lineBreak}`;
+        });
+
+        // Remove last line break, console.log will add this also
+        return output.substring(0, output.length - 1);
+    }
+
+    indentAppend(message, level = 1)
+    {
+        return this.indent(message, level, true);
     }
 
     visualDifference(actual, expected)
@@ -733,7 +776,11 @@ module.exports = class Reporter
             expected = this.highlight(expected, {language: 'html', ignoreIllegals: true, theme: this.htmlDumpTheme});
         }
 
-        return '  ' + this.concordance.diff(actual, expected, {plugins: [], theme: this.dumpTheme}).split('\n').join('\n  ');
+        return this.indent(
+            this.concordance.diff(actual, expected, {plugins: [], theme: this.dumpTheme}), 2
+        );
+
+        // return '  ' + this.concordance.diff(actual, expected, {plugins: [], theme: this.dumpTheme}).split('\n').join('\n    ');
     }
 
     beautify(value)
@@ -743,7 +790,7 @@ module.exports = class Reporter
             value = value.substring(0, value.length - 2);
             value = this.highlight(value, {language: 'html', ignoreIllegals: true, theme: this.htmlDumpTheme});
 
-            return '  ' + value.split('\n').join('\n  ');
+            return this.indent(value); // '  ' + value.split('\n').join('\n  ');
         }
 
         let options = {};
@@ -764,7 +811,7 @@ module.exports = class Reporter
             }
         }
 
-        return '  ' + formatted.split('\n').join('\n  ');
+        return this.indent(formatted); // '  ' + formatted.split('\n').join('\n  ');
     }
 
     visualError(assertion)
@@ -819,13 +866,11 @@ module.exports = class Reporter
 
                 const lineNumber = formatLineNumber(item.line, line) + '|';
                 const coloredLineNumber = isErrorSource ? lineNumber : this.forceColor.dim(lineNumber);
-                const result = `   ${coloredLineNumber} ${item.value}`;
+                const result = this.indentAppend(`${coloredLineNumber} ${item.value}`);
 
                 return isErrorSource ? this.forceColor.bgRed(result) : result;
             })
             .join('\n');
-
-        errorContent = errorContent.substring(2);
 
         return errorContent;
     }

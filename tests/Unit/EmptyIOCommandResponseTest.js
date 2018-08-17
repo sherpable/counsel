@@ -10,22 +10,26 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
         });
 
         this.assertEquals(`x  
+  
   x 1) Empty command response logging -> main test
   ${counsel.root}tests/IO/EmptyCommandResponseTest.yaml
   Command
-  'echo'
+    'echo'
   Arguments
-  Array []
+    Array []
   Options
-  Object {
-    cwd: '${counsel.rootWithoutTrailingsSlash}',
-  }
-
+    Object {
+      cwd: '${counsel.rootWithoutTrailingsSlash}',
+    }
   
-
+  
+  
   No result received from command "echo".
-
-
-   Time: ${reporter.executionTimeFormatted}  1 failed, 1 tests`, reporter.output);
+  
+  
+  
+  Time: ${reporter.executionTimeFormatted}
+  1 failed, 1 tests
+`, reporter.output);
     }
 }

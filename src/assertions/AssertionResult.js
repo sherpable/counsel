@@ -79,11 +79,11 @@ module.exports = class AssertionResult
         let message = '';
 
         if (this.message) {
-            message = `  ${this.message}\n\n`;
+            message = `${this.message}\n\n`;
         }
 
         if (this.describeFailure()) {
-            message += `  ${this.describeFailure()}`;
+            message += this.reporter.indent(this.describeFailure());
         }
 
         return message;
@@ -95,7 +95,7 @@ module.exports = class AssertionResult
             return null;
         }
 
-        return `${this.failureMessage}:\n\n  ${this.beautify(this.actual)}`;
+        return `${this.failureMessage}:\n\n${this.beautify(this.actual)}`;
     }
 
     visualDifference()
