@@ -446,7 +446,11 @@ module.exports = class Reporter
             let incompleteTestsOverview = '';
             let skippedTestsOverview = '';
 
-            let warningMessage = this.forceColor.yellow(`OK, but `);
+            let warningMessage = '';
+
+            if (this.assertionsFailuresCount == 0) {
+                warningMessage += this.forceColor.yellow(`OK, but `);
+            }
 
             if (this.testsIncompleteCount > 0) {
                 warningMessage+= this.forceColor.yellow(`${this.testsIncompleteCount} incomplete`);
