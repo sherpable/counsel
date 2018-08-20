@@ -9,7 +9,8 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
             expect: undefined,
         });
 
-        this.assertEquals(`x  
+        this.assertEquals(`x
+
   
   x 1) Empty command response logging -> main test
   ${counsel.root}tests/IO/EmptyCommandResponseTest.yaml

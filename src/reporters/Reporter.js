@@ -426,7 +426,7 @@ module.exports = class Reporter
             ...this.testResults(),
         });
 
-        this.log('\n');
+        this.log('');
 
         if (this.assertionsFailuresCount > 0) {
             this.log(this.errorContent);
@@ -705,7 +705,7 @@ module.exports = class Reporter
 
     log(message = '')
     {
-        message = this.indent(message);
+        message = this.indent(message) + '\n';
 
         this.output += message;
 
@@ -713,7 +713,7 @@ module.exports = class Reporter
             return;
         }
 
-        console.log(message);
+        process.stdout.write(message);
     }
 
     appendLog(message)
@@ -729,10 +729,14 @@ module.exports = class Reporter
 
     indent(message, level = 1, append = false)
     {
+        if (message == '\n' || message == '' || ! message) {
+            return '\n';
+        }
+
         let levelSpaces = this.indentation * level;
         let spaces = levelSpaces;
 
-        let output = '';
+        let output = [];
 
         let lineCounter = 0;
 
@@ -754,11 +758,10 @@ module.exports = class Reporter
                 lineBreak = '\n';
             }
 
-            output += `${' '.repeat(spaces)}${line}${lineBreak}`;
+            output.push(`${' '.repeat(spaces)}${line}`);
         });
 
-        // Remove last line break, console.log will add this also
-        return output.substring(0, output.length - 1);
+        return output.join('\n');
     }
 
     indentAppend(message, level = 1)
