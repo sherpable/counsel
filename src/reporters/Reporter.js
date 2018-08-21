@@ -426,7 +426,7 @@ module.exports = class Reporter
             ...this.testResults(),
         });
 
-        this.log('');
+        this.log('\n');
 
         if (this.assertionsFailuresCount > 0) {
             this.log(this.errorContent);
@@ -705,7 +705,11 @@ module.exports = class Reporter
 
     log(message = '')
     {
-        message = this.indent(message) + '\n';
+        if (! message || message == '' || message == '\n') {
+            this.output += '\n';
+        } else {
+            message = this.indent(message) + '\n';
+        }
 
         this.output += message;
 
