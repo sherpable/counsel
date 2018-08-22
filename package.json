@@ -48,7 +48,6 @@
         "pretty-ms": "^3.2.0",
         "sinon": "^4.5.0",
         "stack-trace": "0.0.10",
-        "superchild": "^0.1.10",
         "vue": "^2.5.17",
         "vue-loader": "^15.3.0",
         "vue-template-compiler": "^2.5.17",
