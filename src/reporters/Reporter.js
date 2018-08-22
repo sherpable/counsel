@@ -453,13 +453,13 @@ module.exports = class Reporter
             }
 
             if (this.testsIncompleteCount > 0) {
-                warningMessage+= this.forceColor.yellow(`${this.testsIncompleteCount} incomplete`);
+                warningMessage += this.forceColor.yellow(`${this.testsIncompleteCount} incomplete`);
 
                 for (let incompleteTest in this.incompleteTests) {
                     incompleteTestsOverview += '\n';
-                    incompleteTestsOverview += `${incompleteTest}`;
+                    incompleteTestsOverview += incompleteTest;
                     incompleteTestsOverview += '\n';
-                    incompleteTestsOverview += `${this.incompleteTests[incompleteTest]}`;
+                    incompleteTestsOverview += this.forceColor.dim(this.incompleteTests[incompleteTest]);
                 }
             }
 
@@ -469,11 +469,20 @@ module.exports = class Reporter
                 }
 
                 warningMessage += this.forceColor.yellow(`${this.testsSkippedCount} skipped`);
+
+                for (let skippedTest in this.skippedTests) {
+                    skippedTestsOverview += '\n';
+                    skippedTestsOverview += skippedTest;
+                    skippedTestsOverview += '\n';
+                    skippedTestsOverview += this.forceColor.dim(this.skippedTests[skippedTest]);
+                }
             }
 
             this.log(warningMessage);
 
             this.log(incompleteTestsOverview);
+
+            this.log(skippedTestsOverview);
 
             this.log('');
         }
