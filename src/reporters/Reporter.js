@@ -432,7 +432,8 @@ module.exports = class Reporter
             this.log(this.errorContent);
         }
 
-        this.log(this.forceColor.dim(`Time: ${this.executionTimeFormatted}`));
+        let memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
+        this.log(this.forceColor.dim(`Time: ${this.executionTimeFormatted}, Memory: ${memoryUsage.toFixed(2)}MB`));
 
         if (this.assertionsPassesCount > 0) {
             this.log(this.forceColor.green(`${this.assertionsPassesCount} passed, ${this.testsPassesCount} tests`));
