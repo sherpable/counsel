@@ -2,7 +2,7 @@ module.exports = class HelloWorldTest extends TestCase
 {
     test_without_annotation()
     {
-        this.assertTrue(false);
+        this.assertTrue(true);
     }
 
 	/** @test */
