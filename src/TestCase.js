@@ -99,12 +99,14 @@ module.exports = class TestCase
 
 	markAsIncomplete(message)
 	{
-		this.reporter.afterEachIncompleteTest(this.test, message);
+		throw new IncompleteTestError(message);
+		// this.reporter.afterEachIncompleteTest(this.test, message);
 	}
 
 	markAsSkipped(message)
 	{
-		this.reporter.afterEachSkippedTest(this.test, message);
+		throw new SkippedTestError(message);
+		// this.reporter.afterEachSkippedTest(this.test, message);
 	}
 
 	async executeIOTest(test)

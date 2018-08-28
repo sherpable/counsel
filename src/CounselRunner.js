@@ -175,6 +175,7 @@ module.exports = class CounselRunner
             .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
             .alias('s', 'suite').describe('s', 'Filter which suite to run.')
             .alias('ls', 'list-suites').describe('ls', 'Show available test suites.')
+            .describe('verbose', 'Show more verbose information.')
             .describe('coverage', 'Generate code coverage report. Supported report types: clover, cobertura, html, json-summary, json, lcov, lcovonly, none, teamcity, text-lcov, text-summary, text. Default will be text-summary.')
             .describe('silent', 'Run in silent mode, this will not display anything. Usefull for running through a test coverage tool.')
             .describe('is-io-test', 'Mark the current process as an IO test.')
@@ -425,7 +426,7 @@ module.exports = class CounselRunner
                 await this.runTestsInLocation(location);
             }
         } catch (error) {
-            console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
+            console.error('\n' + this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
             console.error(error);
 
             process.exit(2);
@@ -555,7 +556,15 @@ module.exports = class CounselRunner
                         }
                         await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
                     } else {
-                        throw error;
+                        if (error instanceof IncompleteTestError) {
+                            this.reporter.afterEachIncompleteTest(testClass.test, error.message);
+                            this.reporter.afterEachTest(testClass.test);
+                        } else if (error instanceof SkippedTestError) {
+                            this.reporter.afterEachSkippedTest(testClass.test, error.message);
+                            this.reporter.afterEachTest(testClass.test);
+                        } else {
+                            throw error;
+                        }
                     }
                 }
 

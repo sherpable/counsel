@@ -432,8 +432,9 @@ module.exports = class Reporter
             this.log(this.errorContent);
         }
 
-        let memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
-        this.log(this.forceColor.dim(`Time: ${this.executionTimeFormatted}, Memory: ${memoryUsage.toFixed(2)}MB`));
+        // let memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
+        // this.log(this.forceColor.dim(`Time: ${this.executionTimeFormatted}, Memory: ${memoryUsage.toFixed(2)}MB`));
+        this.log(this.forceColor.dim(`Time: ${this.executionTimeFormatted}`));
 
         if (this.assertionsPassesCount > 0) {
             this.log(this.forceColor.green(`${this.assertionsPassesCount} passed, ${this.testsPassesCount} tests`));
@@ -456,11 +457,13 @@ module.exports = class Reporter
             if (this.testsIncompleteCount > 0) {
                 warningMessage += this.forceColor.yellow(`${this.testsIncompleteCount} incomplete`);
 
-                for (let incompleteTest in this.incompleteTests) {
-                    incompleteTestsOverview += '\n';
-                    incompleteTestsOverview += incompleteTest;
-                    incompleteTestsOverview += '\n';
-                    incompleteTestsOverview += this.forceColor.dim(this.incompleteTests[incompleteTest]);
+                if (counsel.arguments.verbose) {
+                    for (let incompleteTest in this.incompleteTests) {
+                        incompleteTestsOverview += '\n';
+                        incompleteTestsOverview += incompleteTest;
+                        incompleteTestsOverview += '\n';
+                        incompleteTestsOverview += this.forceColor.dim(this.incompleteTests[incompleteTest]);
+                    }
                 }
             }
 
@@ -471,11 +474,13 @@ module.exports = class Reporter
 
                 warningMessage += this.forceColor.yellow(`${this.testsSkippedCount} skipped`);
 
-                for (let skippedTest in this.skippedTests) {
-                    skippedTestsOverview += '\n';
-                    skippedTestsOverview += skippedTest;
-                    skippedTestsOverview += '\n';
-                    skippedTestsOverview += this.forceColor.dim(this.skippedTests[skippedTest]);
+                if (counsel.arguments.verbose) {
+                    for (let skippedTest in this.skippedTests) {
+                        skippedTestsOverview += '\n';
+                        skippedTestsOverview += skippedTest;
+                        skippedTestsOverview += '\n';
+                        skippedTestsOverview += this.forceColor.dim(this.skippedTests[skippedTest]);
+                    }
                 }
             }
 
@@ -692,7 +697,10 @@ module.exports = class Reporter
             errorLocation = `${assertion.error.fileName}:${assertion.error.lineNumber}`;
         }
 
-        this.errorContent += '\n';
+        if (this.assertionsFailuresCount > 1) {
+            this.errorContent += '\n';
+        }
+
         this.errorContent += this.forceColor.red('x') + this.forceColor.white(` ${this.assertionsFailuresCount}) ${name}`);
         this.errorContent += '\n';
         this.errorContent += this.forceColor.dim(`${errorLocation}`);
