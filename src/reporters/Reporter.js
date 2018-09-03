@@ -623,6 +623,11 @@ module.exports = class Reporter
         this.testsPassesCount++;
     }
 
+    beforeFirstAssertion()
+    {
+        process.stdout.write(this.addIndentation());
+    }
+
     beforeEachAssertion(assertion, parameters, test)
     {
         if (! this.testFailures[test.file]) {
@@ -780,7 +785,7 @@ module.exports = class Reporter
                 lineBreak = '\n';
             }
 
-            output.push(`${' '.repeat(spaces)}${line}`);
+            output.push(`${this.addIndentation(spaces)}${line}`);
         });
 
         return output.join('\n');
@@ -789,6 +794,15 @@ module.exports = class Reporter
     indentAppend(message, level = 1)
     {
         return this.indent(message, level, true);
+    }
+
+    addIndentation(spaces = undefined)
+    {
+        if (spaces === undefined) {
+            spaces = this.indentation;
+        }
+
+        return `${' '.repeat(spaces)}`;
     }
 
     visualDifference(actual, expected)

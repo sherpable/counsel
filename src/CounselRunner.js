@@ -418,9 +418,6 @@ module.exports = class CounselRunner
     {
         await this.reporter.beforeTest();
 
-        // Write 2 spaces before first assertion result
-        process.stdout.write('  ');
-
         try {
             for (let location in this.locations) {
                 await this.runTestsInLocation(location);
@@ -494,6 +491,10 @@ module.exports = class CounselRunner
             try {
                 await this.reporter.beforeEachTest(path, name);
 
+                if (this.reporter.assertionsCount < 1) {
+                    this.reporter.beforeFirstAssertion();
+                }
+
                 // Run the test
                 await testClass[name]();
 
@@ -510,7 +511,7 @@ module.exports = class CounselRunner
 
                 if (testClass.expectedException) {
                     Assertions.test = testClass.test;
-                    Assertions.fail(`Assert that exception [${testClass.expectedException.name}] was thrown, but is was not.`, testClass.error);
+                    Assertions.fail(`Assert that exception [${testClass.expectedException.name}] was thrown, but it was not.`, testClass.error);
                 }
 
                 if (testClass.notExpectedException) {
