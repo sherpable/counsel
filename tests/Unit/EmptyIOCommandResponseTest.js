@@ -19,7 +19,7 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
     Array []
   Options
     Object {
-      cwd: '${counsel.rootWithoutTrailingsSlash}',
+      cwd: '${counsel.cwd()}',
     }
   
   

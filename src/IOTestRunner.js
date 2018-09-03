@@ -16,9 +16,15 @@ module.exports = class IOTestRunner
 		this.dumper = require('intitule');
 		this.path = require('path');
 
-        this.root = this.path.normalize(
-            process.cwd() + '/'
-        );
+		if (process.platform == 'win32') {
+	        this.root = this.path.normalize(
+	            process.cwd() + '\\'
+	        );
+    	} else {
+    		this.root = this.path.normalize(
+	            process.cwd() + '/'
+	        );
+    	}
 
 		this.dumper.leftMarginSpaces = 4;
 		this.dumper.makeGlobal();

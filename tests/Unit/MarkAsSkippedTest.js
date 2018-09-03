@@ -20,7 +20,7 @@ module.exports = class MarkAsSkippedTest extends TestCase
         this.assertTrue(true);
     }
 
-        /** @test */
+    /** @test */
     it_is_possible_to_mark_a_test_as_skipped_for_second_time()
     {
         this.markAsSkipped(

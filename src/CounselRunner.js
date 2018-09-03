@@ -190,13 +190,26 @@ module.exports = class CounselRunner
         this.serviceProvidersList = providers;
     }
 
+    cwd()
+    {
+        if (process.platform == 'win32') {
+            return this.rootWithoutTrailingsSlash.replace(/\\/g, '\\\\');
+        }
+
+        return this.rootWithoutTrailingsSlash;
+    }
+
     loadConfig()
     {
         this.rootWithoutTrailingsSlash = this.serviceProviders.path.normalize(
             process.cwd()
         );
 
-        this.root = this.rootWithoutTrailingsSlash + '/';
+        if (process.platform == 'win32') {
+            this.root = this.rootWithoutTrailingsSlash + '\\';
+        } else {
+            this.root = this.rootWithoutTrailingsSlash + '/';
+        }
 
         if (this.serviceProviders.fs.existsSync(this.configFile)) {
             this.config = require(this.root + this.configFile);
