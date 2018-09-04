@@ -98,6 +98,14 @@ module.exports = class IOTestRunner
 			args.push(testContext.filename);
 		}
 
+		if (command.startsWith('src/counsel.js')) {
+			command = 'node ' + command;
+		}
+
+		if (process.platform == 'win32') {
+			options.shell = true;
+		}
+
 		let counselProcess = spawn(command, args, options);
 
 		let executeInformation = {command, args, options};
@@ -126,7 +134,11 @@ module.exports = class IOTestRunner
 	        signal: counselProcess.signal,
 	    };
 
-		if (result.trim()) {
+	    if (result) {
+	    	result = result.trim();
+		}
+
+		if (result) {
 			result = result.split('\n').map(line => {
 				// Maybe need to remove the trim() call
 				// and don't replace tabs with spaces.
