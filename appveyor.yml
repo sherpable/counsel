@@ -1,6 +1,7 @@
 environment:
-  nodejs_version: "lts"
-  nodejs_version: "stable"
+  matrix:
+  - nodejs_version: "lts"
+  - nodejs_version: "stable"
 
 install:
   - ps: Install-Product node stable
