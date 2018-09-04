@@ -1,0 +1,18 @@
+environment:
+  nodejs_version: "lts"
+  nodejs_version: "stable"
+
+install:
+  - ps: Install-Product node stable
+  - ps: Install-Product node lts
+  - npm install
+
+test_script:
+  - node --version
+  - npm --version
+  - npm test
+
+after_test:
+  - npm run coverage
+
+build: off
