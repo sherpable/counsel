@@ -98,7 +98,7 @@ module.exports = class IOTestRunner
 			args.push(testContext.filename);
 		}
 
-		if (command.startsWith('src/counsel.js')) {
+		if (command.endsWith('.js') && process.platform == 'win32') {
 			command = 'node ' + command;
 		}
 
@@ -133,10 +133,6 @@ module.exports = class IOTestRunner
 	        status: counselProcess.status,
 	        signal: counselProcess.signal,
 	    };
-
-	    if (result) {
-	    	result = result.trim();
-		}
 
 		if (result) {
 			result = result.split('\n').map(line => {
