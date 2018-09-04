@@ -134,7 +134,9 @@ module.exports = class IOTestRunner
 	        signal: counselProcess.signal,
 	    };
 
-		if (result) {
+	    let cleanResult = result.trim();
+
+		if (cleanResult) {
 			result = result.split('\n').map(line => {
 				// Maybe need to remove the trim() call
 				// and don't replace tabs with spaces.
