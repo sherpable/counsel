@@ -112,11 +112,20 @@ module.exports = class CounselRunner
             reporterType = 'text-summary';
         }
 
+        let root = require('path').normalize(
+            process.cwd()
+        );
+
         let spawn = require('child_process').spawnSync;
 
         console.log(`  Running test coverage tool Istanbul: https://istanbul.js.org/.`);
 
-        let coverageProcess = spawn('node_modules/.bin/nyc', [
+        let nycFile = '/node_modules/.bin/nyc';
+        if (process.platform == 'win32') {
+            nycFile = '\\node_modules\\.bin\\nyc.cmd';
+        }
+
+        let coverageProcess = spawn(`${root}${nycFile}`, [
             '--reporter', reporterType,
             'src/counsel.js',
             '--silent'
@@ -137,12 +146,13 @@ module.exports = class CounselRunner
 
         console.log(`  Test coverage completed.`);
 
-        let root = require('path').normalize(
-            process.cwd()
-        );
-
         if (reporterType == 'html') {
-            console.log(`  View results: file://${root}/coverage/index.html`);
+            let coverageIndexFilePath = '/coverage/index.html';
+
+            if (process.platform == 'win32') {
+                coverageIndexFilePath = '\\coverage\\index.html'
+            }
+            console.log(`  View results: file://${root}${coverageIndexFilePath}`);
         }
 
         if (error) {
