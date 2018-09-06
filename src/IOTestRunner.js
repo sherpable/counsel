@@ -164,6 +164,17 @@ module.exports = class IOTestRunner
 		        	? itemValue
 		        	: parseInt(itemValue);
 
+		        // Replace directory seperator '/' with '\' when running in Windows
+		        if (process.platform == 'win32' && test.expect.includes('{{root}}')) {
+			        let pathRegex = new RegExp('{{root}}*.*', 'g');
+			        let paths = test.expect.match(pathRegex);
+			        paths.forEach(path => {
+			        	let replaceDirectorySeperatorRegex = new RegExp('/', 'g');
+			        	let windowsPath = path.replace(replaceDirectorySeperatorRegex, '\\');
+			        	test.expect = test.expect.replace(path, windowsPath);
+			        });
+		    	}
+
 		        let regex = new RegExp(`\{\{${item}\}\}`, 'g');
 		        test.expect = test.expect.replace(regex, itemValue);
 		    }

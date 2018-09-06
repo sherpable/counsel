@@ -3,6 +3,12 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
     /** @test */
     async it_will_report_proper_about_io_tests_with_an_empty_response()
     {
+        if (process.platform == 'win32') {
+            this.markAsSkipped(
+                '"echo" command in windows will return "ECHO is on." instead of nothing.'
+            );
+        }
+
         let reporter = await this.executeIOTest({
             test: 'Empty command response logging',
             perform: 'echo',
