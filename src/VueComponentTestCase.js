@@ -16,8 +16,6 @@ module.exports = class VueComponentTestCase extends TestCase
         ), {
             get(target, property, receiver)
             {
-                target.wrapper.update();
-
                 if (property == 'page') {
                     return target.vm;
                 }

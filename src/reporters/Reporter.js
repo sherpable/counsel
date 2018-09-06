@@ -809,12 +809,14 @@ module.exports = class Reporter
     {
         if (this.isHtml(actual)) {
             actual = this.prettier.format(actual);
+            actual = actual.replace(/{" "}/g, '');
             actual = actual.substring(0, actual.length - 2);
             actual = this.highlight(actual, {language: 'html', ignoreIllegals: true, theme: this.htmlDumpTheme});
         }
 
         if (this.isHtml(expected)) {
             expected = this.prettier.format(expected);
+            expected = expected.replace(/{" "}/g, '');
             expected = expected.substring(0, expected.length - 2);
             expected = this.highlight(expected, {language: 'html', ignoreIllegals: true, theme: this.htmlDumpTheme});
         }
@@ -822,18 +824,17 @@ module.exports = class Reporter
         return this.indent(
             this.concordance.diff(actual, expected, {plugins: [], theme: this.dumpTheme}), 2
         );
-
-        // return '  ' + this.concordance.diff(actual, expected, {plugins: [], theme: this.dumpTheme}).split('\n').join('\n    ');
     }
 
     beautify(value)
     {
         if (this.isHtml(value)) {
             value = this.prettier.format(value);
+            value = value.replace(/{" "}/g, '');
             value = value.substring(0, value.length - 2);
             value = this.highlight(value, {language: 'html', ignoreIllegals: true, theme: this.htmlDumpTheme});
 
-            return this.indent(value); // '  ' + value.split('\n').join('\n  ');
+            return this.indent(value);
         }
 
         let options = {};

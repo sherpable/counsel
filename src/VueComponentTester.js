@@ -166,7 +166,6 @@ module.exports = class VueComponentTester
 
     toHtml()
     {
-        this.wrapper.update();
         return this.wrapper.html();
     }
 
@@ -177,8 +176,6 @@ module.exports = class VueComponentTester
 
     assertEmitted(eventName)
     {
-        this.wrapper.update();
-
         let events = this.wrapper.emitted();
         let eventNames = Object.keys(events);
 
