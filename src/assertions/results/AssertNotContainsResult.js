@@ -11,7 +11,5 @@ module.exports = class AssertNotContainsResult extends AssertionResult
             '',
             this.beautify(this.regex),
         ];
-
-        return `Value must not match expression:\n\n${this.beautify(this.contents)}\n\nRegular expression:\n\n${this.beautify(this.regex)}`;
     }
 }

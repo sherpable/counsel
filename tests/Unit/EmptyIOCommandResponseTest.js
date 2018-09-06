@@ -10,32 +10,33 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
         }
 
         let reporter = await this.executeIOTest({
+            path: 'tests/IO/EmptyCommandResponseTest.yaml',
             test: 'Empty command response logging',
             perform: 'echo',
             expect: undefined,
         });
 
-        this.assertEquals(`x
+        this.assertEquals(` x
 
-  x 1) Empty command response logging -> main test
-  ${counsel.root}tests/IO/EmptyCommandResponseTest.yaml
-  Command
-    'echo'
-  Arguments
-    Array []
-  Options
-    Object {
-      cwd: '${counsel.cwd()}',
-    }
-  
-  
-  
-  No result received from command "echo".
-  
-  
-  
-  Time: ${reporter.executionTimeFormatted}
-  1 failed, 1 tests
+ x 1) Empty command response logging -> main test
+ ${counsel.root}tests/IO/EmptyCommandResponseTest.yaml
+ Command
+  'echo'
+ Arguments
+  Array []
+ Options
+  Object {
+    cwd: '${counsel.cwd()}',
+  }
+ 
+ 
+ 
+ No result received from command "echo".
+ 
+ 
+ 
+ Time: ${reporter.executionTimeFormatted}
+ 1 failed, 1 tests
 `, reporter.output);
     }
 }

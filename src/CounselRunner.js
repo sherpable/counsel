@@ -50,7 +50,7 @@ module.exports = class CounselRunner
         }
 
         if (this.arguments.version) {
-            console.log(`Counsel version ${require('chalk').green(this.version)}.`);
+            console.log(`  Counsel version ${require('chalk').green(this.version)}.`);
             process.exit();
         }
 
@@ -58,7 +58,7 @@ module.exports = class CounselRunner
             this.silent = true;
         }
 
-        console.log(`  Counsel ${require('chalk').green(this.version)}.\n`);
+        console.log(` Counsel ${require('chalk').green(this.version)}.\n`);
 
         if (this.arguments.config) {
             this.configFile = this.arguments.config;
@@ -513,10 +513,6 @@ module.exports = class CounselRunner
 
             try {
                 await this.reporter.beforeEachTest(path, name);
-
-                if (this.reporter.assertionsCount < 1) {
-                    this.reporter.beforeFirstAssertion();
-                }
 
                 // Run the test
                 await testClass[name]();

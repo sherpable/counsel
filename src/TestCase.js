@@ -100,39 +100,41 @@ module.exports = class TestCase
 	markAsIncomplete(message)
 	{
 		throw new IncompleteTestError(message);
-		// this.reporter.afterEachIncompleteTest(this.test, message);
 	}
 
 	markAsSkipped(message)
 	{
 		throw new SkippedTestError(message);
-		// this.reporter.afterEachSkippedTest(this.test, message);
 	}
 
 	async executeIOTest(test)
 	{
         let ioTest = {};
+        let path = test.path;
+        delete test.path;
         
         ioTest.test = test;
 
-        ioTest.filename = counsel.path('tests/IO/EmptyCommandResponseTest.yaml');
-        let reporter = new (require('./reporters/DotReporter'));
-        reporter.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: false, level: 0});
+        ioTest.filename = counsel.path(path);
+        let ioTestReporter = new (require('./reporters/DotReporter'));
+        ioTestReporter.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: false, level: 0});
+        ioTestReporter.silent = true;
 
-        reporter.silent = true;
-        let oldReporter = Assertions.reporter;
-        Assertions.reporter = reporter;
-        let ioTestRunner = new (require('./IOTestRunner'))([ioTest], reporter);
+        let parentTestReporter = Assertions.reporter;
+        let parentTest = Assertions.test;
+        Assertions.reporter = ioTestReporter;
+        let ioTestRunner = new (require('./IOTestRunner'))([ioTest], ioTestReporter);
 
-        reporter.beforeTest();
+        ioTestReporter.beforeTest();
 
         await ioTestRunner.runTest(ioTest);
 
-        reporter.afterTest();
+        ioTestReporter.afterTest();
 
-        Assertions.reporter = oldReporter;
+        Assertions.reporter = parentTestReporter;
+        Assertions.test = parentTest;
 
-        return reporter;
+        return ioTestReporter;
 	}
 
 	/* istanbul ignore next */

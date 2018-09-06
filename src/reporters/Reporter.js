@@ -49,7 +49,7 @@ module.exports = class Reporter
 
         this.progress = 0;
 
-        this.indentation = 2;
+        this.indentation = 1;
 
         this.dumpTheme = {
             boolean: this.ansiStyles.yellow,
@@ -625,7 +625,9 @@ module.exports = class Reporter
 
     beforeFirstAssertion()
     {
-        process.stdout.write(this.addIndentation());
+        this.appendLog(
+            this.addIndentation()
+        );
     }
 
     beforeEachAssertion(assertion, parameters, test)
@@ -647,6 +649,10 @@ module.exports = class Reporter
 
     afterEachAssertion(assertion)
     {
+        if (this.assertionsCount < 1) {
+            this.beforeFirstAssertion();
+        }
+
         this.assertionsCount++;
 
         if (! this.testFailures[assertion.test.file]) {

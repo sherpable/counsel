@@ -54,7 +54,7 @@ module.exports = class DotReporter extends Reporter
         if (this.testsExecuted == this.testsPerLine) {
             this.testsExecuted = 0;
 
-            this.appendLog(`  ${this.testsCountWithSpace()} / ${this.totalTests} (${this.progressWithSpace()}%)\n  `);
+            this.appendLog(`  ${this.testsCountWithSpace()} / ${this.totalTests} (${this.progressWithSpace()}%)\n${this.addIndentation()}`);
         }
     }
 
@@ -90,7 +90,7 @@ module.exports = class DotReporter extends Reporter
         if (this.testsExecuted == this.testsPerLine) {
             this.testsExecuted = 0;
 
-            this.appendLog(`  ${this.testsCountWithSpace()} / ${this.totalTests} (${this.progressWithSpace()}%)\n  `);
+            this.appendLog(`  ${this.testsCountWithSpace()} / ${this.totalTests} (${this.progressWithSpace()}%)\n${this.addIndentation()}`);
         }
     }
 
