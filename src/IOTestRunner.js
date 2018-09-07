@@ -183,6 +183,8 @@ module.exports = class IOTestRunner
 		    actual = result.join('\n');
 
 		    Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true, executeInformation };
+		    test.expect = test.expect.trim();
+		    actual = actual.trim();
 		    Assertions.assertEquals(test.expect, actual);
 
 		    if (actual === test.expect) {
