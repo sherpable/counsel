@@ -36,29 +36,15 @@ module.exports = class CounselRunner
 
         this.silent = false;
 
-        if (this.arguments.coverage) {
-            this.runCodeCoverage(this.arguments.coverage);
 
-            process.exit();
-        }
 
-        if (this.arguments.help) {
-            console.log(`  Counsel ${require('chalk').green(this.version)}.\n`);
 
-            this.optimist.showHelp();
-            process.exit();
-        }
-
-        if (this.arguments.version) {
-            console.log(`  Counsel version ${require('chalk').green(this.version)}.`);
-            process.exit();
-        }
 
         if (this.arguments.silent) {
             this.silent = true;
         }
 
-        console.log(` Counsel ${require('chalk').green(this.version)}.\n`);
+        
 
         if (this.arguments.config) {
             this.configFile = this.arguments.config;
@@ -118,18 +104,21 @@ module.exports = class CounselRunner
 
         let spawn = require('child_process').spawnSync;
 
-        console.log(`  Running test coverage tool Istanbul: https://istanbul.js.org/.`);
+        this.reporter.log(`Running test coverage tool Istanbul: https://istanbul.js.org/.`);
 
         let nycFile = '/node_modules/.bin/nyc';
+        let options = {};
         if (process.platform == 'win32') {
-            nycFile = '\\node_modules\\.bin\\nyc.cmd';
+            root = `node ${root}`;
+            nycFile = '\\node_modules\\nyc\\bin\\nyc.js';
+            options.shell = true;
         }
 
         let coverageProcess = spawn(`${root}${nycFile}`, [
             '--reporter', reporterType,
             'src/counsel.js',
             '--silent'
-        ]);
+        ], options);
 
         let result = null;
         let error = null;
@@ -142,9 +131,11 @@ module.exports = class CounselRunner
             error = coverageProcess.stderr.toString();
         }
 
-        console.log(result);
+        this.reporter.log(result);
 
-        console.log(`  Test coverage completed.`);
+        if (! coverageProcess.stderr) {
+            this.reporter.log(`Test coverage completed.`);
+        }
 
         if (reporterType == 'html') {
             let coverageIndexFilePath = '/coverage/index.html';
@@ -152,21 +143,40 @@ module.exports = class CounselRunner
             if (process.platform == 'win32') {
                 coverageIndexFilePath = '\\coverage\\index.html'
             }
-            console.log(`  View results: file://${root}${coverageIndexFilePath}`);
+            this.reporter.log(`View results: file://${root}${coverageIndexFilePath}`);
         }
 
         if (error) {
-            console.log('Error');
-            console.log(error);
+            this.reporter.log('Error');
+            this.reporter.log(error);
         }
     }
 
     booted()
     {
+        if (this.arguments.help) {
+            this.reporter.log(`Counsel ${require('chalk').green(this.version)}.\n`);
+
+            this.reporter.log(this.optimist.help());
+            process.exit();
+        }
+
+        if (this.arguments.version) {
+            this.reporter.log(`Counsel version ${require('chalk').green(this.version)}.`);
+            process.exit();
+        }
+
+        if (this.arguments.coverage) {
+            this.runCodeCoverage(this.arguments.coverage);
+            process.exit();
+        }
+
+        this.reporter.log(`Counsel ${require('chalk').green(this.version)}.\n`);
+
         if (this.arguments['list-suites']) {
-            console.log('  Available test suite(s):');
+            this.reporter.log('Available test suite(s):');
             for (let suite in this.config.suites) {
-                console.log(`  - ${suite}`);
+                this.reporter.log(`- ${suite}`);
             }
 
             process.exit();
@@ -249,7 +259,7 @@ module.exports = class CounselRunner
             this.reporter.fullRun = this.fullRun;
 
             global.dump = (data) => {
-                console.log(this.reporter.beautify(data));
+                this.reporter.log(this.reporter.beautify(data));
             }
 
             global.dd = (data) => {
@@ -257,8 +267,8 @@ module.exports = class CounselRunner
                 process.exit(0);
             }
         } catch (error) {
-            console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
-            console.error(error);
+            this.reporter.log(this.serviceProviders.chalk.red(`${this.serviceProviders.figures.cross} counsel error`));
+            this.reporter.log(error);
 
             process.exit(2);
         }
@@ -272,11 +282,6 @@ module.exports = class CounselRunner
         );
 
         this.assertions = Assertions;
-    }
-
-    getFilter()
-    {
-        return process.argv.slice(2)[0];
     }
 
     async boot()
@@ -348,11 +353,11 @@ module.exports = class CounselRunner
             }
         } catch (error) {
             if (error instanceof Error && error.code === 'MODULE_NOT_FOUND') {
-                console.error(`  ${this.serviceProviders.chalk.red(this.serviceProviders.figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
-                console.log(error);
+                this.reporter.log(`${this.serviceProviders.chalk.red(this.serviceProviders.figures.cross)} Bootstrap file [${this.config.bootstrap}] don't exists.`);
+                this.reporter.log(error);
             } else {
-                console.error(this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel bootstrap error`));
-                console.log(error);
+                this.reporter.error(this.serviceProviders.chalk.red(`${this.serviceProviders.figures.cross} counsel bootstrap error`));
+                this.reporter.log(error);
             }
 
             process.exit(2);
@@ -369,6 +374,8 @@ module.exports = class CounselRunner
         this.getTestLocations();
 
         this.loadAssertions();
+
+        await this.booted();
 
         await this.reporter.afterBoot();
     }
@@ -546,9 +553,9 @@ module.exports = class CounselRunner
                 }
             } catch (error) {
                 if (error.message.startsWith('[vue-test-utils]')) {
-                    console.log('\n');
-                    console.error(this.serviceProviders.chalk.red(`  Vue utils error`));
-                    console.error(error);
+                    this.reporter.log('\n');
+                    this.reporter.log(this.serviceProviders.chalk.red(`Vue utils error`));
+                    this.reporter.log(error);
 
                     process.exit(2);
                 } else {

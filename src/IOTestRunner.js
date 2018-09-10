@@ -189,19 +189,8 @@ module.exports = class IOTestRunner
 
 		    if (actual === test.expect) {
 		    	mainTestPassed = true;
-		    	// this.reporter.afterEachPassedIOTest(testContext);
-		        // console.log(this.chalk.green(` ${this.figures.tick}`));
 		    } else {
 		    	mainTestPassed = false;
-		    	// this.reporter.afterEachFailedIOTest(testContext, actual);
-
-		     //    console.log(this.chalk.red(` ${this.figures.cross}`));
-		     //    console.log('');
-
-		     //    console.log(`--- Expected\n${test.expect.split(' ').join(this.chalk.bold.red('.'))}\n+++ Actual\n${actual.split(' ').join(this.chalk.bold.red('.'))}`);
-
-		     //    console.log(this.chalk.yellow('  Difference'));
-		     //    diff(actual, test.expect);
 		    }
 		} else {
 			Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true, executeInformation };
@@ -253,26 +242,10 @@ module.exports = class IOTestRunner
 		    }
 		}
 
-	  //   if (this.currentTestFail) {
-	  //   	console.log(this.chalk.yellow('  Command'));
-			// dump(command);
-			// console.log(this.chalk.yellow('  Arguments'));
-			// dump(args);
-			// console.log(this.chalk.yellow('  Options'));
-			// dump(options);
-	  //   }
-
 	  	if (mainTestPassed && assertionsPassed) {
 	  		this.reporter.afterEachPassedIOTest(testContext, passedAssertions);
 	  		this.reporter.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
 	  	} else {
-			// console.log(this.chalk.yellow('  Command'));
-			// dump(command);
-			// console.log(this.chalk.yellow('  Arguments'));
-			// dump(args);
-			// console.log(this.chalk.yellow('  Options'));
-			// dump(options);
-
 	  		this.reporter.afterEachFailedIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions, {command, args, options});
 	  		this.reporter.afterEachIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
 	  	}

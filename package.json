@@ -12,11 +12,8 @@
         "test": "node src/counsel.js",
         "coverage": "node src/counsel.js --coverage && nyc report --reporter=text-lcov > coverage.lcov && codecov"
     },
-    "nyc": {
-        "ignore-class-method": "visualError"
-    },
     "dependencies": {
-        "@vue/test-utils": "^1.0.0-beta.24",
+        "@vue/test-utils": "^1.0.0-beta.25",
         "ajv": "^6.5.2",
         "auto-loader": "^0.2.0",
         "browser-env": "^3.2.5",
@@ -51,6 +48,6 @@
         "vue": "^2.5.17",
         "vue-loader": "^15.3.0",
         "vue-template-compiler": "^2.5.17",
-        "webpack": "^4.12.0"
+        "webpack": "^4.18.0"
     }
 }
