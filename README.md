@@ -1,4 +1,4 @@
 # Counsel
 
 ## Documentation
-https://timonschenzel.github.io/counsel-docs/
+https://timonschenzel.github.io/counsel/
