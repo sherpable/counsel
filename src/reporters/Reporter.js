@@ -861,7 +861,7 @@ module.exports = class Reporter
             }
         }
 
-        return this.indent(formatted); // '  ' + formatted.split('\n').join('\n  ');
+        return this.indent(formatted);
     }
 
     visualError(assertion)

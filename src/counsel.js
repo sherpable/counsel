@@ -25,7 +25,6 @@ global.SkippedTestError = class SkippedTestError extends Error
      */
     try {
         await counsel.boot();
-        await counsel.booted();
     } catch (error) {
         console.error(counsel.serviceProviders.chalk.red(`  ${counsel.serviceProviders.figures.cross} counsel bootstrap error`));
         console.log(error);
@@ -44,7 +43,7 @@ global.SkippedTestError = class SkippedTestError extends Error
     }
 
     /**
-     * Finally, exit with the proper status code
+     * Finally, exit with the proper status code.
      */
     counsel.exit();
 })();

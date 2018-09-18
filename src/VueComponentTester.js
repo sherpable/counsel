@@ -26,9 +26,6 @@ module.exports = class VueComponentTester
             this.component = parentComponent.components[this.componentName];
         }
 
-        // console.log(Vue.options.components['hello-world-dot-vue-component'].sealedOptions);
-        // process.exit();
-
         if (! this.component) {
             throw new Error(`Component [${this.componentName}] don't exists.`);
         }
@@ -44,9 +41,6 @@ module.exports = class VueComponentTester
         }
 
         let componentRootHtml = componentTemplate('body').children().first().html();
-
-        // console.log(this.componentName);
-        // console.log(this.component);
 
         counsel.serviceProviders.cheerio(componentRootHtml).each((index, element) => {
             let childComponentName = element.tagName;
