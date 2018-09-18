@@ -1,10 +1,27 @@
 {
-    "name": "counsel",
+    "name": "@sherpa/counsel",
     "version": "0.0.1",
+    "description": "Elegant testing framework for JavaScript and Vue.js.",
     "author": "Timon Schenzel",
     "license": "MIT",
-    "private": true,
-    "main": "index.js",
+    "keywords": [
+        "javascript",
+        "testing",
+        "unit-testing",
+        "testing-framework",
+        "elegant",
+        "nodejs",
+        "vuejs"
+    ],
+    "repository": {
+        "type" : "git",
+        "url": "https://github.com/timonschenzel/counsel.git"
+    },
+    "bugs": {
+        "url": "https://github.com/timonschenzel/counsel/issues"
+    },
+    "homepage": "https://timonschenzel.github.io/counsel/",
+    "main": "src/counsel.js",
     "bin": {
         "counsel": "./src/counsel.js"
     },
