@@ -373,6 +373,7 @@ module.exports = class Reporter
             testsPassesCount: this.testsPassesCount,
             testsFailuresCount: this.testsFailuresCount,
             testsIncompleteCount: this.testsIncompleteCount,
+            testsSkippedCount: this.testsSkippedCount,
 
             assertionsCount: this.assertionsCount,
             assertionsPassesCount: this.assertionsPassesCount,
@@ -409,7 +410,7 @@ module.exports = class Reporter
 
     afterTest()
     {
-        if (this.assertionsCount == 0) {
+        if (this.assertionsCount == 0 && this.testsCount == 0) {
             this.log(this.forceColor.yellow(`No tests executed.`));
             return;
         }
@@ -544,14 +545,22 @@ module.exports = class Reporter
     {
         this.testsIncompleteCount++;
         
-        this.incompleteTests[`${test.file}->${test.function}`] = message;
+        if (test.file && test.function) {
+            this.incompleteTests[`${test.file}->${test.function}`] = message;
+        } else {
+            this.incompleteTests[`${test.file}`] = message;
+        }
     }
 
     afterEachSkippedTest(test, message)
     {
         this.testsSkippedCount++;
         
-        this.skippedTests[`${test.file}->${test.function}`] = message;
+        if (test.file && test.function) {
+            this.skippedTests[`${test.file}->${test.function}`] = message;
+        } else {
+            this.skippedTests[`${test.file}`] = message;
+        }
     }
 
     afterEachIOTestWithoutResults(testContext, testProcess)
@@ -624,13 +633,6 @@ module.exports = class Reporter
         this.testsPassesCount++;
     }
 
-    beforeFirstAssertion()
-    {
-        this.appendLog(
-            this.addIndentation()
-        );
-    }
-
     beforeEachAssertion(assertion, parameters, test)
     {
         if (! this.testFailures[test.file]) {
@@ -650,10 +652,6 @@ module.exports = class Reporter
 
     afterEachAssertion(assertion)
     {
-        if (this.assertionsCount < 1) {
-            this.beforeFirstAssertion();
-        }
-
         this.assertionsCount++;
 
         if (! this.testFailures[assertion.test.file]) {

@@ -13,6 +13,15 @@ module.exports = class DotReporter extends Reporter
         }
     }
 
+    beforeTest()
+    {
+        super.beforeTest();
+
+        this.appendLog(
+            this.addIndentation()
+        );
+    }
+
     afterEachFailedTest(testName, results, failuresCount)
     {
         super.afterEachFailedTest(testName, results, failuresCount);

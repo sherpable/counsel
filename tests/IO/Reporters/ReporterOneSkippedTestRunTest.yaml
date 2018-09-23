@@ -1,0 +1,26 @@
+test:
+  Reporter one skipped test run test output
+perform:
+  src/counsel.js OneSkippedTestRunTest --suite unit --verbose --is-io-test
+expect: |
+  Counsel {{version}}
+
+  S
+
+  Time: {{executionTimeFormatted}}
+
+  OK, but 1 skipped
+
+  OneSkippedTestRunTest
+  This test is skipped.
+assertions:
+  status: 0
+  assertionsCount: 0
+  assertionsFailuresCount: 0
+  assertionsPassesCount: 0
+  testsCount: 1
+  testsFailuresCount: 0
+  testsPassesCount: 0
+  testsIncompleteCount: 0
+  testsSkippedCount: 1
+  progress: 0

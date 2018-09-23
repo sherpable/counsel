@@ -492,9 +492,35 @@ module.exports = class CounselRunner
     async runTestsInClass(testClass, path, testMethods)
     {
         // Invoke setUp method if exists
-        if (typeof testClass['setUp'] == 'function') {
-            testClass.name = path + ' -> ' + 'setUp';
-            testClass['setUp']();
+        try {
+            if (typeof testClass['setUp'] == 'function') {
+                testClass.name = path + ' -> ' + 'setUp';
+                testClass['setUp']();
+            }
+        } catch (error) {
+            if (error instanceof IncompleteTestError) {
+                let incompleteTest = testClass.test;
+                if (! incompleteTest) {
+                    incompleteTest = { file: path, function: null };
+                }
+
+                this.reporter.afterEachIncompleteTest(incompleteTest, error.message);
+                this.reporter.afterEachTest(testClass.test);
+
+                return;
+            } else if (error instanceof SkippedTestError) {
+                let skippedTest = testClass.test;
+                if (! skippedTest) {
+                    skippedTest = { file: path, function: null };
+                }
+
+                this.reporter.afterEachSkippedTest(skippedTest, error.message);
+                this.reporter.afterEachTest(testClass.test);
+
+                return;
+            } else {
+                throw error;
+            }
         }
 
         for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
@@ -580,10 +606,20 @@ module.exports = class CounselRunner
                         await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
                     } else {
                         if (error instanceof IncompleteTestError) {
-                            this.reporter.afterEachIncompleteTest(testClass.test, error.message);
+                            let incompleteTest = testClass.test;
+                            if (! incompleteTest) {
+                                incompleteTest = { file: path, function: null };
+                            }
+
+                            this.reporter.afterEachIncompleteTest(incompleteTest, error.message);
                             this.reporter.afterEachTest(testClass.test);
                         } else if (error instanceof SkippedTestError) {
-                            this.reporter.afterEachSkippedTest(testClass.test, error.message);
+                            let skippedTest = testClass.test;
+                            if (! skippedTest) {
+                                skippedTest = { file: path, function: null };
+                            }
+
+                            this.reporter.afterEachSkippedTest(skippedTest, error.message);
                             this.reporter.afterEachTest(testClass.test);
                         } else {
                             throw error;
