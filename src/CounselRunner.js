@@ -37,14 +37,10 @@ module.exports = class CounselRunner
         this.silent = false;
 
 
-
-
-
         if (this.arguments.silent) {
             this.silent = true;
         }
 
-        
 
         if (this.arguments.config) {
             this.configFile = this.arguments.config;
@@ -155,14 +151,14 @@ module.exports = class CounselRunner
     booted()
     {
         if (this.arguments.help) {
-            this.reporter.log(`Counsel ${require('chalk').green(this.version)}.\n`);
+            this.reporter.log(`Counsel ${require('chalk').green(this.version)}\n`);
 
             this.reporter.log(this.optimist.help());
             process.exit();
         }
 
         if (this.arguments.version) {
-            this.reporter.log(`Counsel version ${require('chalk').green(this.version)}.`);
+            this.reporter.log(`Counsel version ${require('chalk').green(this.version)}`);
             process.exit();
         }
 
@@ -171,7 +167,7 @@ module.exports = class CounselRunner
             process.exit();
         }
 
-        this.reporter.log(`Counsel ${require('chalk').green(this.version)}.\n`);
+        this.reporter.log(`Counsel ${require('chalk').green(this.version)}\n`);
 
         if (this.arguments['list-suites']) {
             this.reporter.log('Available test suite(s):');

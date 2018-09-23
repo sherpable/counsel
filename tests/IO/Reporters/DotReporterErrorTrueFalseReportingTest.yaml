@@ -3,7 +3,7 @@ test:
 perform:
   src/counsel.js --config io-tests/configs/dot-reporter-true-false-error-reporting-test.js --is-io-test
 expect: |
-  Counsel {{version}}.
+  Counsel {{version}}
 
   xx                        2 / 2 (100%)
 
@@ -30,6 +30,7 @@ expect: |
   true
 
   Time: {{executionTimeFormatted}}
+
   2 failed, 2 tests
 assertions:
   status: 2

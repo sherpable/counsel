@@ -3,11 +3,12 @@ test:
 perform:
   src/counsel.js CountdownTest --is-io-test
 expect: |
-  Counsel {{version}}.
+  Counsel {{version}}
 
   ......
 
   Time: {{executionTimeFormatted}}
+
   14 passed, 6 tests
 assertions:
   status: 0

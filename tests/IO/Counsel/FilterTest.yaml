@@ -3,11 +3,12 @@ test:
 perform:
   src/counsel.js --filter FilterTest --is-io-test
 expect: |
-  Counsel {{version}}.
+  Counsel {{version}}
 
   ..
 
   Time: {{executionTimeFormatted}}
+
   2 passed, 2 tests
 assertions:
   status: 0

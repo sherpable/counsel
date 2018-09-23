@@ -104,8 +104,10 @@ module.exports = class DotReporter extends Reporter
                 spaceLeft = ' '.repeat(spacesLeft);
             }
 
-            this.appendLog(`${spaceLeft}  ${this.testsCount} / ${this.totalTests} (100%)\n`);
+            this.appendLog(`${spaceLeft}  ${this.testsCount} / ${this.totalTests} (100%)`);
         }
+
+        this.appendLog('\n');
 
         super.afterTest();
     }

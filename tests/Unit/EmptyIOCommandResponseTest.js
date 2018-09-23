@@ -36,6 +36,7 @@ module.exports = class EmptyIOCommandResponseTest extends TestCase
  
  
  Time: ${reporter.executionTimeFormatted}
+
  1 failed, 1 tests
 `, reporter.output);
     }

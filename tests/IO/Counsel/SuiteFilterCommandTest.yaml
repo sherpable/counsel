@@ -3,11 +3,12 @@ test:
 perform:
   src/counsel.js --suite vue-components --is-io-test
 expect: |
-  Counsel {{version}}.
+  Counsel {{version}}
 
   ..................        18 / 18 (100%)
 
   Time: {{executionTimeFormatted}}
+
   32 passed, 18 tests
 assertions:
   status: 0
