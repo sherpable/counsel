@@ -17,6 +17,23 @@ module.exports = class DotReporter extends Reporter
     {
         super.beforeTest();
 
+        if (this.testsCount > 0) {
+            return;
+        }
+
+        this.appendLog(
+            this.addIndentation()
+        );
+    }
+
+    beforeIOTest()
+    {
+        super.beforeIOTest();
+
+        if (this.testsCount > 0) {
+            return;
+        }
+
         this.appendLog(
             this.addIndentation()
         );

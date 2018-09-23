@@ -473,13 +473,13 @@ module.exports = class CounselRunner
             return;
         }
 
-        await this.reporter.beforeIOTests();
+        await this.reporter.beforeIOTest();
 
         this.IOTestRunner = this.instantiateIOTestRunner();
 
         this.IOTestRunner.test();
 
-        await this.reporter.afterIOTests();
+        await this.reporter.afterIOTest();
     }
 
     exit()

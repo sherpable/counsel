@@ -496,12 +496,12 @@ module.exports = class Reporter
         }
     }
 
-    beforeIOTests()
+    beforeIOTest()
     {
         
     }
 
-    afterIOTests()
+    afterIOTest()
     {
         
     }
