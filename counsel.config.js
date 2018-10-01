@@ -1,5 +1,11 @@
 module.exports = {
     reporter: './reporters/DotReporter',
+    vue: {
+        require: () => {
+            return require('vue');
+        },
+        referenceName: 'Vue'
+    },
 	bootstrap: 'bootstrap',
 	locations: [
 		'tests',
