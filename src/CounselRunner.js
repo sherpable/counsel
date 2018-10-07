@@ -22,7 +22,8 @@ module.exports = class CounselRunner
             nodeHook: 'node-hook',
             yaml: 'js-yaml',
             annotations: './utilities/annotations',
-            assertionResult: './assertions/AssertionResult',
+            assertion: './assertions/Assertion',
+            test: './results/Test',
             reporter: './reporters/Reporter',
             testCase: './TestCase',
             IOTestRunner: './IOTestRunner',
@@ -436,7 +437,8 @@ module.exports = class CounselRunner
     {
         global.Reporter = this.serviceProviders.reporter;
         global.TestCase = this.serviceProviders.testCase;
-        global.AssertionResult = this.serviceProviders.assertionResult;
+        global.Assertion = this.serviceProviders.assertion;
+        global.Test = this.serviceProviders.test;
         global.moment = this.serviceProviders.moment;
     }
 
@@ -493,28 +495,32 @@ module.exports = class CounselRunner
     {
         // Invoke setUp method if exists
         try {
-            if (typeof testClass['setUp'] == 'function') {
+            if (typeof testClass['setUpInternal'] == 'function') {
                 testClass.name = path + ' -> ' + 'setUp';
-                testClass['setUp']();
+                testClass['setUpInternal']();
             }
         } catch (error) {
             if (error instanceof IncompleteTestError) {
                 let incompleteTest = testClass.test;
                 if (! incompleteTest) {
-                    incompleteTest = { file: path, function: null };
+                    incompleteTest = { className: path, functionName: null };
                 }
 
-                this.reporter.afterEachIncompleteTest(incompleteTest, error.message);
+                incompleteTest.message = error.message;
+
+                this.reporter.afterEachIncompleteTest(incompleteTest);
                 this.reporter.afterEachTest(testClass.test);
 
                 return;
             } else if (error instanceof SkippedTestError) {
                 let skippedTest = testClass.test;
                 if (! skippedTest) {
-                    skippedTest = { file: path, function: null };
+                    skippedTest = { className: path, functionName: null };
                 }
 
-                this.reporter.afterEachSkippedTest(skippedTest, error.message);
+                skippedTest.message = error.message;
+
+                this.reporter.afterEachSkippedTest(skippedTest);
                 this.reporter.afterEachTest(testClass.test);
 
                 return;
@@ -532,16 +538,18 @@ module.exports = class CounselRunner
 
             // Invoke beforeEach method if exists
             // @todo: create test for this feature
-            if (typeof testClass['beforeEach'] == 'function') {
+            if (typeof testClass['beforeEachInternal'] == 'function') {
                 testClass.name = path + ' -> ' + 'beforeEach';
-                testClass['beforeEach']();
+                testClass['beforeEachInternal']();
             }
 
             testClass.test = { file: path, function: name };
             testClass.assertions.test = { file: path, function: name };
 
+            let test = new Test(path, name);
+
             try {
-                await this.reporter.beforeEachTest(path, name);
+                await this.reporter.beforeEachTest(test);
 
                 // Run the test
                 await testClass[name]();
@@ -549,13 +557,17 @@ module.exports = class CounselRunner
                 let testFailuresCount = this.reporter.testFailures[path]['functions'][name]['count'];
                 let testIncomplete = this.reporter.incompleteTests[`${path}->${name}`];
                 let testSkipped = this.reporter.skippedTests[`${path}->${name}`];
+                test.failuresCount = testFailuresCount;
+                test.incomplete = testIncomplete;
+                test.skipped = testSkipped;
+                test.results = this.reporter.results[path];
 
-                if (testFailuresCount > 0) {
-                    await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
-                } else if (! testIncomplete && ! testSkipped) {
-                    await this.reporter.afterEachPassedTest(path, this.reporter.results[path]);
+                if (test.failuresCount > 0) {
+                    await this.reporter.afterEachFailedTest(test);
+                } else if (! test.incomplete && ! test.skipped) {
+                    await this.reporter.afterEachPassedTest(test);
                 }
-                await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
+                await this.reporter.afterEachTest(test);
 
                 if (testClass.expectedException) {
                     Assertions.test = testClass.test;
@@ -569,9 +581,9 @@ module.exports = class CounselRunner
 
                 // Invoke afterEach method if exists
                 // @todo: create test for this feature
-                if (typeof testClass['afterEach'] == 'function') {
+                if (typeof testClass['afterEachInternal'] == 'function') {
                     testClass.name = path + ' -> ' + 'afterEach';
-                    testClass['afterEach']();
+                    testClass['afterEachInternal']();
                 }
             } catch (error) {
                 if (error.message.startsWith('[vue-test-utils]')) {
@@ -598,29 +610,39 @@ module.exports = class CounselRunner
 
                         // After each test with exception
                         let testFailuresCount = this.reporter.testFailures[path]['functions'][name]['count'];
+                        test.failuresCount = testFailuresCount;
+                        test.results = this.reporter.results[path];
                         if (testFailuresCount > 0) {
-                            await this.reporter.afterEachFailedTest(path, this.reporter.results[path], testFailuresCount);
+                            await this.reporter.afterEachFailedTest(test);
                         } else {
-                            await this.reporter.afterEachPassedTest(path, this.reporter.results[path]);
+                            await this.reporter.afterEachPassedTest(test);
                         }
-                        await this.reporter.afterEachTest(path, this.reporter.results[path], testFailuresCount);
+                        await this.reporter.afterEachTest(test);
                     } else {
                         if (error instanceof IncompleteTestError) {
                             let incompleteTest = testClass.test;
+                            incompleteTest.className = incompleteTest.file;
+                            incompleteTest.functionName = incompleteTest.function;
                             if (! incompleteTest) {
-                                incompleteTest = { file: path, function: null };
+                                incompleteTest = { className: path, functionName: null };
                             }
 
-                            this.reporter.afterEachIncompleteTest(incompleteTest, error.message);
-                            this.reporter.afterEachTest(testClass.test);
+                            incompleteTest.message = error.message;
+
+                            this.reporter.afterEachIncompleteTest(incompleteTest);
+                            this.reporter.afterEachTest(test);
                         } else if (error instanceof SkippedTestError) {
                             let skippedTest = testClass.test;
+                            skippedTest.className = skippedTest.file;
+                            skippedTest.functionName = skippedTest.function;
                             if (! skippedTest) {
-                                skippedTest = { file: path, function: null };
+                                skippedTest = { className: path, functionName: null };
                             }
 
-                            this.reporter.afterEachSkippedTest(skippedTest, error.message);
-                            this.reporter.afterEachTest(testClass.test);
+                            skippedTest.message = error.message;
+
+                            this.reporter.afterEachSkippedTest(skippedTest);
+                            this.reporter.afterEachTest(test);
                         } else {
                             throw error;
                         }
@@ -632,9 +654,9 @@ module.exports = class CounselRunner
         }
 
         // Invoke tearDown method
-        if (typeof testClass['tearDown'] == 'function') {
+        if (typeof testClass['tearDownInternal'] == 'function') {
             testClass.name = path + ' -> ' + 'tearDown';
-            testClass['tearDown']();
+            testClass['tearDownInternal']();
         }
     }
 

@@ -115,49 +115,54 @@ module.exports = class Assertions
 		this.assertions[name] = assertion;
 	}
 
-	execute(assertion, parameters)
+	execute(type, parameters)
 	{
-		this.reporter.beforeEachAssertion(assertion, parameters, this.test);
-
-		let assertionResultFileName = assertion.charAt(0).toUpperCase() + assertion.substr(1);
-		let assertionResult = null;
-
-		let rootFolder = counsel.serviceProviders.path.normalize(
-		    process.cwd() + '/'
+		let assertion = new (this.assertionClass(type))(
+			type,
+			parameters,
+			this.test,
+			this.reporter
 		);
 
-		let assertionResultFileLocation = `${rootFolder}src/assertions/results/${assertionResultFileName}Result.js`;
+		this.reporter.beforeEachAssertion(assertion);
 
-		if (counsel.serviceProviders.fs.existsSync(assertionResultFileLocation)) {
-			let assertionClass = require(assertionResultFileLocation);
-			assertionResult = new assertionClass(
-				assertion,
-				this.test,
-				this.reporter,
-				this.assertions[assertion](...parameters),
-			);
-		} else {
-			assertionResult = new AssertionResult(
-				assertion,
-				this.test,
-				this.reporter,
-				this.assertions[assertion](...parameters),
-			);
-		}
+		assertion.execute();
 
-	    this.reporter.afterEachAssertion(assertionResult);
+	    this.reporter.afterEachAssertion(assertion);
 
-	    if (assertionResult.passed()) {
-	    	this.reporter.afterEachPassedAssertion(assertionResult);
+	    if (assertion.passed()) {
+	    	this.reporter.afterEachPassedAssertion(assertion);
 	    } else {
-	    	this.reporter.afterEachFailedAssertion(assertionResult);
+	    	this.reporter.afterEachFailedAssertion(assertion);
 	    }
 
-	    return assertionResult;
+	    return assertion;
 	}
 
 	pipe(assertion, parameters)
 	{
 	    return this.assertions[assertion](...parameters);
+	}
+
+	executeAssertion(type, parameters)
+	{
+		return this.assertions[type](...parameters);
+	}
+
+	assertionClass(type)
+	{
+		let assertionFileName = type.charAt(0).toUpperCase() + type.substr(1);
+		
+		let rootFolder = counsel.serviceProviders.path.normalize(
+		    process.cwd() + '/'
+		);
+
+		let assertionFileLocation = `${rootFolder}src/assertions/results/${assertionFileName}.js`;
+
+		if (counsel.serviceProviders.fs.existsSync(assertionFileLocation)) {
+			return require(assertionFileLocation);
+		} else {
+			return Assertion;
+		}
 	}
 }

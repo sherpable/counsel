@@ -11,6 +11,28 @@ module.exports = class TestCase
 		this.cleanupAfterSingleTestMethod();
 	}
 
+	setUpInternal()
+	{
+		this.setUp();
+	}
+
+	beforeEachInternal()
+	{
+		this.beforeEach();
+	}
+
+	afterEachInternal()
+	{
+		this.cleanupAfterSingleTestMethod();
+
+		this.afterEach();
+	}
+
+	tearDownInternal()
+	{
+		this.tearDown();
+	}
+
 	setUp()
 	{
 
@@ -23,7 +45,7 @@ module.exports = class TestCase
 
 	afterEach()
 	{
-		this.cleanupAfterSingleTestMethod();
+
 	}
 
 	tearDown()

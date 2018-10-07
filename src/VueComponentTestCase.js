@@ -53,28 +53,18 @@ module.exports = class VueComponentTestCase extends TestCase
         this.assertNotContains(regex, contents, message);
     }
 
-    setUp()
+    beforeEachInternal()
     {
-        super.setUp();
-    }
-
-    beforeEach()
-    {
-        super.beforeEach();
-
         this.clock.restore();
         this.clock = counsel.serviceProviders.sinon.useFakeTimers();
+
+        super.beforeEachInternal();
     }
 
-    afterEach()
+    tearDownInternal()
     {
-        super.afterEach();
-    }
-
-    tearDown()
-    {
-        super.tearDown();
-
         this.clock.restore();
+
+        super.tearDownInternal();
     }
 }

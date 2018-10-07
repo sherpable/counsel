@@ -1,4 +1,4 @@
-module.exports = class AssertContainsResult extends AssertionResult
+module.exports = class AssertContains extends Assertion
 {
     describeFailure()
     {

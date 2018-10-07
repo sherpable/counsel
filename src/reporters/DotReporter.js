@@ -39,30 +39,30 @@ module.exports = class DotReporter extends Reporter
         );
     }
 
-    afterEachFailedTest(testName, results, failuresCount)
+    afterEachFailedTest(test)
     {
-        super.afterEachFailedTest(testName, results, failuresCount);
+        super.afterEachFailedTest(test);
 
         this.appendLog(this.forceColor.red('x'));
     }
 
-    afterEachPassedTest(testName, results)
+    afterEachPassedTest(test)
     {
-        super.afterEachPassedTest(testName, results);
+        super.afterEachPassedTest(test);
 
         this.appendLog(this.forceColor.green('.'));
     }
 
-    afterEachIncompleteTest(test, message)
+    afterEachIncompleteTest(test)
     {
-        super.afterEachIncompleteTest(test, message);
+        super.afterEachIncompleteTest(test);
 
         this.appendLog(this.forceColor.yellow('I'));
     }
 
-    afterEachSkippedTest(test, message)
+    afterEachSkippedTest(test)
     {
-        super.afterEachSkippedTest(test, message);
+        super.afterEachSkippedTest(test);
 
         this.appendLog(this.forceColor.blue('S'));
     }
@@ -103,9 +103,9 @@ module.exports = class DotReporter extends Reporter
         super.afterEachIOTestWithoutResults(testContext, testProcess);
     }
 
-    afterEachTest(testName, results, failuresCount)
+    afterEachTest(test)
     {
-        super.afterEachTest(testName, results, failuresCount);
+        super.afterEachTest(test);
 
         if (! this.fullRun) {
             return;

@@ -15,6 +15,8 @@ module.exports = class Reporter
             this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: true});
         }
 
+        this.theme = require('../Theme')(counsel.serviceProviders.chalk, this.forceColor);
+
         this.silent = false;
         this.output = '';
         
@@ -50,320 +52,6 @@ module.exports = class Reporter
         this.progress = 0;
 
         this.indentation = 1;
-
-        this.dumpTheme = {
-            boolean: this.ansiStyles.yellow,
-            circular: this.forceColor.grey('[Circular]'),
-            date: {
-                invalid: this.forceColor.red('invalid'),
-                value: this.ansiStyles.blue
-            },
-            diffGutters: {
-                actual: this.forceColor.red('-') + ' ',
-                expected: this.forceColor.green('+') + ' ',
-                padding: '  '
-            },
-            error: {
-                ctor: {open: this.ansiStyles.grey.open + '(', close: ')' + this.ansiStyles.grey.close},
-                name: this.ansiStyles.magenta
-            },
-            function: {
-                name: this.ansiStyles.blue,
-                stringTag: this.ansiStyles.magenta
-            },
-            global: this.ansiStyles.magenta,
-            item: {after: this.forceColor.grey(',')},
-            list: {openBracket: this.forceColor.grey('['), closeBracket: this.forceColor.grey(']')},
-            mapEntry: {after: this.forceColor.grey(',')},
-            maxDepth: this.forceColor.grey('…'),
-            null: this.ansiStyles.yellow,
-            number: this.ansiStyles.yellow,
-            object: {
-                openBracket: this.forceColor.grey('{'),
-                closeBracket: this.forceColor.grey('}'),
-                ctor: this.ansiStyles.magenta,
-                stringTag: {open: this.ansiStyles.magenta.open + '@', close: this.ansiStyles.magenta.close},
-                secondaryStringTag: {open: this.ansiStyles.grey.open + '@', close: this.ansiStyles.grey.close}
-            },
-            property: {
-                after: this.forceColor.grey(','),
-                keyBracket: {open: this.forceColor.grey('['), close: this.forceColor.grey(']')},
-                valueFallback: this.forceColor.grey('…')
-            },
-            react: {
-                functionType: this.forceColor.grey('\u235F'),
-                openTag: {
-                    start: this.forceColor.grey('<'),
-                    end: this.forceColor.grey('>'),
-                    selfClose: this.forceColor.grey('/'),
-                    selfCloseVoid: ' ' + this.forceColor.grey('/')
-                },
-                closeTag: {
-                    open: this.forceColor.grey('</'),
-                    close: this.forceColor.grey('>')
-                },
-                tagName: this.ansiStyles.magenta,
-                attribute: {
-                    separator: '=',
-                    value: {
-                        openBracket: this.forceColor.grey('{'),
-                        closeBracket: this.forceColor.grey('}'),
-                        string: {
-                            line: {open: this.forceColor.blue('"'), close: this.forceColor.blue('"'), escapeQuote: '"'}
-                        }
-                    }
-                },
-                child: {
-                    openBracket: this.forceColor.grey('{'),
-                    closeBracket: this.forceColor.grey('}')
-                }
-            },
-            regexp: {
-                source: {open: this.ansiStyles.blue.open + '/', close: '/' + this.ansiStyles.blue.close},
-                flags: this.ansiStyles.yellow
-            },
-            stats: {separator: this.forceColor.grey('---')},
-            string: {
-                open: this.ansiStyles.blue.open,
-                close: this.ansiStyles.blue.close,
-                line: {open: this.forceColor.blue('\''), close: this.forceColor.blue('\'')},
-                multiline: {start: this.forceColor.blue('`'), end: this.forceColor.blue('`')},
-                controlPicture: this.ansiStyles.grey,
-                diff: {
-                    insert: {
-                        open: this.ansiStyles.bgGreen.open + this.ansiStyles.black.open,
-                        close: this.ansiStyles.black.close + this.ansiStyles.bgGreen.close
-                    },
-                    delete: {
-                        open: this.ansiStyles.bgRed.open + this.ansiStyles.black.open,
-                        close: this.ansiStyles.black.close + this.ansiStyles.bgRed.close
-                    },
-                    equal: this.ansiStyles.blue,
-                    insertLine: {
-                        open: this.ansiStyles.green.open,
-                        close: this.ansiStyles.green.close
-                    },
-                    deleteLine: {
-                        open: this.ansiStyles.red.open,
-                        close: this.ansiStyles.red.close
-                    }
-                }
-            },
-            symbol: this.ansiStyles.yellow,
-            typedArray: {
-                bytes: this.ansiStyles.yellow
-            },
-            undefined: this.ansiStyles.yellow
-        };
-
-        this.htmlDumpTheme = {
-            /**
-             * keyword in a regular Algol-style language
-             */
-            keyword: counsel.serviceProviders.chalk.blue,
-
-            /**
-             * built-in or library object (constant, class, function)
-             */
-            built_in: counsel.serviceProviders.chalk.cyan,
-
-            /**
-             * user-defined type in a language with first-class syntactically significant types, like
-             * Haskell
-             */
-            type: counsel.serviceProviders.chalk.cyan.dim,
-
-            /**
-             * special identifier for a built-in value ("true", "false", "null")
-             */
-            literal: counsel.serviceProviders.chalk.blue,
-
-            /**
-             * number, including units and modifiers, if any.
-             */
-            number: counsel.serviceProviders.chalk.green,
-
-            /**
-             * literal regular expression
-             */
-            regexp: counsel.serviceProviders.chalk.red,
-
-            /**
-             * literal string, character
-             */
-            string: counsel.serviceProviders.chalk.greenBright,
-
-            /**
-             * parsed section inside a literal string
-             */
-            subst: this.plainFormat,
-
-            /**
-             * symbolic constant, interned string, goto label
-             */
-            symbol: this.plainFormat,
-
-            /**
-             * class or class-level declaration (interfaces, traits, modules, etc)
-             */
-            class: counsel.serviceProviders.chalk.blue,
-
-            /**
-             * function or method declaration
-             */
-            function: counsel.serviceProviders.chalk.yellow,
-
-            /**
-             * name of a class or a function at the place of declaration
-             */
-            title: this.plainFormat,
-
-            /**
-             * block of function arguments (parameters) at the place of declaration
-             */
-            params: this.plainFormat,
-
-            /**
-             * comment
-             */
-            comment: counsel.serviceProviders.chalk.green,
-
-            /**
-             * documentation markup within comments
-             */
-            doctag: counsel.serviceProviders.chalk.green,
-
-            /**
-             * flags, modifiers, annotations, processing instructions, preprocessor directive, etc
-             */
-            meta: counsel.serviceProviders.chalk.grey,
-
-            /**
-             * keyword or built-in within meta construct
-             */
-            'meta-keyword': this.plainFormat,
-
-            /**
-             * string within meta construct
-             */
-            'meta-string': this.plainFormat,
-
-            /**
-             * heading of a section in a config file, heading in text markup
-             */
-            section: this.plainFormat,
-
-            /**
-             * XML/HTML tag
-             */
-            tag: counsel.serviceProviders.chalk.green,
-
-            /**
-             * name of an XML tag, the first word in an s-expression
-             */
-            name: counsel.serviceProviders.chalk.green,
-
-            /**
-             * s-expression name from the language standard library
-             */
-            'builtin-name': this.plainFormat,
-
-            /**
-             * name of an attribute with no language defined semantics (keys in JSON, setting names in
-             * .ini), also sub-attribute within another highlighted object, like XML tag
-             */
-            attr: counsel.serviceProviders.chalk.yellow,
-
-            /**
-             * name of an attribute followed by a structured value part, like CSS properties
-             */
-            attribute: this.plainFormat,
-
-            /**
-             * variable in a config or a template file, environment var expansion in a script
-             */
-            variable: this.plainFormat,
-
-            /**
-             * list item bullet in text markup
-             */
-            bullet: this.plainFormat,
-
-            /**
-             * code block in text markup
-             */
-            code: this.plainFormat,
-
-            /**
-             * emphasis in text markup
-             */
-            emphasis: counsel.serviceProviders.chalk.italic,
-
-            /**
-             * strong emphasis in text markup
-             */
-            strong: counsel.serviceProviders.chalk.bold,
-
-            /**
-             * mathematical formula in text markup
-             */
-            formula: this.plainFormat,
-
-            /**
-             * hyperlink in text markup
-             */
-            link: counsel.serviceProviders.chalk.underline,
-
-            /**
-             * quotation in text markup
-             */
-            quote: this.plainFormat,
-
-            /**
-             * tag selector in CSS
-             */
-            'selector-tag': this.plainFormat,
-
-            /**
-             * #id selector in CSS
-             */
-            'selector-id': this.plainFormat,
-
-            /**
-             * .class selector in CSS
-             */
-            'selector-class': this.plainFormat,
-
-            /**
-             * [attr] selector in CSS
-             */
-            'selector-attr': this.plainFormat,
-
-            /**
-             * :pseudo selector in CSS
-             */
-            'selector-pseudo': this.plainFormat,
-
-            /**
-             * tag of a template language
-             */
-            'template-tag': this.plainFormat,
-
-            /**
-             * variable in a template language
-             */
-            'template-variable': this.plainFormat,
-
-            /**
-             * added or changed line in a diff
-             */
-            addition: counsel.serviceProviders.chalk.green,
-
-            /**
-             * deleted line in a diff
-             */
-            deletion: counsel.serviceProviders.chalk.red,
-        };
     }
 
     testResults()
@@ -381,11 +69,6 @@ module.exports = class Reporter
 
             progress: this.progress,
         }
-    }
-
-    plainFormat(code)
-    {
-        return code;
     }
 
     beforeBoot()
@@ -541,25 +224,25 @@ module.exports = class Reporter
         // this.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
     }
 
-    afterEachIncompleteTest(test, message)
+    afterEachIncompleteTest(test)
     {
         this.testsIncompleteCount++;
         
-        if (test.file && test.function) {
-            this.incompleteTests[`${test.file}->${test.function}`] = message;
+        if (test.className && test.functionName) {
+            this.incompleteTests[`${test.className}->${test.functionName}`] = test.message;
         } else {
-            this.incompleteTests[`${test.file}`] = message;
+            this.incompleteTests[`${test.className}`] = test.message;
         }
     }
 
-    afterEachSkippedTest(test, message)
+    afterEachSkippedTest(test)
     {
         this.testsSkippedCount++;
         
-        if (test.file && test.function) {
-            this.skippedTests[`${test.file}->${test.function}`] = message;
+        if (test.className && test.functionName) {
+            this.skippedTests[`${test.className}->${test.functionName}`] = test.message;
         } else {
-            this.skippedTests[`${test.file}`] = message;
+            this.skippedTests[`${test.className}`] = test.message;
         }
     }
 
@@ -595,24 +278,24 @@ module.exports = class Reporter
 
     }
 
-    beforeEachTest(testName, functionName)
+    beforeEachTest(test)
     {
-        if (! this.testFailures[testName]) {
-            this.testFailures[testName] = {};
-            this.testFailures[testName]['functions'] = [];
+        if (! this.testFailures[test.className]) {
+            this.testFailures[test.className] = {};
+            this.testFailures[test.className]['functions'] = [];
         }
 
-        if (! this.testFailures[testName]['count']) {
-            this.testFailures[testName]['count'] = 0;
+        if (! this.testFailures[test.className]['count']) {
+            this.testFailures[test.className]['count'] = 0;
         }
 
-        if (! this.testFailures[testName]['functions'][functionName]) {
-            this.testFailures[testName]['functions'][functionName] = []
-            this.testFailures[testName]['functions'][functionName]['count'] = 0;
+        if (! this.testFailures[test.className]['functions'][test.functionName]) {
+            this.testFailures[test.className]['functions'][test.functionName] = []
+            this.testFailures[test.className]['functions'][test.functionName]['count'] = 0;
         }
     }
 
-    afterEachTest(testName, results, failuresCount)
+    afterEachTest(test)
     {
         this.testsCount++;
 
@@ -623,30 +306,30 @@ module.exports = class Reporter
         this.progress = Math.round((this.testsCount / this.totalTests) * 100);
     }
 
-    afterEachFailedTest(testName, results, failuresCount)
+    afterEachFailedTest(test)
     {
         this.testsFailuresCount++;
     }
 
-    afterEachPassedTest(testName, results)
+    afterEachPassedTest(test)
     {
         this.testsPassesCount++;
     }
 
-    beforeEachAssertion(assertion, parameters, test)
+    beforeEachAssertion(assertion)
     {
-        if (! this.testFailures[test.file]) {
-            this.testFailures[test.file] = {};
-            this.testFailures[test.file]['functions'] = [];
+        if (! this.testFailures[assertion.test.file]) {
+            this.testFailures[assertion.test.file] = {};
+            this.testFailures[assertion.test.file]['functions'] = [];
         }
 
-        if (! this.testFailures[test.file]['count']) {
-            this.testFailures[test.file]['count'] = 0;
+        if (! this.testFailures[assertion.test.file]['count']) {
+            this.testFailures[assertion.test.file]['count'] = 0;
         }
 
-        if (! this.testFailures[test.file]['functions'][test.function]) {
-            this.testFailures[test.file]['functions'][test.function] = []
-            this.testFailures[test.file]['functions'][test.function]['count'] = 0;
+        if (! this.testFailures[assertion.test.file]['functions'][assertion.test.function]) {
+            this.testFailures[assertion.test.file]['functions'][assertion.test.function] = []
+            this.testFailures[assertion.test.file]['functions'][assertion.test.function]['count'] = 0;
         }
     }
 
@@ -816,18 +499,18 @@ module.exports = class Reporter
             actual = this.prettier.format(actual);
             actual = actual.replace(/{" "}/g, '');
             actual = actual.substring(0, actual.length - 2);
-            actual = this.highlight(actual, {language: 'html', ignoreIllegals: true, theme: this.htmlDumpTheme});
+            actual = this.highlight(actual, {language: 'html', ignoreIllegals: true, theme: this.theme.htmlDumpTheme});
         }
 
         if (this.isHtml(expected)) {
             expected = this.prettier.format(expected);
             expected = expected.replace(/{" "}/g, '');
             expected = expected.substring(0, expected.length - 2);
-            expected = this.highlight(expected, {language: 'html', ignoreIllegals: true, theme: this.htmlDumpTheme});
+            expected = this.highlight(expected, {language: 'html', ignoreIllegals: true, theme: this.theme.htmlDumpTheme});
         }
 
         return this.indent(
-            this.concordance.diff(actual, expected, {plugins: [], theme: this.dumpTheme}), 2
+            this.concordance.diff(actual, expected, {plugins: [], theme: this.theme.dumpTheme}), 2
         );
     }
 
@@ -837,7 +520,7 @@ module.exports = class Reporter
             value = this.prettier.format(value);
             value = value.replace(/{" "}/g, '');
             value = value.substring(0, value.length - 2);
-            value = this.highlight(value, {language: 'html', ignoreIllegals: true, theme: this.htmlDumpTheme});
+            value = this.highlight(value, {language: 'html', ignoreIllegals: true, theme: this.theme.htmlDumpTheme});
 
             return this.indent(value);
         }
@@ -845,7 +528,7 @@ module.exports = class Reporter
         let options = {};
 
         if (! this.silent) {
-            options = {plugins: [], theme: this.dumpTheme};
+            options = {plugins: [], theme: this.theme.dumpTheme};
         }
 
         let formatted = this.concordance.format(value, options);

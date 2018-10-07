@@ -1,39 +1,57 @@
-module.exports = class AssertionResult
+module.exports = class Assertion
 {
-	constructor(assertion, test, reporter, result = {})
+	constructor(type, parameters, test, reporter)
 	{
-        this.assertion = assertion;
+        this.type = type;
+        this.parameters = parameters;
         this.test = test;
         this.reporter = reporter;
         this.error = null;
-        this.pass = result['pass'];
-        this.failed = ! result['pass'];
-        this.actual = result['actual'];
-        this.expected = result['expected'];
-        this.message = result['message'];
-        this.contents = result['contents'];
-        this.regex = result['regex'];
-		this.failureMessage = result['failureMessage'];
+        this.pass = null;
+        this.failed = null;
+        this.actual = null;
+        this.expected = null;
+        this.message = null;
+        this.contents = null;
+        this.regex = null;
+        this.failureMessage = null;
+	}
+
+    execute()
+    {
+        this.result = Assertions.executeAssertion(this.type, this.parameters);
+
+        this.processResult();
+    }
+
+    processResult()
+    {
+        this.pass = this.result['pass'];
+        this.failed = ! this.result['pass'];
+        this.actual = this.result['actual'];
+        this.expected = this.result['expected'];
+        this.message = this.result['message'];
+        this.contents = this.result['contents'];
+        this.regex = this.result['regex'];
+        this.failureMessage = this.result['failureMessage'];
 
         let stack = null;
 
-        if (result.error) {
-            this.error = result.error.raw;
-            stack = result.error.stack;
+        if (this.result.error) {
+            this.error = this.result.error.raw;
+            stack = this.result.error.stack;
         } else {
             stack = counsel.serviceProviders.stackTrace.get();
         }
 
-        delete result['pass'];
-        delete result['actual'];
-        delete result['expected'];
-        delete result['message'];
-        delete result['failureMessage'];
-        delete result['contents'];
-        delete result['regex'];
-		delete result['error'];
-
-		this.result = result;
+        delete this.result['pass'];
+        delete this.result['actual'];
+        delete this.result['expected'];
+        delete this.result['message'];
+        delete this.result['failureMessage'];
+        delete this.result['contents'];
+        delete this.result['regex'];
+        delete this.result['error'];
 
         if (this.failed) {
             let rawError = null;
@@ -62,7 +80,7 @@ module.exports = class AssertionResult
 
             this.error.raw = rawError;
         }
-	}
+    }
 
     passed()
     {
