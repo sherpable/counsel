@@ -1,5 +1,14 @@
-module.exports = class Assertions
+import { Reporter as ReporterContract } from '../Contracts/Reporters/Reporter';
+import { Assertions as AssertionsContract } from '../Contracts/Assertions/Assertions';
+
+export class Assertions implements AssertionsContract
 {
+	protected reporter: ReporterContract = null;
+
+	protected test: any = null;
+
+	protected assertions: object = null;
+
 	constructor(reporter)
 	{
 		this.reporter = reporter;

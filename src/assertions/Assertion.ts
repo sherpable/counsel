@@ -1,20 +1,42 @@
-module.exports = class Assertion
+import { Reporter as ReporterContract } from '../Contracts/Reporters/Reporter';
+import { Assertion as AssertionContract } from '../Contracts/Assertions/Assertion';
+
+export class Assertion implements AssertionContract
 {
-	constructor(type, parameters, test, reporter)
-	{
+    protected type: string = null;
+
+    protected parameters: Array<any> = [];
+
+    protected result: any = {};
+
+    protected test: any = {};
+
+    protected reporter: ReporterContract;
+
+    protected error: any = null;
+
+    protected pass: boolean = null;
+
+    protected fail: boolean = null;
+
+    protected actual: any = null;
+
+    protected expected: any = null;
+
+    protected message: string = null;
+
+    protected contents: any = null;
+
+    protected regex: RegExp = null;
+
+    protected failureMessage: string = null;
+
+    constructor(type: string, parameters: Array<any>, test: Object, reporter: ReporterContract)
+    {
         this.type = type;
         this.parameters = parameters;
         this.test = test;
         this.reporter = reporter;
-        this.error = null;
-        this.pass = null;
-        this.failed = null;
-        this.actual = null;
-        this.expected = null;
-        this.message = null;
-        this.contents = null;
-        this.regex = null;
-        this.failureMessage = null;
 	}
 
     execute()
@@ -27,7 +49,7 @@ module.exports = class Assertion
     processResult()
     {
         this.pass = this.result['pass'];
-        this.failed = ! this.result['pass'];
+        this.fail = ! this.result['pass'];
         this.actual = this.result['actual'];
         this.expected = this.result['expected'];
         this.message = this.result['message'];
@@ -53,7 +75,7 @@ module.exports = class Assertion
         delete this.result['regex'];
         delete this.result['error'];
 
-        if (this.failed) {
+        if (this.fail) {
             let rawError = null;
             if (this.error) {
                 rawError = this.error;
@@ -89,7 +111,7 @@ module.exports = class Assertion
 
     failed()
     {
-        return this.failed == true;
+        return this.fail == true;
     }
 
     getFailureMessage()

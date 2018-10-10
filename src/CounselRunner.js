@@ -22,7 +22,7 @@ module.exports = class CounselRunner
             nodeHook: 'node-hook',
             yaml: 'js-yaml',
             annotations: './utilities/annotations',
-            assertion: './assertions/Assertion',
+            assertion: '../dest/src/assertions/Assertion',
             test: './results/Test',
             reporter: './reporters/Reporter',
             testCase: './TestCase',
@@ -274,7 +274,7 @@ module.exports = class CounselRunner
     loadAssertions()
     {
         global.Assertions = new Proxy(
-            new (require('./assertions/Assertions'))(this.reporter),
+            new (require('../dest/src/assertions/Assertions').Assertions)(this.reporter),
             require('./assertions/AssertionsProxy')
         );
 
@@ -437,7 +437,7 @@ module.exports = class CounselRunner
     {
         global.Reporter = this.serviceProviders.reporter;
         global.TestCase = this.serviceProviders.testCase;
-        global.Assertion = this.serviceProviders.assertion;
+        global.Assertion = this.serviceProviders.assertion.Assertion;
         global.Test = this.serviceProviders.test;
         global.moment = this.serviceProviders.moment;
     }
