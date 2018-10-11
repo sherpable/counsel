@@ -18,5 +18,3 @@ test_script:
 
 after_test:
   - npm run coverage
-
-build: off
