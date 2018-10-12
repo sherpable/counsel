@@ -16,17 +16,19 @@ global.SkippedTestError = class SkippedTestError extends Error
 };
 
 (async () => {
-    global.counsel = new (require('./CounselRunner'));
-
+    let app = require('./CounselRunner').instantiate();
+    let chalk = use('chalk');
+    let figures = use('figures');
+    
     /**
      * Boot counsel, basically this will read the config file "counsel.js".
      * If a bootstrap file is provided it will load this fill.
      * Further it scan all provided locations and get the test classes.
      */
     try {
-        await counsel.boot();
+        await app.boot();
     } catch (error) {
-        console.error(counsel.serviceProviders.chalk.red(`  ${counsel.serviceProviders.figures.cross} counsel bootstrap error`));
+        console.error(chalk.red(`  ${figures.cross} counsel bootstrap error`));
         console.log(error);
         process.exit(2);
     }
@@ -35,9 +37,9 @@ global.SkippedTestError = class SkippedTestError extends Error
      * Filter and run all tests found in all the test classes.
      */
     try {
-        await counsel.test();
+        await app.test();
     } catch (error) {
-        console.error(counsel.serviceProviders.chalk.red(`  ${counsel.serviceProviders.figures.cross} counsel error`));
+        console.error(chalk.red(`  ${figures.cross} counsel error`));
         console.log(error);
         process.exit(2);
     }
@@ -45,5 +47,5 @@ global.SkippedTestError = class SkippedTestError extends Error
     /**
      * Finally, exit with the proper status code.
      */
-    counsel.exit();
+    app.exit();
 })();

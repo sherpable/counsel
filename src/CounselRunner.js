@@ -25,7 +25,7 @@ module.exports = class CounselRunner
             assertion: '../dest/src/assertions/Assertion',
             test: './results/Test',
             reporter: './reporters/Reporter',
-            testCase: './TestCase',
+            TestCase: './TestCase',
             IOTestRunner: './IOTestRunner',
         };
 
@@ -37,11 +37,9 @@ module.exports = class CounselRunner
 
         this.silent = false;
 
-
         if (this.arguments.silent) {
             this.silent = true;
         }
-
 
         if (this.arguments.config) {
             this.configFile = this.arguments.config;
@@ -89,6 +87,36 @@ module.exports = class CounselRunner
         }
     }
 
+    static instantiate(app = null)
+    {
+        if (! app) {
+            app = new this;
+        }
+        
+        this.instance = app;
+        
+        app.loadHelpers();
+        
+        app.loadServiceProviders();
+        
+        return app;
+    }
+    
+    loadHelpers()
+    {
+        require('./helpers.js');
+    }
+    
+    make(abstract, parameters)
+    {
+        return new (this.use(abstract))(...parameters);
+    }
+    
+    use(abstract)
+    {
+        return this.serviceProviders[abstract];
+    }
+    
     runCodeCoverage(reporterType)
     {
         if (! String(reporterType) || typeof reporterType != 'string') {
@@ -183,7 +211,7 @@ module.exports = class CounselRunner
     parseArguments()
     {
         this.optimist = require('optimist');
-        
+
         return this.optimist
             .boolean('is-io-test')
             .alias('h', 'help').describe('h', 'Show some help.')
@@ -264,8 +292,8 @@ module.exports = class CounselRunner
                 process.exit(0);
             }
         } catch (error) {
-            this.reporter.log(this.serviceProviders.chalk.red(`${this.serviceProviders.figures.cross} counsel error`));
-            this.reporter.log(error);
+            console.log(this.serviceProviders.chalk.red(`${this.serviceProviders.figures.cross} counsel error`));
+            console.log(error);
 
             process.exit(2);
         }
@@ -283,8 +311,6 @@ module.exports = class CounselRunner
 
     async boot()
     {
-        this.loadServiceProviders();
-
         this.defineGlobals();
 
         this.loadConfig();
@@ -436,7 +462,7 @@ module.exports = class CounselRunner
     defineGlobals()
     {
         global.Reporter = this.serviceProviders.reporter;
-        global.TestCase = this.serviceProviders.testCase;
+        global.TestCase = this.serviceProviders.TestCase;
         global.Assertion = this.serviceProviders.assertion.Assertion;
         global.Test = this.serviceProviders.test;
         global.moment = this.serviceProviders.moment;
@@ -486,7 +512,7 @@ module.exports = class CounselRunner
 
     exit()
     {
-        let statusCode = counsel.reporter.assertionsFailuresCount ? 2 : 0;
+        let statusCode = counsel().reporter.assertionsFailuresCount ? 2 : 0;
 
         process.exit(statusCode);
     }

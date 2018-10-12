@@ -63,7 +63,7 @@ export class Assertion implements AssertionContract
             this.error = this.result.error.raw;
             stack = this.result.error.stack;
         } else {
-            stack = counsel.serviceProviders.stackTrace.get();
+            stack = counsel().serviceProviders.stackTrace.get();
         }
 
         delete this.result['pass'];
@@ -145,7 +145,7 @@ export class Assertion implements AssertionContract
 
     beautify(value)
     {
-        if (counsel.isIOTestProcess) {
+        if (counsel().isIOTestProcess) {
             return value;
         }
 
