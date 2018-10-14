@@ -17,8 +17,8 @@ global.SkippedTestError = class SkippedTestError extends Error
 
 (async () => {
     let app = require('./CounselRunner').instantiate();
-    let chalk = use('chalk');
-    let figures = use('figures');
+    let chalk = resolve('chalk');
+    let figures = resolve('figures');
     
     /**
      * Boot counsel, basically this will read the config file "counsel.js".

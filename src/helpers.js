@@ -9,5 +9,10 @@ global.counsel = (abstract = null, parameters = []) =>
 
 global.use = (abstract) =>
 {
-    return require('./CounselRunner').instance.use(abstract);
+    require('./CounselRunner').instance.use(abstract);
+}
+
+global.resolve = (abstract) =>
+{
+    return require('./CounselRunner').instance.resolve(abstract);
 }
