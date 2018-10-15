@@ -8,9 +8,6 @@ install:
   - ps: Install-Product node lts
   - npm install
 
-build_script:
-  - npm run build
-
 test_script:
   - node --version
   - npm --version

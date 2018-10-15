@@ -22,10 +22,11 @@ module.exports = class CounselRunner
             nodeHook: 'node-hook',
             yaml: 'js-yaml',
             annotations: './utilities/annotations',
-            assertion: '../dest/src/assertions/Assertion',
-            test: './results/Test',
+            assertion: './assertions/Assertion',
+            Test: './results/Test',
+            TestClass: './results/TestClass',
             reporter: './reporters/Reporter',
-            testCase: './TestCase',
+            TestCase: './TestCase',
             IOTestRunner: './IOTestRunner',
         };
 
@@ -37,11 +38,9 @@ module.exports = class CounselRunner
 
         this.silent = false;
 
-
         if (this.arguments.silent) {
             this.silent = true;
         }
-
 
         if (this.arguments.config) {
             this.configFile = this.arguments.config;
@@ -89,6 +88,58 @@ module.exports = class CounselRunner
         }
     }
 
+    static instantiate(app = null)
+    {
+        if (! app) {
+            app = new this;
+        }
+        
+        this.instance = app;
+        
+        app.loadHelpers();
+        
+        app.loadServiceProviders();
+        
+        return app;
+    }
+    
+    loadHelpers()
+    {
+        require('./helpers.js');
+    }
+    
+    bind(abstract, concrete = null)
+    {
+        if (! concrete) {
+            concrete = abstract;
+        }
+
+        this.serviceProviders[abstract] = concrete;
+    }
+
+    make(abstract, parameters)
+    {
+        return new (this.resolve(abstract))(...parameters);
+    }
+    
+    use(abstract)
+    {
+        let alias;
+
+        [abstract, alias] = abstract.split(' as ');
+
+        if (! alias) {
+            alias = abstract;
+        }
+
+        global[alias] = this.resolve(abstract);
+    }
+
+    resolve(abstract)
+    {
+        return this.serviceProviders[abstract];
+    }
+    
     runCodeCoverage(reporterType)
     {
         if (! String(reporterType) || typeof reporterType != 'string') {
@@ -183,7 +234,7 @@ module.exports = class CounselRunner
     parseArguments()
     {
         this.optimist = require('optimist');
-        
+
         return this.optimist
             .boolean('is-io-test')
             .alias('h', 'help').describe('h', 'Show some help.')
@@ -264,8 +315,8 @@ module.exports = class CounselRunner
                 process.exit(0);
             }
         } catch (error) {
-            this.reporter.log(this.serviceProviders.chalk.red(`${this.serviceProviders.figures.cross} counsel error`));
-            this.reporter.log(error);
+            console.log(this.serviceProviders.chalk.red(`${this.serviceProviders.figures.cross} counsel error`));
+            console.log(error);
 
             process.exit(2);
         }
@@ -274,7 +325,7 @@ module.exports = class CounselRunner
     loadAssertions()
     {
         global.Assertions = new Proxy(
-            new (require('../dest/src/assertions/Assertions').Assertions)(this.reporter),
+            new (require('./assertions/Assertions'))(this.reporter),
             require('./assertions/AssertionsProxy')
         );
 
@@ -283,8 +334,6 @@ module.exports = class CounselRunner
 
     async boot()
     {
-        this.loadServiceProviders();
-
         this.defineGlobals();
 
         this.loadConfig();
@@ -436,9 +485,10 @@ module.exports = class CounselRunner
     defineGlobals()
     {
         global.Reporter = this.serviceProviders.reporter;
-        global.TestCase = this.serviceProviders.testCase;
-        global.Assertion = this.serviceProviders.assertion.Assertion;
-        global.Test = this.serviceProviders.test;
+        global.TestCase = this.serviceProviders.TestCase;
+        global.Assertion = this.serviceProviders.assertion;
+        global.Test = this.serviceProviders.Test;
+        global.TestClass = this.serviceProviders.TestClass;
         global.moment = this.serviceProviders.moment;
     }
 
@@ -486,178 +536,9 @@ module.exports = class CounselRunner
 
     exit()
     {
-        let statusCode = counsel.reporter.assertionsFailuresCount ? 2 : 0;
+        let statusCode = counsel().reporter.assertionsFailuresCount ? 2 : 0;
 
         process.exit(statusCode);
-    }
-
-    async runTestsInClass(testClass, path, testMethods)
-    {
-        // Invoke setUp method if exists
-        try {
-            if (typeof testClass['setUpInternal'] == 'function') {
-                testClass.name = path + ' -> ' + 'setUp';
-                testClass['setUpInternal']();
-            }
-        } catch (error) {
-            if (error instanceof IncompleteTestError) {
-                let incompleteTest = testClass.test;
-                if (! incompleteTest) {
-                    incompleteTest = { className: path, functionName: null };
-                }
-
-                incompleteTest.message = error.message;
-
-                this.reporter.afterEachIncompleteTest(incompleteTest);
-                this.reporter.afterEachTest(testClass.test);
-
-                return;
-            } else if (error instanceof SkippedTestError) {
-                let skippedTest = testClass.test;
-                if (! skippedTest) {
-                    skippedTest = { className: path, functionName: null };
-                }
-
-                skippedTest.message = error.message;
-
-                this.reporter.afterEachSkippedTest(skippedTest);
-                this.reporter.afterEachTest(testClass.test);
-
-                return;
-            } else {
-                throw error;
-            }
-        }
-
-        for (let name of Object.getOwnPropertyNames(Object.getPrototypeOf(testClass))) {
-            if (! testMethods.includes(name)) {
-                continue;
-            }
-
-            let method = testClass[name];
-
-            // Invoke beforeEach method if exists
-            // @todo: create test for this feature
-            if (typeof testClass['beforeEachInternal'] == 'function') {
-                testClass.name = path + ' -> ' + 'beforeEach';
-                testClass['beforeEachInternal']();
-            }
-
-            testClass.test = { file: path, function: name };
-            testClass.assertions.test = { file: path, function: name };
-
-            let test = new Test(path, name);
-
-            try {
-                await this.reporter.beforeEachTest(test);
-
-                // Run the test
-                await testClass[name]();
-
-                let testFailuresCount = this.reporter.testFailures[path]['functions'][name]['count'];
-                let testIncomplete = this.reporter.incompleteTests[`${path}->${name}`];
-                let testSkipped = this.reporter.skippedTests[`${path}->${name}`];
-                test.failuresCount = testFailuresCount;
-                test.incomplete = testIncomplete;
-                test.skipped = testSkipped;
-                test.results = this.reporter.results[path];
-
-                if (test.failuresCount > 0) {
-                    await this.reporter.afterEachFailedTest(test);
-                } else if (! test.incomplete && ! test.skipped) {
-                    await this.reporter.afterEachPassedTest(test);
-                }
-                await this.reporter.afterEachTest(test);
-
-                if (testClass.expectedException) {
-                    Assertions.test = testClass.test;
-                    Assertions.fail(`Assert that exception [${testClass.expectedException.name}] was thrown, but it was not.`, testClass.error);
-                }
-
-                if (testClass.notExpectedException) {
-                    Assertions.test = testClass.test;
-                    Assertions.pass(`Exception [${testClass.notExpectedException.name}] was not thrown.`);
-                }
-
-                // Invoke afterEach method if exists
-                // @todo: create test for this feature
-                if (typeof testClass['afterEachInternal'] == 'function') {
-                    testClass.name = path + ' -> ' + 'afterEach';
-                    testClass['afterEachInternal']();
-                }
-            } catch (error) {
-                if (error.message.startsWith('[vue-test-utils]')) {
-                    this.reporter.log('\n');
-                    this.reporter.log(this.serviceProviders.chalk.red(`Vue utils error`));
-                    this.reporter.log(error);
-
-                    process.exit(2);
-                } else {
-                    let expectedException = testClass.expectedException;
-                    let expectedExceptionMessage = testClass.expectedExceptionMessage;
-                    let notExpectedException = testClass.notExpectedException;
-
-                    if ((expectedException && expectedException.name) || (notExpectedException && notExpectedException.name)) {
-                        if (expectedException && expectedException.name) {
-                            Assertions.test = testClass.test;
-                            Assertions.assertEquals(expectedException.name, error.name, `Assert that exception [${expectedException.name}] was thrown, but is was not.\n  ${error.stack}`, testClass.error);
-                        }
-
-                        if(notExpectedException && notExpectedException.name) {
-                            Assertions.test = testClass.test;
-                            Assertions.assertNotEquals(notExpectedException.name, error.name, `Assert that exception [${notExpectedException.name}] was not thrown, but is was.\n  ${error.stack}`, testClass.error);
-                        }
-
-                        // After each test with exception
-                        let testFailuresCount = this.reporter.testFailures[path]['functions'][name]['count'];
-                        test.failuresCount = testFailuresCount;
-                        test.results = this.reporter.results[path];
-                        if (testFailuresCount > 0) {
-                            await this.reporter.afterEachFailedTest(test);
-                        } else {
-                            await this.reporter.afterEachPassedTest(test);
-                        }
-                        await this.reporter.afterEachTest(test);
-                    } else {
-                        if (error instanceof IncompleteTestError) {
-                            let incompleteTest = testClass.test;
-                            incompleteTest.className = incompleteTest.file;
-                            incompleteTest.functionName = incompleteTest.function;
-                            if (! incompleteTest) {
-                                incompleteTest = { className: path, functionName: null };
-                            }
-
-                            incompleteTest.message = error.message;
-
-                            this.reporter.afterEachIncompleteTest(incompleteTest);
-                            this.reporter.afterEachTest(test);
-                        } else if (error instanceof SkippedTestError) {
-                            let skippedTest = testClass.test;
-                            skippedTest.className = skippedTest.file;
-                            skippedTest.functionName = skippedTest.function;
-                            if (! skippedTest) {
-                                skippedTest = { className: path, functionName: null };
-                            }
-
-                            skippedTest.message = error.message;
-
-                            this.reporter.afterEachSkippedTest(skippedTest);
-                            this.reporter.afterEachTest(test);
-                        } else {
-                            throw error;
-                        }
-                    }
-                }
-
-                testClass['cleanupAfterSingleTestMethod']();
-            }
-        }
-
-        // Invoke tearDown method
-        if (typeof testClass['tearDownInternal'] == 'function') {
-            testClass.name = path + ' -> ' + 'tearDown';
-            testClass['tearDownInternal']();
-        }
     }
 
     async runTestsInLocation(location, reportingTests = false)
@@ -675,25 +556,13 @@ module.exports = class CounselRunner
                 continue;
             }
 
-            let testClass = new testFiles[filePath]();
-            testClass.reporter = this.reporter;
-            testClass.assertions = this.assertions;
+            let testClass = new TestClass(
+                new testFiles[filePath](),
+                filePath,
+                testClasses[filePath]
+            );
 
-            let testClassName = testClass.constructor.name;
-
-            await this.reporter.beforeEachTestClass(testClassName, filePath);
-
-            await this.runTestsInClass(testClass, filePath, testClasses[filePath]);
-
-            let testFailuresCount = this.reporter.testFailures[filePath]['count'];
-
-            await this.reporter.afterEachTestClass(testClassName, filePath, this.reporter.results[filePath], testFailuresCount);
-
-            if (testFailuresCount > 0) {
-                await this.reporter.afterEachFailedTestClass(testClassName, filePath, this.reporter.results[filePath], testFailuresCount);
-            } else {
-                await this.reporter.afterEachPassedTestClass(testClassName, filePath, this.reporter.results[filePath]);
-            }
+            await testClass.runTests();
         }
     }
 

@@ -105,7 +105,7 @@ module.exports = class TestCase
 		this.expectedExceptionFailureMessage = failureMessage;
 		this.error = {
 			raw: new Error,
-			stack: counsel.serviceProviders.stackTrace.get(),
+			stack: counsel().serviceProviders.stackTrace.get(),
 		}
 	}
 
@@ -115,7 +115,7 @@ module.exports = class TestCase
 		this.notExpectedExceptionFailureMessage = failureMessage;
 		this.error = {
 			raw: new Error,
-			stack: counsel.serviceProviders.stackTrace.get(),
+			stack: counsel().serviceProviders.stackTrace.get(),
 		}
 	}
 
@@ -134,12 +134,12 @@ module.exports = class TestCase
         let ioTest = {};
         let path = test.path;
         delete test.path;
-        
+
         ioTest.test = test;
 
-        ioTest.filename = counsel.path(path);
+        ioTest.filename = counsel().path(path);
         let ioTestReporter = new (require('./reporters/DotReporter'));
-        ioTestReporter.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: false, level: 0});
+        ioTestReporter.forceColor = new (counsel().serviceProviders.chalk).constructor({enabled: false, level: 0});
         ioTestReporter.silent = true;
 
         let parentTestReporter = Assertions.reporter;

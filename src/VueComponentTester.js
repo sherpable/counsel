@@ -2,7 +2,7 @@ module.exports = class VueComponentTester
 {
     constructor(testCaseInstance, template, props = {}, parentComponent = false)
     {
-        this.parsedTemplate = counsel.serviceProviders.cheerio.load(template);
+        this.parsedTemplate = counsel().serviceProviders.cheerio.load(template);
 
         template = template.replace(/\r?\n?/g, '');
         this.template = template;
@@ -35,14 +35,14 @@ module.exports = class VueComponentTester
         // Stub child components
         let componentTemplate = null;
         if (this.component.template) {
-            componentTemplate = counsel.serviceProviders.cheerio.load(this.component.template);
+            componentTemplate = counsel().serviceProviders.cheerio.load(this.component.template);
         } else {
-            componentTemplate = counsel.serviceProviders.cheerio.load(this.component.options.template);
+            componentTemplate = counsel().serviceProviders.cheerio.load(this.component.options.template);
         }
 
         let componentRootHtml = componentTemplate('body').children().first().html();
 
-        counsel.serviceProviders.cheerio(componentRootHtml).each((index, element) => {
+        counsel().serviceProviders.cheerio(componentRootHtml).each((index, element) => {
             let childComponentName = element.tagName;
 
             if (childComponentName) {
@@ -71,7 +71,7 @@ module.exports = class VueComponentTester
 
         this.parsedTemplate(this.componentName).children().each((index, element) => {
             let tagName = element.tagName;
-            let child = counsel.serviceProviders.cheerio(element);
+            let child = counsel().serviceProviders.cheerio(element);
 
             if (child.attr('slot')) {
                 this.slots[child.attr('slot')] = `<${tagName}>${child.html()}</${tagName}>`;
@@ -85,7 +85,7 @@ module.exports = class VueComponentTester
             let defaultSlotParentName = (componentTemplate('slot').not('[name]').parent()[0].name);
 
             let cleanComponentTemplate = this.component.options.template.replace(/\s+/g, '');
-            let cleanSlotParentHtml = counsel.serviceProviders.cheerio.html(componentTemplate('slot').not('[name]').parent()).replace(/\s+/g, '');
+            let cleanSlotParentHtml = counsel().serviceProviders.cheerio.html(componentTemplate('slot').not('[name]').parent()).replace(/\s+/g, '');
 
             if (cleanSlotParentHtml != cleanComponentTemplate) {
                 componentTemplate('slot').not('[name]').parent().replaceWith('<slot></slot>');

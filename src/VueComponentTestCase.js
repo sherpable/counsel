@@ -4,7 +4,7 @@ module.exports = class VueComponentTestCase extends TestCase
     {
         super();
 
-        this.clock = counsel.serviceProviders.sinon.useFakeTimers();
+        this.clock = counsel().serviceProviders.sinon.useFakeTimers();
     }
 
     render(template, props)
@@ -56,7 +56,7 @@ module.exports = class VueComponentTestCase extends TestCase
     beforeEachInternal()
     {
         this.clock.restore();
-        this.clock = counsel.serviceProviders.sinon.useFakeTimers();
+        this.clock = counsel().serviceProviders.sinon.useFakeTimers();
 
         super.beforeEachInternal();
     }

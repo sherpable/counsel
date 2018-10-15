@@ -8,7 +8,4 @@ node_js:
   - "node"
   - "lts/*"
 
-before_script:
-  - npm run build
-
 after_success: npm run coverage

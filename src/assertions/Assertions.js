@@ -1,14 +1,5 @@
-import { Reporter as ReporterContract } from '../Contracts/Reporters/Reporter';
-import { Assertions as AssertionsContract } from '../Contracts/Assertions/Assertions';
-
-export class Assertions implements AssertionsContract
+module.exports = class Assertions
 {
-	protected reporter: ReporterContract = null;
-
-	protected test: any = null;
-
-	protected assertions: object = null;
-
 	constructor(reporter)
 	{
 		this.reporter = reporter;
@@ -59,7 +50,7 @@ export class Assertions implements AssertionsContract
 		    assertEquals: (expected, actual, message, error = null) =>
 		    {
 		        return {
-		            pass: counsel.serviceProviders.concordance.compare(actual, expected).pass == true,
+		            pass: counsel().serviceProviders.concordance.compare(actual, expected).pass == true,
 		            message,
 		            expected,
 		            actual,
@@ -70,7 +61,7 @@ export class Assertions implements AssertionsContract
 		    assertNotEquals: (expected, actual, message, error = null) =>
 		    {
 		        return {
-		            pass: counsel.serviceProviders.concordance.compare(actual, expected).pass == false,
+		            pass: counsel().serviceProviders.concordance.compare(actual, expected).pass == false,
 		            message,
 		            expected,
 		            actual,
@@ -161,14 +152,14 @@ export class Assertions implements AssertionsContract
 	assertionClass(type)
 	{
 		let assertionFileName = type.charAt(0).toUpperCase() + type.substr(1);
-		
-		let rootFolder = counsel.serviceProviders.path.normalize(
+
+		let rootFolder = counsel().serviceProviders.path.normalize(
 		    process.cwd() + '/'
 		);
 
 		let assertionFileLocation = `${rootFolder}src/assertions/results/${assertionFileName}.js`;
 
-		if (counsel.serviceProviders.fs.existsSync(assertionFileLocation)) {
+		if (counsel().serviceProviders.fs.existsSync(assertionFileLocation)) {
 			return require(assertionFileLocation);
 		} else {
 			return Assertion;

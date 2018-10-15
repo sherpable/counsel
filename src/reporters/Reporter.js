@@ -9,17 +9,17 @@ module.exports = class Reporter
         this.prettier = require('prettier');
         this.isHtml = require('is-html');
 
-        if (counsel.isIOTestProcess) {
-            this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: false, level: 0});
+        if (counsel().isIOTestProcess) {
+            this.forceColor = new (counsel().serviceProviders.chalk).constructor({enabled: false, level: 0});
         } else {
-            this.forceColor = new counsel.serviceProviders.chalk.constructor({enabled: true});
+            this.forceColor = new (counsel().serviceProviders.chalk).constructor({enabled: true});
         }
 
-        this.theme = require('../Theme')(counsel.serviceProviders.chalk, this.forceColor);
+        this.theme = require('../Theme')(counsel().serviceProviders.chalk, this.forceColor);
 
         this.silent = false;
         this.output = '';
-        
+
         this.reporterDate = Date;
 
         this.results = {};
@@ -102,9 +102,9 @@ module.exports = class Reporter
         this.executionTime = this.endTime - this.startTime;
         this.executionTimeFormatted = this.formatTime(this.executionTime);
 
-        counsel.reportToParentProcess({
-            root: counsel.root,
-            version: counsel.version,
+        counsel().reportToParentProcess({
+            root: counsel().root,
+            version: counsel().version,
             executionTimeFormatted: this.executionTimeFormatted,
             executionTime: this.executionTime,
             ...this.testResults(),
@@ -142,7 +142,7 @@ module.exports = class Reporter
             if (this.testsIncompleteCount > 0) {
                 warningMessage += this.forceColor.yellow(`${this.testsIncompleteCount} incomplete`);
 
-                if (counsel.arguments.verbose) {
+                if (counsel().arguments.verbose) {
                     for (let incompleteTest in this.incompleteTests) {
                         incompleteTestsOverview += '\n';
                         incompleteTestsOverview += incompleteTest;
@@ -159,7 +159,7 @@ module.exports = class Reporter
 
                 warningMessage += this.forceColor.yellow(`${this.testsSkippedCount} skipped`);
 
-                if (counsel.arguments.verbose) {
+                if (counsel().arguments.verbose) {
                     for (let skippedTest in this.skippedTests) {
                         skippedTestsOverview += '\n';
                         skippedTestsOverview += skippedTest;
@@ -181,12 +181,12 @@ module.exports = class Reporter
 
     beforeIOTest()
     {
-        
+
     }
 
     afterIOTest()
     {
-        
+
     }
 
     beforeEachIOTest(testContext)
@@ -201,14 +201,14 @@ module.exports = class Reporter
         //     failedCount++;
         // }
 
-        
+
 
         // let passedCount = Object.keys(passedAssertions).length;
         // if (! mainTestPasses) {
         //     passedCount++;
         // }
 
-        
+
         this.testsCount++;
     }
 
@@ -227,7 +227,7 @@ module.exports = class Reporter
     afterEachIncompleteTest(test)
     {
         this.testsIncompleteCount++;
-        
+
         if (test.className && test.functionName) {
             this.incompleteTests[`${test.className}->${test.functionName}`] = test.message;
         } else {
@@ -238,7 +238,7 @@ module.exports = class Reporter
     afterEachSkippedTest(test)
     {
         this.testsSkippedCount++;
-        
+
         if (test.className && test.functionName) {
             this.skippedTests[`${test.className}->${test.functionName}`] = test.message;
         } else {
@@ -248,7 +248,7 @@ module.exports = class Reporter
 
     afterEachIOTestWithoutResults(testContext, testProcess)
     {
-        
+
     }
 
     beforeEachTestClass(className, path)
@@ -438,7 +438,7 @@ module.exports = class Reporter
         if (this.silent) {
             return;
         }
-        
+
         process.stdout.write(message);
     }
 
@@ -570,7 +570,7 @@ module.exports = class Reporter
         sourceInput.isDependency = false;
         sourceInput.isWithinProject = true;
 
-        let contents = counsel.serviceProviders.fs.readFileSync(sourceInput.file, 'utf8');
+        let contents = counsel().serviceProviders.fs.readFileSync(sourceInput.file, 'utf8');
         const excerpt = codeExcerpt(contents, sourceInput.line, { around: 1 });
 
         if (!excerpt) {

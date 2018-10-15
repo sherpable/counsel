@@ -1,4 +1,4 @@
-module.exports class IOTest
+module.exports = class IOTest
 {
 	constructor()
 	{

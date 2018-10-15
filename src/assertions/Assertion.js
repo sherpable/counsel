@@ -1,42 +1,20 @@
-import { Reporter as ReporterContract } from '../Contracts/Reporters/Reporter';
-import { Assertion as AssertionContract } from '../Contracts/Assertions/Assertion';
-
-export class Assertion implements AssertionContract
+module.exports = class Assertion
 {
-    protected type: string = null;
-
-    protected parameters: Array<any> = [];
-
-    protected result: any = {};
-
-    protected test: any = {};
-
-    protected reporter: ReporterContract;
-
-    protected error: any = null;
-
-    protected pass: boolean = null;
-
-    protected fail: boolean = null;
-
-    protected actual: any = null;
-
-    protected expected: any = null;
-
-    protected message: string = null;
-
-    protected contents: any = null;
-
-    protected regex: RegExp = null;
-
-    protected failureMessage: string = null;
-
-    constructor(type: string, parameters: Array<any>, test: Object, reporter: ReporterContract)
+    constructor(type, parameters, test, reporter)
     {
         this.type = type;
         this.parameters = parameters;
         this.test = test;
         this.reporter = reporter;
+        this.error = null;	
+        this.pass = null;	
+        this.fail = null;	
+        this.actual = null;	
+        this.expected = null;	
+        this.message = null;	
+        this.contents = null;	
+        this.regex = null;	
+        this.failureMessage = null;
 	}
 
     execute()
@@ -63,7 +41,7 @@ export class Assertion implements AssertionContract
             this.error = this.result.error.raw;
             stack = this.result.error.stack;
         } else {
-            stack = counsel.serviceProviders.stackTrace.get();
+            stack = counsel().serviceProviders.stackTrace.get();
         }
 
         delete this.result['pass'];
@@ -145,7 +123,7 @@ export class Assertion implements AssertionContract
 
     beautify(value)
     {
-        if (counsel.isIOTestProcess) {
+        if (counsel().isIOTestProcess) {
             return value;
         }
 
