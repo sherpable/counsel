@@ -1,3 +1,5 @@
+use('Assertion');
+
 module.exports = class AssertCount extends Assertion
 {
     describeFailure()

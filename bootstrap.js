@@ -141,7 +141,7 @@ Vue.component('countdown', {
 
         remaining()
         {
-            let remaining = moment.duration(Date.parse(this.until) - this.now);
+            let remaining = window.moment.duration(Date.parse(this.until) - this.now);
             if (remaining <= 0) {
                 this.$emit('finished');
             }

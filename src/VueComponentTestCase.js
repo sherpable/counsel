@@ -1,10 +1,14 @@
+use('TestCase');
+
 module.exports = class VueComponentTestCase extends TestCase
 {
     constructor()
     {
         super();
 
-        this.clock = counsel().serviceProviders.sinon.useFakeTimers();
+        this.moment = counsel().resolve('moment');
+
+        this.clock = counsel().resolve('sinon').useFakeTimers();
     }
 
     render(template, props)

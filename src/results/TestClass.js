@@ -33,7 +33,7 @@ module.exports = class TestClass
 
 	async runTest(method)
 	{
-		let test = new Test(this.filePath, method);
+		let test = new (counsel().resolve('Test'))(this.filePath, method);
 
 		try {
 			await this.reporter.beforeEachTest(test);
@@ -58,12 +58,12 @@ module.exports = class TestClass
 			await this.reporter.afterEachTest(test);
 
 			if (this.testClass.expectedException) {
-				Assertions.test = this.testClass.test;
+				Assertions.setTest(this.testClass.test);
 				Assertions.fail(`Assert that exception [${this.testClass.expectedException.name}] was thrown, but it was not.`, this.testClass.error);
 			}
 
 			if (this.testClass.notExpectedException) {
-				Assertions.test = this.testClass.test;
+				Assertions.setTest(this.testClass.test);
 				Assertions.pass(`Exception [${this.testClass.notExpectedException.name}] was not thrown.`);
 			}
 
@@ -83,12 +83,12 @@ module.exports = class TestClass
 
 				if ((expectedException && expectedException.name) || (notExpectedException && notExpectedException.name)) {
 					if (expectedException && expectedException.name) {
-						Assertions.test = this.testClass.test;
+						Assertions.setTest(this.testClass.test);
 						Assertions.assertEquals(expectedException.name, error.name, `Assert that exception [${expectedException.name}] was thrown, but is was not.\n  ${error.stack}`, this.testClass.error);
 					}
 
 					if(notExpectedException && notExpectedException.name) {
-						Assertions.test = this.testClass.test;
+						Assertions.setTest(this.testClass.test);
 						Assertions.assertNotEquals(notExpectedException.name, error.name, `Assert that exception [${notExpectedException.name}] was not thrown, but is was.\n  ${error.stack}`, this.testClass.error);
 					}
 
@@ -153,7 +153,7 @@ module.exports = class TestClass
 			this.invokeIfNeeded('beforeEachInternal', 'beforeEach');
 
             this.testClass.test = { file: this.filePath, function: method };
-            this.testClass.assertions.test = { file: this.filePath, function: method };
+            this.testClass.assertions.setTest({ file: this.filePath, function: method });
 
 			await this.runTest(method);
         }

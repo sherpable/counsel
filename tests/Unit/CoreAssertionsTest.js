@@ -1,11 +1,3 @@
-const foo = class Foo
-{
-    constructor()
-    {
-        this.foo = 'bar';
-    }
-}
-
 module.exports = class CoreAssertionsTest extends TestCase
 {
     /** @test */
@@ -101,5 +93,13 @@ module.exports = class CoreAssertionsTest extends TestCase
         }).catch(error => {
             reject(error);
         });
+    }
+}
+
+const foo = class Foo
+{
+    constructor()
+    {
+        this.foo = 'bar';
     }
 }

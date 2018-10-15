@@ -22,13 +22,18 @@ module.exports = class CounselRunner
             nodeHook: 'node-hook',
             yaml: 'js-yaml',
             annotations: './utilities/annotations',
-            assertion: './assertions/Assertion',
+            Assertion: './assertions/Assertion',
             Test: './results/Test',
             TestClass: './results/TestClass',
-            reporter: './reporters/Reporter',
+            Reporter: './reporters/Reporter',
             TestCase: './TestCase',
             IOTestRunner: './IOTestRunner',
         };
+
+        this.facades = {
+            Assertions: 'Assertions',
+            TestCase: 'TestCase',
+        }
 
         this.packageJson = require(require('path').resolve(__dirname, '../package.json'));
 
@@ -324,18 +329,16 @@ module.exports = class CounselRunner
 
     loadAssertions()
     {
-        global.Assertions = new Proxy(
+        this.bind('Assertions', new Proxy(
             new (require('./assertions/Assertions'))(this.reporter),
             require('./assertions/AssertionsProxy')
-        );
+        ));
 
-        this.assertions = Assertions;
+        this.assertions = this.resolve('Assertions');
     }
 
     async boot()
     {
-        this.defineGlobals();
-
         this.loadConfig();
 
         await this.reporter.beforeBoot();
@@ -421,6 +424,8 @@ module.exports = class CounselRunner
 
         this.loadAssertions();
 
+        this.defineFacades();
+
         await this.booted();
 
         await this.reporter.afterBoot();
@@ -482,14 +487,21 @@ module.exports = class CounselRunner
         }
     }
 
-    defineGlobals()
+    defineFacades()
     {
-        global.Reporter = this.serviceProviders.reporter;
-        global.TestCase = this.serviceProviders.TestCase;
-        global.Assertion = this.serviceProviders.assertion;
-        global.Test = this.serviceProviders.Test;
-        global.TestClass = this.serviceProviders.TestClass;
-        global.moment = this.serviceProviders.moment;
+        for (let resolveKey in this.facades) {
+            this.defineFacade(this.facades[resolveKey], resolveKey);
+        }
+
+        global.TestCase = this.resolve('TestCase');
+    }
+
+    defineFacade(globalName, resolveKey)
+    {
+        global[globalName] = new Proxy(
+            new (require('./Facade'))(resolveKey),
+            require('./FacadeProxy')
+        );
     }
 
     async test()
@@ -556,7 +568,7 @@ module.exports = class CounselRunner
                 continue;
             }
 
-            let testClass = new TestClass(
+            let testClass = new (this.resolve('TestClass'))(
                 new testFiles[filePath](),
                 filePath,
                 testClasses[filePath]

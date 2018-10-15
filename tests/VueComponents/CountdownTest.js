@@ -2,7 +2,7 @@ module.exports = class CountdownTest extends VueComponentTestCase
 {
     beforeEach()
     {
-        this.until = moment().add(10, 'seconds');
+        this.until = this.moment().add(10, 'seconds');
 
         this.component = this.render('<countdown :until="until"></countdown>', { until: this.until });
     }

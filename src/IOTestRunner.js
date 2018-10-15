@@ -182,7 +182,7 @@ module.exports = class IOTestRunner
 		    // Main test
 		    actual = result.join('\n');
 
-		    Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true, executeInformation };
+		    Assertions.setTest({ name: test.test, file: testFile, function: 'main test', io: true, executeInformation });
 		    test.expect = test.expect.trim();
 		    actual = actual.trim();
 		    Assertions.assertEquals(test.expect, actual);
@@ -193,7 +193,7 @@ module.exports = class IOTestRunner
 		    	mainTestPassed = false;
 		    }
 		} else {
-			Assertions.test = { name: test.test, file: testFile, function: 'main test', io: true, executeInformation };
+			Assertions.setTest({ name: test.test, file: testFile, function: 'main test', io: true, executeInformation });
 
 			if (test.expect == 'undefined') {
 				test.expect = undefined;
@@ -222,7 +222,7 @@ module.exports = class IOTestRunner
 
 	    if (result && test.assertions && Object.keys(test.assertions).length) {
 		    for (let assertion in test.assertions) {
-				Assertions.test = { name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true, executeInformation };
+				Assertions.setTest({ name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true, executeInformation });
 		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);
 
 		        if (test.assertions[assertion] === counselResults[assertion]) {

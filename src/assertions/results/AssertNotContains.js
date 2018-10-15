@@ -1,3 +1,5 @@
+use('Assertion');
+
 module.exports = class AssertNotContains extends Assertion
 {
     describeFailure()

@@ -1,3 +1,5 @@
+use('Assertion');
+
 module.exports = class AssertNotEquals extends Assertion
 {
     describeFailure()

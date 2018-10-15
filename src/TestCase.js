@@ -144,7 +144,7 @@ module.exports = class TestCase
 
         let parentTestReporter = Assertions.reporter;
         let parentTest = Assertions.test;
-        Assertions.reporter = ioTestReporter;
+        Assertions.setReporter(ioTestReporter);
         let ioTestRunner = new (require('./IOTestRunner'))([ioTest], ioTestReporter);
 
         ioTestReporter.beforeTest();
@@ -153,8 +153,8 @@ module.exports = class TestCase
 
         ioTestReporter.afterTest();
 
-        Assertions.reporter = parentTestReporter;
-        Assertions.test = parentTest;
+        Assertions.setReporter(parentTestReporter);
+        Assertions.setTest(parentTest);
 
         return ioTestReporter;
 	}

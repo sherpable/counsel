@@ -1,3 +1,5 @@
+use('Reporter');
+
 module.exports = class DotReporter extends Reporter
 {
     constructor()

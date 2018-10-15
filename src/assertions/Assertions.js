@@ -1,3 +1,5 @@
+use('Assertion');
+
 module.exports = class Assertions
 {
 	constructor(reporter)
@@ -108,6 +110,16 @@ module.exports = class Assertions
 		        };
 		    },
 		};
+	}
+
+	setTest(test)
+	{
+		this.test = test;
+	}
+
+	setReporter(reporter)
+	{
+		this.reporter = reporter;
 	}
 
 	macro(name, assertion)
