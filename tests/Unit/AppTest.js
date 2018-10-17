@@ -1,3 +1,5 @@
+use('TestCase');
+
 module.exports = class AppTest extends TestCase
 {
     setUp()

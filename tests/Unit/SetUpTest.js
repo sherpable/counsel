@@ -1,3 +1,5 @@
+use('TestCase');
+
 module.exports = class SetUpTest extends TestCase
 {
     constructor()

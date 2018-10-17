@@ -379,7 +379,8 @@ module.exports = class CounselRunner
             });
 
             // Load vue specific stuff
-            global.VueComponentTestCase = require('./VueComponentTestCase');
+            this.bind('VueComponentTestCase', require('./VueComponentTestCase'));
+            // global.VueComponentTestCase = require('./VueComponentTestCase');
             global.VueComponentTester = require('./VueComponentTester');
             global.vueTestUtils = require('@vue/test-utils');
             if (! this.config.vue.require) {
@@ -493,7 +494,7 @@ module.exports = class CounselRunner
             this.defineFacade(this.facades[resolveKey], resolveKey);
         }
 
-        global.TestCase = this.resolve('TestCase');
+        // global.TestCase = this.resolve('TestCase');
     }
 
     defineFacade(globalName, resolveKey)

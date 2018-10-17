@@ -1,3 +1,5 @@
+use('VueComponentTestCase');
+
 module.exports = class MenuTest extends VueComponentTestCase
 {
     beforeEach()

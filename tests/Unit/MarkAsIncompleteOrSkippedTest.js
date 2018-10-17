@@ -1,3 +1,5 @@
+use('TestCase');
+
 module.exports = class MarkAsIncompleteOrSkippedTest extends TestCase
 {
     /** @test */

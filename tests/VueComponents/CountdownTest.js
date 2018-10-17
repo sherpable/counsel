@@ -1,3 +1,5 @@
+use('VueComponentTestCase');
+
 module.exports = class CountdownTest extends VueComponentTestCase
 {
     beforeEach()

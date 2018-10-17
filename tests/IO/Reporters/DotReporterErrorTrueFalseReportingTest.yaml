@@ -8,22 +8,22 @@ expect: |
   xx                        2 / 2 (100%)
 
   x 1) CoreAssertionsTest -> it_is_able_to_assert_true
-  {{root}}io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:6
+  {{root}}io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:8
 
-  5|     {
-  6|         this.assertTrue(false);
-  7|     }
+  7|     {
+  8|         this.assertTrue(false);
+  9|     }
 
   Value is not truthy:
 
   false
 
   x 2) CoreAssertionsTest -> it_is_able_to_assert_false
-  {{root}}io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:12
+  {{root}}io-tests/dot-reporter-true-false-error-reporting-test/CoreAssertionsTest.js:14
 
-  11|     {
-  12|         this.assertFalse(true);
-  13|     }
+  13|     {
+  14|         this.assertFalse(true);
+  15|     }
 
   Value is not falsy:
 

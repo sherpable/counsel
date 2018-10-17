@@ -1,10 +1,4 @@
-const foo = class Foo
-{
-    constructor()
-    {
-        this.foo = 'bar';
-    }
-}
+use('TestCase');
 
 module.exports = class CoreAssertionsTest extends TestCase
 {
@@ -101,5 +95,13 @@ module.exports = class CoreAssertionsTest extends TestCase
         }).catch(error => {
             reject(error);
         });
+    }
+}
+
+const foo = class Foo
+{
+    constructor()
+    {
+        this.foo = 'bar';
     }
 }

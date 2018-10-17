@@ -1,3 +1,5 @@
+use('TestCase');
+
 module.exports = class TearDownTest extends TestCase
 {
     constructor()
