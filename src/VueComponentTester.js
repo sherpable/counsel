@@ -60,7 +60,7 @@ module.exports = class VueComponentTester
 
                 if (stub) {
                     // let childComponentWrapper = vueTestUtils.mount(stub);
-                    let childComponent = new VueComponentTester(this.tester, `<${childComponentName}>${stub.template}</${childComponentName}>`, stub.props, this.component);
+                    let childComponent = new (counsel().resolve('VueComponentTester'))(this.tester, `<${childComponentName}>${stub.template}</${childComponentName}>`, stub.props, this.component);
                     this.children[childComponentName] = childComponent;
                     this.config.stubs[childComponentName] = childComponent.toHtml();
                 }
@@ -110,7 +110,7 @@ module.exports = class VueComponentTester
 
         this.config.slots = this.slots;
 
-        this.wrapper = vueTestUtils.mount(testComponent, this.config);
+        this.wrapper = counsel().resolve('vueTestUtils').mount(testComponent, this.config);
 
         this.vm = this.wrapper.vm;
 

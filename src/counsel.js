@@ -1,20 +1,5 @@
 #!/usr/bin/env node
 
-global.IncompleteTestError = class IncompleteTestError extends Error
-{
-    toString()
-    {
-        return `${this.constructor.name}: ${this.message}`;
-    }
-};
-global.SkippedTestError = class SkippedTestError extends Error
-{
-    toString()
-    {
-        return `${this.constructor.name}: ${this.message}`;
-    }
-};
-
 (async () => {
     let app = require('./CounselRunner').instantiate();
     let chalk = resolve('chalk');

@@ -13,7 +13,7 @@ module.exports = class VueComponentTestCase extends TestCase
 
     render(template, props)
     {
-        return new Proxy(VueComponentTester.test(
+        return new Proxy(counsel().resolve('VueComponentTester').test(
             this,
             template,
             props

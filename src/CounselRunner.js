@@ -296,6 +296,25 @@ module.exports = class CounselRunner
             this.loadReporter(this.config.reporter);
         }
     }
+    
+    loadCustomErrorClasses()
+    {
+        global.IncompleteTestError = class IncompleteTestError extends Error
+        {
+            toString()
+            {
+                return `${this.constructor.name}: ${this.message}`;
+            }
+        };
+
+        global.SkippedTestError = class SkippedTestError extends Error
+        {
+            toString()
+            {
+                return `${this.constructor.name}: ${this.message}`;
+            }
+        };
+    }
 
     loadReporter(reporter)
     {
@@ -340,6 +359,8 @@ module.exports = class CounselRunner
     async boot()
     {
         this.loadConfig();
+        
+        this.loadCustomErrorClasses();
 
         await this.reporter.beforeBoot();
 
@@ -380,9 +401,8 @@ module.exports = class CounselRunner
 
             // Load vue specific stuff
             this.bind('VueComponentTestCase', require('./VueComponentTestCase'));
-            // global.VueComponentTestCase = require('./VueComponentTestCase');
-            global.VueComponentTester = require('./VueComponentTester');
-            global.vueTestUtils = require('@vue/test-utils');
+            this.bind('VueComponentTester', require('./VueComponentTester'));
+            this.bind('vueTestUtils', require('@vue/test-utils'));
             if (! this.config.vue.require) {
                 this.config.vue.require = () => {
                     require('vue');
@@ -493,8 +513,6 @@ module.exports = class CounselRunner
         for (let resolveKey in this.facades) {
             this.defineFacade(this.facades[resolveKey], resolveKey);
         }
-
-        // global.TestCase = this.resolve('TestCase');
     }
 
     defineFacade(globalName, resolveKey)
