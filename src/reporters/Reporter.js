@@ -251,29 +251,29 @@ module.exports = class Reporter
 
     }
 
-    beforeEachTestClass(className, path)
+    beforeEachTestClass(testClass)
     {
-        if (! this.testFailures[path]) {
-            this.testFailures[path] = {};
-            this.testFailures[path]['functions'] = [];
+        if (! this.testFailures[testClass.filePath]) {
+            this.testFailures[testClass.filePath] = {};
+            this.testFailures[testClass.filePath]['functions'] = [];
         }
 
-        if (! this.testFailures[path]['count']) {
-            this.testFailures[path]['count'] = 0;
+        if (! this.testFailures[testClass.filePath]['count']) {
+            this.testFailures[testClass.filePath]['count'] = 0;
         }
     }
 
-    afterEachTestClass(className, path, results, failuresCount)
+    afterEachTestClass(testClass)
     {
 
     }
 
-    afterEachFailedTestClass(className, path, results, failuresCount)
+    afterEachFailedTestClass(testClass)
     {
 
     }
 
-    afterEachPassedTestClass(className, path, results)
+    afterEachPassedTestClass(testClass)
     {
 
     }

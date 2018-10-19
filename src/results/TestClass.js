@@ -16,18 +16,18 @@ module.exports = class TestClass
 
 	async runTests()
 	{
-		await this.reporter.beforeEachTestClass(this.testClassName, this.filePath);
+		await this.reporter.beforeEachTestClass(this);
 
 		await this.runTestsInClass();
 
 		let testFailuresCount = this.reporter.testFailures[this.filePath]['count'];
 
-		await this.reporter.afterEachTestClass(this.testClassName, this.filePath, this.reporter.results[this.filePath], testFailuresCount);
+		await this.reporter.afterEachTestClass(this);
 
 		if (testFailuresCount > 0) {
-			await this.reporter.afterEachFailedTestClass(this.testClassName, this.filePath, this.reporter.results[this.filePath], testFailuresCount);
+			await this.reporter.afterEachFailedTestClass(this);
 		} else {
-			await this.reporter.afterEachPassedTestClass(this.testClassName, this.filePath, this.reporter.results[this.filePath]);
+			await this.reporter.afterEachPassedTestClass(this);
 		}
 	}
 

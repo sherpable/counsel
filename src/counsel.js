@@ -6,7 +6,7 @@
     let figures = resolve('figures');
     
     /**
-     * Boot counsel, basically this will read the config file "counsel.js".
+     * Boot counsel, basically this will read the config file "counsel.config.js".
      * If a bootstrap file is provided it will load this fill.
      * Further it scan all provided locations and get the test classes.
      */
