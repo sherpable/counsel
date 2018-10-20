@@ -189,39 +189,24 @@ module.exports = class Reporter
 
     }
 
-    beforeEachIOTest(testContext)
+    beforeEachIOTest(test)
     {
 
     }
 
-    afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions)
+    afterEachIOTest(ioTest)
     {
-        // let failedCount = Object.keys(failedAssertions).length;
-        // if (! mainTestPasses) {
-        //     failedCount++;
-        // }
-
-
-
-        // let passedCount = Object.keys(passedAssertions).length;
-        // if (! mainTestPasses) {
-        //     passedCount++;
-        // }
-
-
         this.testsCount++;
     }
 
-    afterEachFailedIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions, testProcess)
+    afterEachFailedIOTest(ioTest)
     {
         this.testsFailuresCount++;
-        // this.afterEachIOTest(testContext, actual, mainTestPasses, failedAssertions, passedAssertions);
     }
 
-    afterEachPassedIOTest(testContext, passedAssertions)
+    afterEachPassedIOTest(ioTest)
     {
         this.testsPassesCount++;
-        // this.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
     }
 
     afterEachIncompleteTest(test)
@@ -246,7 +231,7 @@ module.exports = class Reporter
         }
     }
 
-    afterEachIOTestWithoutResults(testContext, testProcess)
+    afterEachIOTestWithoutResults(ioTest)
     {
 
     }

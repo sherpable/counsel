@@ -24,6 +24,7 @@ module.exports = class CounselRunner
             annotations: './utilities/annotations',
             Assertion: './assertions/Assertion',
             Test: './results/Test',
+            IOTest: './results/IOTest',
             TestClass: './results/TestClass',
             Reporter: './reporters/Reporter',
             TestCase: './TestCase',

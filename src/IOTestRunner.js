@@ -13,7 +13,6 @@ module.exports = class IOTestRunner
 		this.yaml = require('js-yaml');
 		this.chalk = require('chalk');
 		this.figures = require('figures');
-		this.dumper = require('intitule');
 		this.path = require('path');
 
 		if (process.platform == 'win32') {
@@ -25,46 +24,34 @@ module.exports = class IOTestRunner
 	            process.cwd() + '/'
 	        );
     	}
-
-		this.dumper.leftMarginSpaces = 4;
-		this.dumper.makeGlobal();
 	}
 
 	test()
 	{
 		this.tests.forEach(async test => {
-			if (this.testNeedToRunInCurrentPlatform(test) && test.test.skip !== true) {
-				await this.reporter.beforeEachIOTest(test);
+			let ioTest = new (counsel().resolve('IOTest'))(test);
 
-            	await this.runTest(test);
+			if (ioTest.needToRun()) {
+				await this.reporter.beforeEachIOTest(ioTest);
+
+            	await this.runTest(ioTest);
         	} else {
-        		await this.reporter.beforeEachIOTest(test);
+        		await this.reporter.beforeEachIOTest(ioTest);
 
         		// Nicer to implement like this:
         		// throw new TestSkippedError('IO test is skipped.');
-        		// Instead of this:
-        		this.reporter.afterEachSkippedTest({
-        			file: test.filename,
-        			function: test.test.test.trim(),
-        		}, 'IO test is skipped.');
+				// Instead of this:
+				ioTest.message = 'IO test is skipped.';
+        		this.reporter.afterEachSkippedTest(ioTest);
 
-        		this.reporter.afterEachIOTest(test, null, null, null, null);
+        		this.reporter.afterEachIOTest(ioTest);
         	}
         });
 
         return this.pass;
 	}
 
-	testNeedToRunInCurrentPlatform(test)
-	{
-		if (! test.test.platform) {
-			return true;
-		}
-
-		return test.test.platform.includes(process.platform);
-	}
-
-	async runTest(testContext)
+	async runTest(ioTest)
 	{
 		let mainTestPassed = null;
 
@@ -72,11 +59,9 @@ module.exports = class IOTestRunner
 
 		let childParentMessage = false;
 
-		let testFile = testContext.filename;
+		let testFile = ioTest.filename;
 
-		let test = testContext.test;
-		test.test = test.test.trim();
-		test.perform = test.perform.trim();
+		let test = ioTest.test.test;
 
 		let spawn = require('child_process').spawnSync;
 
@@ -95,7 +80,7 @@ module.exports = class IOTestRunner
 
 		if (command.startsWith('src/counsel.js') && args.includes('--as-io-test')) {
 			args.push('--io-test-filename');
-			args.push(testContext.filename);
+			args.push(ioTest.filename);
 		}
 
 		if (command.endsWith('.js') && process.platform == 'win32') {
@@ -204,9 +189,8 @@ module.exports = class IOTestRunner
 					`No result received from command "${test.perform}".`
 				);
 
-				this.reporter.afterEachIOTestWithoutResults(testContext, {
-					command, args, options,
-				});
+				ioTest.process = {command, args, options};
+				this.reporter.afterEachIOTestWithoutResults(ioTest);
 
 				mainTestPassed = false;
 			} else {
@@ -242,12 +226,19 @@ module.exports = class IOTestRunner
 		    }
 		}
 
+		ioTest.actual = actual;
+		ioTest.mainTestPassed = mainTestPassed;
+		ioTest.failedAssertions = failedAssertions;
+		ioTest.passedAssertions = passedAssertions;
+		ioTest.process = {command, args, options};
+
+
 	  	if (mainTestPassed && assertionsPassed) {
-	  		this.reporter.afterEachPassedIOTest(testContext, passedAssertions);
-	  		this.reporter.afterEachIOTest(testContext, testContext.test.expect, true, {}, passedAssertions);
+	  		this.reporter.afterEachPassedIOTest(ioTest);
+	  		this.reporter.afterEachIOTest(ioTest);
 	  	} else {
-	  		this.reporter.afterEachFailedIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions, {command, args, options});
-	  		this.reporter.afterEachIOTest(testContext, actual, mainTestPassed, failedAssertions, passedAssertions);
+	  		this.reporter.afterEachFailedIOTest(ioTest);
+	  		this.reporter.afterEachIOTest(ioTest);
 	  	}
 	}
 }

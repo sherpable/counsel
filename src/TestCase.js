@@ -149,7 +149,9 @@ module.exports = class TestCase
 
         ioTestReporter.beforeTest();
 
-        await ioTestRunner.runTest(ioTest);
+        await ioTestRunner.runTest(
+			new (counsel().resolve('IOTest'))(ioTest)
+		);
 
         ioTestReporter.afterTest();
 
