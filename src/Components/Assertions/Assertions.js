@@ -169,7 +169,7 @@ module.exports = class Assertions
 		    process.cwd() + '/'
 		);
 
-		let assertionFileLocation = `${rootFolder}src/assertions/results/${assertionFileName}.js`;
+		let assertionFileLocation = `${rootFolder}src/Components/Assertions/Results/${assertionFileName}.js`;
 
 		if (counsel().serviceProviders.fs.existsSync(assertionFileLocation)) {
 			return require(assertionFileLocation);

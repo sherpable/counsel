@@ -138,14 +138,14 @@ module.exports = class TestCase
         ioTest.test = test;
 
         ioTest.filename = counsel().path(path);
-        let ioTestReporter = new (require('./reporters/DotReporter'));
+        let ioTestReporter = new (require('../Reporters/DotReporter'));
         ioTestReporter.forceColor = new (counsel().serviceProviders.chalk).constructor({enabled: false, level: 0});
         ioTestReporter.silent = true;
 
         let parentTestReporter = Assertions.reporter;
         let parentTest = Assertions.test;
         Assertions.setReporter(ioTestReporter);
-        let ioTestRunner = new (require('./IOTestRunner'))([ioTest], ioTestReporter);
+        let ioTestRunner = new (counsel().resolve('IOTestRunner'))([ioTest], ioTestReporter);
 
         ioTestReporter.beforeTest();
 

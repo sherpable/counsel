@@ -1,5 +1,5 @@
 module.exports = {
-    reporter: './reporters/DotReporter',
+    reporter: './Components/Reporters/DotReporter',
     vue: {
         require: () => {
             return require('vue');

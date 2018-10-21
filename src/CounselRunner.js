@@ -11,7 +11,7 @@ module.exports = class CounselRunner
         this.serviceProvidersList = {
             path: 'path',
             fs: 'fs',
-            fileLoader: './utilities/autoloader',
+            fileLoader: './Utilities/autoloader',
             concordance: 'concordance',
             figures: 'figures',
             cheerio: 'cheerio',
@@ -21,14 +21,14 @@ module.exports = class CounselRunner
             chalk: 'chalk',
             nodeHook: 'node-hook',
             yaml: 'js-yaml',
-            annotations: './utilities/annotations',
-            Assertion: './assertions/Assertion',
-            Test: './results/Test',
-            IOTest: './results/IOTest',
-            TestClass: './results/TestClass',
-            Reporter: './reporters/Reporter',
-            TestCase: './TestCase',
-            IOTestRunner: './IOTestRunner',
+            annotations: './Utilities/annotations',
+            Assertion: './Components/Assertions/Assertion',
+            Test: './Components/Testing/Test',
+            IOTest: './Components/Testing/IOTest',
+            TestClass: './Components/Testing/TestClass',
+            Reporter: './Components/Reporters/Reporter',
+            TestCase: './Components/Testing/TestCase',
+            IOTestRunner: './Components/Runners/IOTestRunner',
         };
 
         this.facades = {
@@ -350,8 +350,8 @@ module.exports = class CounselRunner
     loadAssertions()
     {
         this.bind('Assertions', new Proxy(
-            new (require('./assertions/Assertions'))(this.reporter),
-            require('./assertions/AssertionsProxy')
+            new (require('./Components/Assertions/Assertions'))(this.reporter),
+            require('./Components/Assertions/AssertionsProxy')
         ));
 
         this.assertions = this.resolve('Assertions');
@@ -401,8 +401,8 @@ module.exports = class CounselRunner
             });
 
             // Load vue specific stuff
-            this.bind('VueComponentTestCase', require('./VueComponentTestCase'));
-            this.bind('VueComponentTester', require('./VueComponentTester'));
+            this.bind('VueComponentTestCase', require('./Components/Testing/Vue/VueComponentTestCase'));
+            this.bind('VueComponentTester', require('./Components/Testing/Vue/VueComponentTester'));
             this.bind('vueTestUtils', require('@vue/test-utils'));
             if (! this.config.vue.require) {
                 this.config.vue.require = () => {
@@ -519,8 +519,8 @@ module.exports = class CounselRunner
     defineFacade(globalName, resolveKey)
     {
         global[globalName] = new Proxy(
-            new (require('./Facade'))(resolveKey),
-            require('./FacadeProxy')
+            new (require('./Components/Facade/Facade'))(resolveKey),
+            require('./Components/Facade/FacadeProxy')
         );
     }
 

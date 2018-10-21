@@ -28,19 +28,6 @@ module.exports = class DotReporter extends Reporter
         );
     }
 
-    beforeIOTest()
-    {
-        super.beforeIOTest();
-
-        if (this.testsCount > 0) {
-            return;
-        }
-
-        this.appendLog(
-            this.addIndentation()
-        );
-    }
-
     afterEachFailedTest(test)
     {
         super.afterEachFailedTest(test);

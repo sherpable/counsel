@@ -15,7 +15,7 @@ module.exports = class Reporter
             this.forceColor = new (counsel().serviceProviders.chalk).constructor({enabled: true});
         }
 
-        this.theme = require('../Theme')(counsel().serviceProviders.chalk, this.forceColor);
+        this.theme = require('./Themes/Default')(counsel().serviceProviders.chalk, this.forceColor);
 
         this.silent = false;
         this.output = '';
@@ -78,12 +78,7 @@ module.exports = class Reporter
 
     afterBoot()
     {
-        // Assertions.macro('assertNull', (actual, message) => {
-        //     return new Assertion({
-        //         pass: actual == null,
-        //         message,
-        //     });
-        // });
+
     }
 
     beforeTest()
