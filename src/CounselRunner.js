@@ -1,5 +1,10 @@
 module.exports = class CounselRunner
 {
+    /**
+     * Create a new CounselRunner instance.
+     * 
+     * @constructor
+     */
     constructor()
     {
         require('jsdom-global')();
@@ -94,6 +99,12 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Assign a CounselRunner instance the current instance.
+     * 
+     * @param  {CounselRunner} app
+     * @return {CounselRunner}
+     */
     static instantiate(app = null)
     {
         if (! app) {
@@ -109,11 +120,24 @@ module.exports = class CounselRunner
         return app;
     }
     
+    /**
+     * Load the helpers.js file.
+     * This will also make the helpers globally available.
+     * 
+     * @return {void}
+     */
     loadHelpers()
     {
         require('./helpers.js');
     }
     
+    /**
+     * Register a binding with the container.
+     * 
+     * @param  {string}  abstract  
+     * @param  {object}  $concrete
+     * @return {void}
+     */
     bind(abstract, concrete = null)
     {
         if (! concrete) {
@@ -123,11 +147,26 @@ module.exports = class CounselRunner
         this.serviceProviders[abstract] = concrete;
     }
 
+    /**
+     * Fetch the given type from the container and return a new instance from it.
+     * 
+     * @param  {string}  abstract
+     * @param  {array}   parameters
+     * @return {object}
+     */
     make(abstract, parameters)
     {
         return new (this.resolve(abstract))(...parameters);
     }
     
+    /**
+     * Fetch the given type from the container and assign it to the global object.
+     * It is possible to specify an alias name with the keyword 'as' like this:
+     * use('Foo as Bar');
+     * 
+     * @param  {string}  abstract
+     * @return {void}
+     */
     use(abstract)
     {
         let alias;
@@ -141,11 +180,23 @@ module.exports = class CounselRunner
         global[alias] = this.resolve(abstract);
     }
 
+    /**
+     * Fetch the given type from the container and return it.
+     * 
+     * @param  {string}  abstract
+     * @return {object}
+     */
     resolve(abstract)
     {
         return this.serviceProviders[abstract];
     }
     
+    /**
+     * Run the code coverage tool.
+     * 
+     * @param  {string}  reporterType
+     * @return {void}
+     */
     runCodeCoverage(reporterType)
     {
         if (! String(reporterType) || typeof reporterType != 'string') {
@@ -206,6 +257,11 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * The this will run right after the app is fully loaded and booted.
+     * 
+     * @return {void}
+     */
     booted()
     {
         if (this.arguments.help) {
@@ -237,6 +293,11 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Parse the incomming arguments.
+     * 
+     * @return {void}
+     */
     parseArguments()
     {
         this.optimist = require('optimist');
@@ -259,11 +320,22 @@ module.exports = class CounselRunner
             .argv;
     }
 
+    /**
+     * Register a list of service providers.
+     * 
+     * @param  {object}  providers
+     * @return {void}
+     */
     registerServiceProviders(providers)
     {
         this.serviceProvidersList = providers;
     }
 
+    /**
+     * Retrieve the current working directory.
+     * 
+     * @return {string}
+     */
     cwd()
     {
         if (process.platform == 'win32') {
@@ -273,6 +345,11 @@ module.exports = class CounselRunner
         return this.rootWithoutTrailingsSlash;
     }
 
+    /**
+     * Load and cache the configuration from the config file.
+     * 
+     * @return {void}
+     */
     loadConfig()
     {
         this.rootWithoutTrailingsSlash = this.serviceProviders.path.normalize(
@@ -298,6 +375,11 @@ module.exports = class CounselRunner
         }
     }
     
+    /**
+     * Load custom error classes and make them globally available.
+     * 
+     * @return {void}
+     */
     loadCustomErrorClasses()
     {
         global.IncompleteTestError = class IncompleteTestError extends Error
@@ -317,6 +399,12 @@ module.exports = class CounselRunner
         };
     }
 
+    /**
+     * Load the reporter.
+     * 
+     * @param  {callback|string}  reporter
+     * @return {void}
+     */
     loadReporter(reporter)
     {
         try {
