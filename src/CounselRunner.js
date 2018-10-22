@@ -435,6 +435,11 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Load and bind the Assertions.
+     * 
+     * @return {void}
+     */
     loadAssertions()
     {
         this.bind('Assertions', new Proxy(
@@ -445,6 +450,11 @@ module.exports = class CounselRunner
         this.assertions = this.resolve('Assertions');
     }
 
+    /**
+     * Boot the application.
+     * 
+     * @return {void}
+     */
     async boot()
     {
         this.loadConfig();
@@ -541,6 +551,11 @@ module.exports = class CounselRunner
         await this.reporter.afterBoot();
     }
 
+    /**
+     * Load the env data from de config file and assign in to the current process.
+     * 
+     * @return {void}
+     */
     loadEnvData()
     {
         let envData = this.config.env;
@@ -552,6 +567,11 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Autoload the files specified with the autoloadFiles section with the config file.
+     * 
+     * @return {void}
+     */
     autoloadFiles()
     {
         let autoloadFiles = this.config.autoloadFiles;
@@ -563,6 +583,12 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Autoload the classes specified with the autoloadClasses section with the config file.
+     * 
+     * @param  {string}  reporterType
+     * @return {void}
+     */
     autoloadClasses()
     {
         let autoloadClasses = this.config.autoloadClasses;
@@ -574,6 +600,11 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Autoload and instantiate the classes specified with the instantiateClasses section with the config file.
+     * 
+     * @return {void}
+     */
     instantiateClasses()
     {
         let instantiateClasses = this.config.instantiateClasses;
@@ -585,6 +616,11 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Load and register all given service providers.
+     * 
+     * @return {void}
+     */
     loadServiceProviders()
     {
         for (let serviceProvider in this.serviceProvidersList) {
@@ -597,6 +633,11 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Define the facades.
+     * 
+     * @return {void}
+     */
     defineFacades()
     {
         for (let resolveKey in this.facades) {
@@ -604,6 +645,13 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Define a single facades.
+     * 
+     * @param  {string}  globalName
+     * @param  {string}  resolveKey
+     * @return {void}
+     */
     defineFacade(globalName, resolveKey)
     {
         global[globalName] = new Proxy(
@@ -612,6 +660,11 @@ module.exports = class CounselRunner
         );
     }
 
+    /**
+     * Run all tests.
+     * 
+     * @return {void}
+     */
     async test()
     {
         await this.reporter.beforeTest();
@@ -634,11 +687,21 @@ module.exports = class CounselRunner
         await this.reporter.afterTest();
     }
 
+    /**
+     * Retrieve a new instance from the IO test runner.
+     * 
+     * @return {IOTestRunner}
+     */
     instantiateIOTestRunner()
     {
         return new this.serviceProviders.IOTestRunner(this.ioTests, this.reporter);
     }
 
+    /**
+     * Run all IO tests.
+     * 
+     * @return {void}
+     */
     async runIOTests()
     {
         if (this.isIOTestProcess) {
@@ -654,6 +717,11 @@ module.exports = class CounselRunner
         await this.reporter.afterIOTest();
     }
 
+    /**
+     * Exit the app with the proper status code.
+     * 
+     * @return {void}
+     */
     exit()
     {
         let statusCode = counsel().reporter.assertionsFailuresCount ? 2 : 0;
@@ -661,6 +729,13 @@ module.exports = class CounselRunner
         process.exit(statusCode);
     }
 
+    /**
+     * Run all tests found within a given location.
+     * 
+     * @param  {string}   location
+     * @param  {boolean}  reportingTests
+     * @return {void}
+     */
     async runTestsInLocation(location, reportingTests = false)
     {
         let testFiles = this.getTestFilesInLocation(this.locations[location]);
@@ -686,6 +761,14 @@ module.exports = class CounselRunner
         }
     }
 
+    /**
+     * Parse the given test files. This will check which test files need to be executed
+     * according to the given filters.
+     * 
+     * @param  {object}  testFiles
+     * @param  {string}  location
+     * @return {object}
+     */
     parseTestClasses(testFiles, location)
     {
         let testClasses = [];
@@ -703,6 +786,15 @@ module.exports = class CounselRunner
         return testClasses;
     }
 
+    /**
+     * Parse a single test file. This will check if the test file need to be executed
+     * according to the given filters.
+     * 
+     * @param  {string}  testClassName
+     * @param  {string}  path
+     * @param  {string}  location
+     * @return {object}
+     */
     parseTestClass(testClassName, path, location)
     {
         let tests = [];
@@ -749,6 +841,12 @@ module.exports = class CounselRunner
         return tests;
     }
 
+    /**
+     * Get the total tests that need to be executed, including IO tests.
+     * 
+     * @param  {object}  testClasses
+     * @return {number}
+     */
     getTotalTests(testClasses)
     {
         let totalTests = 0;
@@ -763,6 +861,11 @@ module.exports = class CounselRunner
         return totalTests;
     }
 
+    /**
+     * Get the total IO tests that need to be executed.
+     * 
+     * @return {number}
+     */
     getTotalIOTests()
     {
         let totalIOTests = 0;
@@ -774,6 +877,12 @@ module.exports = class CounselRunner
         return totalIOTests;
     }
 
+    /**
+     * Check if a specific IO test need to be executed inside the current platform.
+     * 
+     * @param  {object}  testContext
+     * @return {boolean}
+     */
     ioTestIsForCurrentPlatform(testContext)
     {
         if (! testContext.test.platform) {
@@ -783,6 +892,12 @@ module.exports = class CounselRunner
         return testContext.test.platform.includes(process.platform);
     }
 
+    /**
+     * Format the test files object into a flat array.
+     * 
+     * @param  {object}  object
+     * @return {object}
+     */
     getTestFilesInLocation(object)
     {
         let testFilePaths = {};
@@ -809,6 +924,12 @@ module.exports = class CounselRunner
         return testFilePaths;
     }
 
+    /**
+     * Retrieve the files within the given test locations.
+     * 
+     * @param  {array}  object
+     * @return {object}
+     */
     getTestLocations(locations = null)
     {
         let fileLocations = locations || this.config.locations;
@@ -836,11 +957,24 @@ module.exports = class CounselRunner
         return this.locations;
     }
 
+    /**
+     * Retrieve an absolute path for this application.
+     * As the first parameter it is possible to add an additional relative path.
+     * 
+     * @param  {string}  additionalPath
+     * @return {string}
+     */
     path(additionalPath)
     {
         return this.root + additionalPath;
     }
 
+    /**
+     * Load file from a specific location.
+     * 
+     * @param  {string}  path
+     * @return {void}
+     */
     loadFilesFrom(path)
     {
         try {
@@ -861,6 +995,14 @@ module.exports = class CounselRunner
         return this.serviceProviders.fileLoader.load(this.path(path), {patterns: this.config.patterns});
     }
 
+    /**
+     * When running IO tests it is possible to reporter back to the parent process
+     * from within the child (io test) process using this method.
+     * 
+     * @param  {string|object}  key
+     * @param  {string}         value
+     * @return {void}
+     */
     reportToParentProcess(key, value = null)
     {
         if (! this.isIOTestProcess && ! this.asIOTestProcess) {
