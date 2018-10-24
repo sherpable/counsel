@@ -1,5 +1,10 @@
 module.exports = class Reporter
 {
+    /**
+     * Create a new Reporter instance.
+     * 
+     * @constructor
+     */
     constructor()
     {
         this.ansiStyles = require('ansi-styles');
@@ -54,6 +59,11 @@ module.exports = class Reporter
         this.indentation = 1;
     }
 
+    /**
+     * Retrieve the test results.
+     * 
+     * @return {object}
+     */
     testResults()
     {
         return {
@@ -71,21 +81,41 @@ module.exports = class Reporter
         }
     }
 
+    /**
+     * Before the application will be booted.
+     * 
+     * @return {void}
+     */
     beforeBoot()
     {
 
     }
 
+    /**
+     * After the application is be booted.
+     * 
+     * @return {void}
+     */
     afterBoot()
     {
 
     }
 
+    /**
+     * Before the tests will be triggered.
+     * 
+     * @return {void}
+     */
     beforeTest()
     {
         this.startTime = new this.reporterDate();
     }
 
+    /**
+     * After the tests have been triggered.
+     * 
+     * @return {void}
+     */
     afterTest()
     {
         if (this.assertionsCount == 0 && this.testsCount == 0) {
@@ -174,36 +204,76 @@ module.exports = class Reporter
         }
     }
 
+    /**
+     * Before the IO tests will be triggered.
+     * 
+     * @return {void}
+     */
     beforeIOTest()
     {
 
     }
 
+    /**
+     * After the IO tests have been triggered.
+     * 
+     * @return {void}
+     */
     afterIOTest()
     {
 
     }
 
-    beforeEachIOTest(test)
+    /**
+     * Before each IO test will be triggered.
+     * 
+     * @param  {IOTest}  ioTest
+     * @return {void}
+     */
+    beforeEachIOTest(ioTest)
     {
 
     }
 
+    /**
+     * After each IO test have been triggered.
+     * 
+     * @param  {IOTest}  ioTest
+     * @return {void}
+     */
     afterEachIOTest(ioTest)
     {
         this.testsCount++;
     }
 
+    /**
+     * After each failed IO test.
+     * @param  {IOTest}  ioTest
+     * 
+     * @return {void}
+     */
     afterEachFailedIOTest(ioTest)
     {
         this.testsFailuresCount++;
     }
 
+    /**
+     * After each passed IO test.
+     * 
+     * @param  {IOTest}  ioTest
+     * @return {void}
+     */
     afterEachPassedIOTest(ioTest)
     {
         this.testsPassesCount++;
     }
 
+    /**
+     * After each incomplete test.
+     * 
+     * @param  {IOTest|Test}  test
+     * @return {void}
+     */
     afterEachIncompleteTest(test)
     {
         this.testsIncompleteCount++;
@@ -215,6 +285,12 @@ module.exports = class Reporter
         }
     }
 
+    /**
+     * After each skipped test.
+     * 
+     * @param  {IOTest|Test}  test
+     * @return {void}
+     */
     afterEachSkippedTest(test)
     {
         this.testsSkippedCount++;
@@ -226,11 +302,23 @@ module.exports = class Reporter
         }
     }
 
+    /**
+     * After each IO test without results.
+     * 
+     * @param  {IOTest}  test
+     * @return {void}
+     */
     afterEachIOTestWithoutResults(ioTest)
     {
 
     }
 
+    /**
+     * Before each test class will be triggered.
+     * 
+     * @param  {TestClass}  testClass
+     * @return {void}
+     */
     beforeEachTestClass(testClass)
     {
         if (! this.testFailures[testClass.filePath]) {
@@ -243,21 +331,45 @@ module.exports = class Reporter
         }
     }
 
+    /**
+     * After each test class have been triggered.
+     * 
+     * @param  {TestClass}  testClass
+     * @return {void}
+     */
     afterEachTestClass(testClass)
     {
 
     }
 
+    /**
+     * After each failed test class.
+     * 
+     * @param  {TestClass}  testClass
+     * @return {void}
+     */
     afterEachFailedTestClass(testClass)
     {
 
     }
 
+    /**
+     * After each passed test class.
+     * 
+     * @param  {TestClass}  testClass
+     * @return {void}
+     */
     afterEachPassedTestClass(testClass)
     {
 
     }
 
+    /**
+     * Before each test will be triggered.
+     * 
+     * @param  {Test}  test
+     * @return {void}
+     */
     beforeEachTest(test)
     {
         if (! this.testFailures[test.className]) {
@@ -275,6 +387,12 @@ module.exports = class Reporter
         }
     }
 
+    /**
+     * After each test have been triggered.
+     * 
+     * @param  {Test}  test
+     * @return {void}
+     */
     afterEachTest(test)
     {
         this.testsCount++;
@@ -286,16 +404,34 @@ module.exports = class Reporter
         this.progress = Math.round((this.testsCount / this.totalTests) * 100);
     }
 
+    /**
+     * After each failed test.
+     * 
+     * @param  {Test}  test
+     * @return {void}
+     */
     afterEachFailedTest(test)
     {
         this.testsFailuresCount++;
     }
 
+    /**
+     * After each passed test.
+     * 
+     * @param  {Test}  test
+     * @return {void}
+     */
     afterEachPassedTest(test)
     {
         this.testsPassesCount++;
     }
 
+    /**
+     * Before each assertion will be triggered.
+     * 
+     * @param  {Assertion}  assertion
+     * @return {void}
+     */
     beforeEachAssertion(assertion)
     {
         if (! this.testFailures[assertion.test.file]) {
@@ -313,6 +449,12 @@ module.exports = class Reporter
         }
     }
 
+    /**
+     * After each assertion have been triggered.
+     * 
+     * @param  {Assertion}  assertion
+     * @return {void}
+     */
     afterEachAssertion(assertion)
     {
         this.assertionsCount++;
@@ -334,6 +476,12 @@ module.exports = class Reporter
         this.results[assertion.test.file][assertion.test.function][assertionsCount] = assertion;
     }
 
+    /**
+     * After each failed assertion.
+     * 
+     * @param  {Assertion}  assertion
+     * @return {void}
+     */
     afterEachFailedAssertion(assertion)
     {
         let name;
@@ -389,11 +537,23 @@ module.exports = class Reporter
         this.errorContent += '\n';
     }
 
+    /**
+     * After each passed assertion.
+     * 
+     * @param  {Assertion}  assertion
+     * @return {void}
+     */
     afterEachPassedAssertion(assertion)
     {
         this.assertionsPassesCount++;
     }
 
+    /**
+     * Log something to the stdout stream with an ending line break.
+     * 
+     * @param  {string}  message
+     * @return {void}
+     */
     log(message = '')
     {
         if (! message || message == '' || message == '\n') {
@@ -411,6 +571,12 @@ module.exports = class Reporter
         process.stdout.write(message);
     }
 
+    /**
+     * Log something to the stdout stream and append it to the current steam.
+     * 
+     * @param  {string}  message
+     * @return {void}
+     */
     appendLog(message)
     {
         this.output += message;
@@ -422,6 +588,14 @@ module.exports = class Reporter
         process.stdout.write(message);
     }
 
+    /**
+     * Add indentation to the given message with an ending line break.
+     * 
+     * @param  {string}   message
+     * @param  {int}      level
+     * @param  {boolean}  append
+     * @return {string}
+     */
     indent(message, level = 1, append = false)
     {
         if (message == '\n' || message == '' || ! message) {
@@ -459,11 +633,26 @@ module.exports = class Reporter
         return output.join('\n');
     }
 
+    /**
+     * Add indentation to the given message without an ending line break.
+     * 
+     * @param  {string}   message
+     * @param  {int}      level
+     * @param  {boolean}  append
+     * @return {string}
+     */
     indentAppend(message, level = 1)
     {
         return this.indent(message, level, true);
     }
 
+    /**
+     * Retrieve only the indentation. When no number of space is given
+     * it will use the property indentation to calculate the amount.
+     * 
+     * @param  {int}     spaces
+     * @return {string}
+     */
     addIndentation(spaces = undefined)
     {
         if (spaces === undefined) {
@@ -473,6 +662,13 @@ module.exports = class Reporter
         return `${' '.repeat(spaces)}`;
     }
 
+    /**
+     * Visualize the difference between the actual and expected value.
+     * 
+     * @param  {mixed}  actual
+     * @param  {mixed}  expected
+     * @return {string}
+     */
     visualDifference(actual, expected)
     {
         if (this.isHtml(actual)) {
@@ -494,6 +690,12 @@ module.exports = class Reporter
         );
     }
 
+    /**
+     * Beautify the given value.
+     * 
+     * @param  {mixed}  value
+     * @return {string}
+     */
     beautify(value)
     {
         if (this.isHtml(value)) {
@@ -526,6 +728,12 @@ module.exports = class Reporter
         return this.indent(formatted);
     }
 
+    /**
+     * Visualize the error from the given assertion.
+     * 
+     * @param  {object}  assertion
+     * @return {string}
+     */
     visualError(assertion)
     {
         if (! assertion.error.fileName) {

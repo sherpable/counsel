@@ -2,6 +2,11 @@ use('Reporter');
 
 module.exports = class DotReporter extends Reporter
 {
+    /**
+     * Create a new DotReporter instance.
+     * 
+     * @constructor
+     */
     constructor()
     {
         super();
@@ -15,6 +20,11 @@ module.exports = class DotReporter extends Reporter
         }
     }
 
+    /**
+     * Before the tests will be triggered.
+     * 
+     * @return {void}
+     */
     beforeTest()
     {
         super.beforeTest();
@@ -28,6 +38,12 @@ module.exports = class DotReporter extends Reporter
         );
     }
 
+    /**
+     * After each failed test class.
+     * 
+     * @param  {TestClass}  testClass
+     * @return {void}
+     */
     afterEachFailedTest(test)
     {
         super.afterEachFailedTest(test);
@@ -35,6 +51,12 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(this.forceColor.red('x'));
     }
 
+    /**
+     * After each passed test class.
+     * 
+     * @param  {TestClass}  testClass
+     * @return {void}
+     */
     afterEachPassedTest(test)
     {
         super.afterEachPassedTest(test);
@@ -42,6 +64,12 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(this.forceColor.green('.'));
     }
 
+    /**
+     * After each incomplete test.
+     * 
+     * @param  {IOTest|Test}  test
+     * @return {void}
+     */
     afterEachIncompleteTest(test)
     {
         super.afterEachIncompleteTest(test);
@@ -49,6 +77,12 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(this.forceColor.yellow('I'));
     }
 
+    /**
+     * After each skipped test.
+     * 
+     * @param  {IOTest|Test}  test
+     * @return {void}
+     */
     afterEachSkippedTest(test)
     {
         super.afterEachSkippedTest(test);
@@ -56,6 +90,12 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(this.forceColor.blue('S'));
     }
 
+    /**
+     * After each IO test without results.
+     * 
+     * @param  {IOTest}  test
+     * @return {void}
+     */
     afterEachIOTest(ioTest)
     {
         super.afterEachIOTest(ioTest);
@@ -73,6 +113,12 @@ module.exports = class DotReporter extends Reporter
         }
     }
 
+    /**
+     * After each failed IO test.
+     * @param  {IOTest}  ioTest
+     * 
+     * @return {void}
+     */
     afterEachFailedIOTest(ioTest)
     {
         super.afterEachFailedIOTest(ioTest);
@@ -80,6 +126,12 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(this.forceColor.red('x'));
     }
 
+    /**
+     * After each passed IO test.
+     * 
+     * @param  {IOTest}  ioTest
+     * @return {void}
+     */
     afterEachPassedIOTest(ioTest)
     {
         super.afterEachPassedIOTest(ioTest);
@@ -87,11 +139,23 @@ module.exports = class DotReporter extends Reporter
         this.appendLog(this.forceColor.green('.'));
     }
 
+    /**
+     * After each IO test without results.
+     * 
+     * @param  {IOTest}  test
+     * @return {void}
+     */
     afterEachIOTestWithoutResults(ioTest)
     {
         super.afterEachIOTestWithoutResults(ioTest);
     }
 
+    /**
+     * After each test class have been triggered.
+     * 
+     * @param  {TestClass}  testClass
+     * @return {void}
+     */
     afterEachTest(test)
     {
         super.afterEachTest(test);
@@ -109,6 +173,11 @@ module.exports = class DotReporter extends Reporter
         }
     }
 
+    /**
+     * After the tests have been triggered.
+     * 
+     * @return {void}
+     */
     afterTest()
     {
         if (this.fullRun && this.testsExecuted > 0) {
@@ -127,6 +196,11 @@ module.exports = class DotReporter extends Reporter
         super.afterTest();
     }
 
+    /**
+     * Retrieve the test progress with indentation so all progress percentages will lineup in the output.
+     * 
+     * @return {string}
+     */
     progressWithSpace()
     {
         let space = ' '.repeat(3 - this.progress.toString().length);
@@ -134,6 +208,11 @@ module.exports = class DotReporter extends Reporter
         return `${space}${this.progress}`;
     }
 
+    /**
+     * Retrieve the test count with indentation so all counters will lineup in the output.
+     * 
+     * @return {string}
+     */
     testsCountWithSpace()
     {
         let space = ' '.repeat(this.totalTests.toString().length - this.testsCount.toString().length);

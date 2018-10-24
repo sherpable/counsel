@@ -1,5 +1,15 @@
 module.exports = class VueComponentTester
 {
+    /**
+     * Create a new VueComponentTester instance.
+     * 
+     * @constructor
+     * 
+     * @param  {TestCase}  testCaseInstance
+     * @param  {string}    template
+     * @param  {object}    props
+     * @param  {boolean}   parentComponent
+     */
     constructor(testCaseInstance, template, props = {}, parentComponent = false)
     {
         this.parsedTemplate = counsel().serviceProviders.cheerio.load(template);
@@ -117,6 +127,11 @@ module.exports = class VueComponentTester
         this.wrapper.setProps(this.props);
     }
 
+    /**
+     * Parse the given props from the component.
+     * 
+     * @return {object}
+     */
     parseProps()
     {
         let props = {};
@@ -134,6 +149,12 @@ module.exports = class VueComponentTester
         return props;
     }
 
+    /**
+     * Specify the props for the component.
+     * 
+     * @param  {object}  props
+     * @return {this}
+     */
     setProps(props)
     {
         this.wrapper.setProps(props);
@@ -141,12 +162,32 @@ module.exports = class VueComponentTester
         return this;
     }
 
+    /**
+     * Create a new VueComponentTester instance.
+     * 
+     * @static
+     * 
+     * @param  {TestCase}  testCaseInstance
+     * @param  {string}    template
+     * @param  {object}    props
+     * @return {this}
+     */
     static test(testCaseInstance, template, props)
     {
         let tester = new this(testCaseInstance, template, props);
         return tester;
     }
 
+    /**
+     * Fast forward the components timeline with a given time.
+     * Supported time expressions (converted into ms):
+     * - 1s   => 1000
+     * - 50ms => 50
+     * - 50   => 50
+     * 
+     * @param  {float|int|string}  timeExpression
+     * @return {void}
+     */
     fastForward(timeExpression)
     {
         let time = parseFloat(timeExpression);
@@ -158,16 +199,32 @@ module.exports = class VueComponentTester
         this.tester.clock.tick(time);
     }
 
+    /**
+     * Retrieve the html presentation from the component.
+     * 
+     * @return {string}
+     */
     toHtml()
     {
         return this.wrapper.html();
     }
 
+    /**
+     * Dump the html presentation from the component and exit the process.
+     * 
+     * @return {void}
+     */
     dd()
     {
         dd(this.toHtml());
     }
 
+    /**
+     * Assert than an event was emitted.
+     * 
+     * @param  {string}  eventName
+     * @return {void}
+     */
     assertEmitted(eventName)
     {
         let events = this.wrapper.emitted();
@@ -176,6 +233,14 @@ module.exports = class VueComponentTester
         this.tester.assertTrue(eventNames.includes(eventName), `Assert that event [${eventName}] was emitted, but is was not.`);
     }
 
+    /**
+     * Assert that the contents will exists in the html presentation from the component.
+	 * When the given regex is a string it will be converter into
+	 * a RegExp instance with flags 'gim'.
+     * 
+	 * @param  {string|RegExp}  expression
+     * @return {this}
+     */
     assertSee(expression)
     {
         let rawExpression = expression;
@@ -191,16 +256,36 @@ module.exports = class VueComponentTester
         return this;
     }
 
+    /**
+     * Alias method for assertSee.
+     * 
+	 * @param  {string|RegExp}  expression
+     * @return {this}
+     */
     andSee(expression)
     {
         return this.assertSee(expression);
     }
 
+    /**
+     * Alias method for assertSee.
+     * 
+	 * @param  {string|RegExp}  expression
+     * @return {this}
+     */
     see(expression)
     {
         return this.assertSee(expression);
     }
 
+    /**
+     * Assert that the contents not exists in the html presentation from the component.
+	 * When the given regex is a string it will be converter into
+	 * a RegExp instance with flags 'gim'.
+     * 
+	 * @param  {string|RegExp}  expression
+     * @return {this}
+     */
     assertNotSee(expression)
     {
         let rawExpression = expression;
@@ -212,16 +297,34 @@ module.exports = class VueComponentTester
         this.tester.assertNotContains(expression, this.toHtml(), `Assert that "${rawExpression}" should not exists on the page, but it was found.`);
     }
 
+    /**
+     * Alias method for assertNotSee.
+     * 
+	 * @param  {string|RegExp}  expression
+     * @return {this}
+     */
     andNotSee(expression)
     {
         return this.assertNotSee(expression);
     }
 
+    /**
+     * Alias method for assertNotSee.
+     * 
+	 * @param  {string|RegExp}  expression
+     * @return {this}
+     */
     notSee(expression)
     {
         return this.assertNotSee(expression);
     }
 
+    /**
+     * Assert that the text is visible in the current component state.
+     * 
+	 * @param  {string}  text
+     * @return {this}
+     */
     async assertVisible(text)
     {
         let cheerio = require('cheerio');
@@ -237,6 +340,12 @@ module.exports = class VueComponentTester
         return this;
     }
 
+    /**
+     * Assert that the text is not visible in the current component state.
+     * 
+	 * @param  {string}  text
+     * @return {this}
+     */
     async assertNotVisible(text)
     {
         let cheerio = require('cheerio');
@@ -252,16 +361,35 @@ module.exports = class VueComponentTester
         return this;
     }
 
+    /**
+     * Alias method for assertNotVisible.
+     * 
+	 * @param  {string}  text
+     * @return {this}
+     */
     async assertHidden(text)
     {
         return await this.assertNotVisible(text);
     }
 
+    /**
+     * Simulate a click operation on the element find by the selector.
+     * 
+	 * @param  {string}  selector
+     * @return {void}
+     */
     click(selector)
     {
         this.find(selector).trigger('click');
     }
 
+    /**
+     * Simulate typing a value into the element find by the selector.
+     * 
+	 * @param  {string}  selector
+     * @param  {mixed}   value
+     * @return {void}
+     */
     typeInto(selector, value)
     {
         let elementWrapper = this.find(selector);
@@ -270,6 +398,12 @@ module.exports = class VueComponentTester
         elementWrapper.trigger('input');
     }
 
+    /**
+     * Find the element with the given selector.
+     * 
+	 * @param  {string}  selector
+     * @return {Wrapper}
+     */
     find(selector)
     {
         return this.wrapper.find(selector);
