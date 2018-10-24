@@ -1,5 +1,12 @@
 module.exports = class IOTest
 {
+    /**
+     * Create a new IOTest instance.
+     * 
+     * @constructor
+     * 
+     * @param  {object}  test
+     */
 	constructor(test)
 	{
 		this.test = test;
@@ -25,11 +32,21 @@ module.exports = class IOTest
 		this.process = {};
 	}
 
+    /**
+     * Check if we need to run this IO test.
+     * 
+     * @return {boolean}
+     */
 	needToRun()
 	{
 		return this.needToRunInCurrentPlatform() && this.skip !== true;
 	}
 
+    /**
+     * Check if we need to run this IO test within the current platform.
+     * 
+     * @return {boolean}
+     */
 	needToRunInCurrentPlatform()
 	{
 		if (! this.platform) {

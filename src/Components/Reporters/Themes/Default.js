@@ -1,5 +1,10 @@
 let ansiStyles = require('ansi-styles');
 
+/**
+ * Export the default theme object with the given styling per data type.
+ * 
+ * @return {object}
+ */
 module.exports = (chalk, forceColor) => {
     return {
         dumpTheme: {

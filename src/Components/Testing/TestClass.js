@@ -1,5 +1,14 @@
 module.exports = class TestClass
 {
+    /**
+     * Create a new TestClass instance.
+     * 
+     * @constructor
+     * 
+     * @param  {class}   className
+     * @param  {string}  filePath
+	 * @param  {array}   methods
+     */
 	constructor(testClass, filePath, methods)
 	{
 		this.testClass = testClass;
@@ -14,6 +23,11 @@ module.exports = class TestClass
 		this.assertions = counsel().assertions;
 	}
 
+	/**
+     * Run all tests within the test class and report back to the reporter instance.
+     * 
+     * @return {void}
+     */
 	async runTests()
 	{
 		await this.reporter.beforeEachTestClass(this);
@@ -31,6 +45,11 @@ module.exports = class TestClass
 		}
 	}
 
+	/**
+     * Run a single test within the test class.
+     * 
+     * @return {void}
+     */
 	async runTest(method)
 	{
 		let test = new (counsel().resolve('Test'))(this.filePath, method);
@@ -137,6 +156,11 @@ module.exports = class TestClass
 		}
 	}
 
+	/**
+     * Run all tests within the test class.
+     * 
+     * @return {void}
+     */
     async runTestsInClass()
     {
 		// Invoke setUp method if exists
@@ -162,6 +186,14 @@ module.exports = class TestClass
 		this.invokeIfNeeded('tearDownInternal', 'tearDown');
 	}
 	
+	/**
+     * Invoke a method on the test class instance.
+     * 
+	 * @param  {string}  methodName
+	 * @param  {string}  nameInOutput
+     * @return {void}
+	 * @throws {Error}
+     */
 	invokeIfNeeded(methodName, nameInOutput = null)
 	{
 		if (! nameInOutput) {

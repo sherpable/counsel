@@ -1,5 +1,15 @@
 module.exports = class Assertion
 {
+    /**
+     * Create a new Assertion instance.
+     * 
+     * @constructor
+     * 
+     * @param  {string}    type
+     * @param  {array}     parameters
+     * @param  {object}    test
+     * @param  {Reporter}  reporter
+     */
     constructor(type, parameters, test, reporter)
     {
         this.type = type;
@@ -17,6 +27,11 @@ module.exports = class Assertion
         this.failureMessage = null;
 	}
 
+    /**
+     * Execute the assertion.
+     * 
+     * @return {void}
+     */
     execute()
     {
         this.result = Assertions.executeAssertion(this.type, this.parameters);
@@ -24,6 +39,11 @@ module.exports = class Assertion
         this.processResult();
     }
 
+    /**
+     * Process the assertion execution results.
+     * 
+     * @return {void}
+     */
     processResult()
     {
         this.pass = this.result['pass'];
@@ -82,16 +102,31 @@ module.exports = class Assertion
         }
     }
 
+    /**
+     * Retrieve if this assertion passes or not.
+     * 
+     * @return {boolean}
+     */
     passed()
     {
         return this.pass == true;
     }
 
+    /**
+     * Retrieve if this assertion failed or not.
+     * 
+     * @return {boolean}
+     */
     failed()
     {
         return this.fail == true;
     }
 
+    /**
+     * Retrieve the failure message for this assertion.
+     * 
+     * @return {string}
+     */
     getFailureMessage()
     {
         let message = '';
@@ -107,6 +142,11 @@ module.exports = class Assertion
         return message;
     }
 
+    /**
+     * Describe the failure for this assertion.
+     * 
+     * @return {string|array}
+     */
     describeFailure()
     {
         if (! this.failureMessage && ! this.actual) {
@@ -116,11 +156,23 @@ module.exports = class Assertion
         return `${this.failureMessage}:\n\n${this.beautify(this.actual)}`;
     }
 
+    /**
+     * Visualize the difference between the actual and expected value for this assertion.
+     * 
+     * @return {string}
+     */
     visualDifference()
     {
         return this.reporter.visualDifference(this.actual, this.expected);
     }
 
+    /**
+     * Beautify a given value. When running as an IO test it will not beautify,
+     * this way IO test results will return a clean output. This will make
+     * the output expectation cleaner.
+     * 
+     * @return {string}
+     */
     beautify(value)
     {
         if (counsel().isIOTestProcess) {

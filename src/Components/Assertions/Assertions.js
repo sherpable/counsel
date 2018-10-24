@@ -2,6 +2,13 @@ use('Assertion');
 
 module.exports = class Assertions
 {
+    /**
+     * Create a new Assertions instance.
+     * 
+     * @constructor
+     * 
+     * @param  {Reporter}  reporter
+     */
 	constructor(reporter)
 	{
 		this.reporter = reporter;
@@ -112,21 +119,47 @@ module.exports = class Assertions
 		};
 	}
 
+    /**
+     * Specify the details from associated test with the current assertions.
+     * 
+	 * @param  {object}  test
+     * @return {void}
+     */
 	setTest(test)
 	{
 		this.test = test;
 	}
 
+    /**
+     * Specify the reporter.
+     * 
+	 * @param  {Reporter}  reporter
+     * @return {void}
+     */
 	setReporter(reporter)
 	{
 		this.reporter = reporter;
 	}
 
+    /**
+     * Create a custom assertion.
+     * 
+	 * @param  {string}  name
+	 * @param  {object}  assertion
+     * @return {void}
+     */
 	macro(name, assertion)
 	{
 		this.assertions[name] = assertion;
 	}
 
+    /**
+     * Execute a specific assertion.
+     * 
+	 * @param  {string}  	type
+	 * @param  {array}  	parameters
+     * @return {Assertion}
+     */
 	execute(type, parameters)
 	{
 		let assertion = new (this.assertionClass(type))(
@@ -151,16 +184,37 @@ module.exports = class Assertions
 	    return assertion;
 	}
 
+    /**
+     * Useful for calling assertion type from within an other assertion
+	 * without reporting the assertions both.
+     * 
+	 * @param  {string}  	assertion
+	 * @param  {array}  	parameters
+     * @return {Assertion}
+     */
 	pipe(assertion, parameters)
 	{
 	    return this.assertions[assertion](...parameters);
 	}
 
+    /**
+     * Execute a given assertion.
+     * 
+	 * @param  {string}  type
+	 * @param  {array}   parameters
+     * @return {object}
+     */
 	executeAssertion(type, parameters)
 	{
 		return this.assertions[type](...parameters);
 	}
 
+    /**
+     * Retieve the assertion class for a given assertion type.
+     * 
+	 * @param  {string}  	type
+     * @return {Assertion}
+     */
 	assertionClass(type)
 	{
 		let assertionFileName = type.charAt(0).toUpperCase() + type.substr(1);

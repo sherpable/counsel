@@ -1,5 +1,10 @@
 module.exports = class TestCase
 {
+    /**
+     * Create a new TestCase instance.
+     * 
+     * @constructor
+     */
 	constructor()
 	{
 		this.vm = null;
@@ -11,16 +16,32 @@ module.exports = class TestCase
 		this.cleanupAfterSingleTestMethod();
 	}
 
+    /**
+     * Trigger the setUp fixture.
+     * 
+     * @return {void}
+     */
 	setUpInternal()
 	{
 		this.setUp();
 	}
 
+    /**
+     * Trigger the beforeEach fixture.
+     * 
+     * @return {void}
+     */
 	beforeEachInternal()
 	{
 		this.beforeEach();
 	}
 
+    /**
+     * Trigger the afterEach fixture.
+	 * This will also perform some cleanup.
+     * 
+     * @return {void}
+     */
 	afterEachInternal()
 	{
 		this.cleanupAfterSingleTestMethod();
@@ -28,76 +49,181 @@ module.exports = class TestCase
 		this.afterEach();
 	}
 
+    /**
+     * Trigger the tearDown fixture.
+     * 
+     * @return {void}
+     */
 	tearDownInternal()
 	{
 		this.tearDown();
 	}
 
+    /**
+     * Blank setUp fixture implementation.
+     * 
+     * @return {void}
+     */
 	setUp()
 	{
 
 	}
 
+    /**
+     * Blank beforeEach fixture implementation.
+     * 
+     * @return {void}
+     */
 	beforeEach()
 	{
 
 	}
 
+    /**
+     * Blank afterEach fixture implementation.
+     * 
+     * @return {void}
+     */
 	afterEach()
 	{
 
 	}
 
+    /**
+     * Blank tearDown fixture implementation.
+     * 
+     * @return {void}
+     */
 	tearDown()
 	{
 
 	}
 
+    /**
+     * Mark a test as passed.
+     * 
+	 * @param  {string}  message
+     * @return {void}
+     */
 	pass(message)
 	{
 		this.assertions.pass(message);
 	}
 
+    /**
+     * Mark a test as failed.
+     * 
+	 * @param  {string}  message
+     * @return {void}
+     */
 	fail(message)
 	{
 		this.assertions.fail(message);
 	}
 
+    /**
+     * Assert that the actual value is equal to true.
+     * 
+	 * @param  {mixed}   actual
+	 * @param  {string}  message
+     * @return {void}
+     */
 	assertTrue(actual, message)
 	{
 		this.assertions.assertTrue(actual, message);
 	}
 
+    /**
+     * Assert that the actual value is equal to false.
+     * 
+	 * @param  {mixed}   actual
+	 * @param  {string}  message
+     * @return {void}
+     */
 	assertFalse(actual, message)
 	{
 		this.assertions.assertFalse(actual, message);
 	}
 
+    /**
+     * Assert that the expected value is equal to actual value.
+     * 
+	 * @param  {mixed}   expected
+	 * @param  {mixed}   actual
+	 * @param  {string}  message
+     * @return {void}
+     */
 	assertEquals(expected, actual, message)
 	{
 		this.assertions.assertEquals(expected, actual, message);
 	}
 
+    /**
+     * Assert that the expected value is not equal to actual value.
+     * 
+	 * @param  {mixed}   expected
+	 * @param  {mixed}   actual
+	 * @param  {string}  message
+     * @return {void}
+     */
 	assertNotEquals(expected, actual, message)
 	{
 		this.assertions.assertNotEquals(expected, actual, message);
 	}
 
+    /**
+     * Assert that the expected count is equal to the count or lenght from the given countable variable.
+     * 
+	 * @param  {mixed}   expected
+	 * @param  {mixed}   countable
+	 * @param  {string}  message
+     * @return {void}
+     */
 	assertCount(expected, countable, message)
 	{
 		this.assertions.assertCount(expected, countable, message);
 	}
 
+    /**
+     * Assert that the contents will contain the regex.
+	 * When the given regex is a string it will be converter into
+	 * a RegExp instance with flags 'gim'.
+     * 
+	 * @param  {string|RegExp}  regex
+	 * @param  {string}   		contents
+	 * @param  {string}  		message
+     * @return {void}
+     */
 	assertContains(regex, contents, message)
 	{
 		this.assertions.assertContains(regex, contents, message);
 	}
 
+    /**
+     * Assert that the contents will not contain the regex.
+	 * When the given regex is a string it will be converter into
+	 * a RegExp instance with flags 'gim'.
+     * 
+	 * @param  {string|RegExp}  regex
+	 * @param  {string}   		contents
+	 * @param  {string}  		message
+     * @return {void}
+     */
 	assertNotContains(regex, contents, message)
 	{
 		this.assertions.assertNotContains(regex, contents, message);
 	}
 
+    /**
+     * Expect that the given expection will be thrown.
+	 * With the second parameter it is possible to assert against the exception message,
+	 * this will check if the exception messages are equal.
+     * 
+	 * @param  {Error}   exception
+	 * @param  {string}  exceptionMessage
+	 * @param  {string}  failureMessage
+     * @return {void}
+     */
 	expectException(exception, exceptionMessage, failureMessage)
 	{
 		this.expectedException = exception;
@@ -109,6 +235,16 @@ module.exports = class TestCase
 		}
 	}
 
+    /**
+     * Expect that the given expection will not be thrown.
+	 * With the second parameter it is possible to assert against the exception message,
+	 * this will check if the exception messages are not equal.
+     * 
+	 * @param  {Error}   exception
+	 * @param  {string}  exceptionMessage
+	 * @param  {string}  failureMessage
+     * @return {void}
+     */
 	notExpectException(exception, failureMessage)
 	{
 		this.notExpectedException = exception;
@@ -119,16 +255,36 @@ module.exports = class TestCase
 		}
 	}
 
+    /**
+     * Mark the test as incomplete.
+     * 
+	 * @param  {string}  message
+     * @return {void}
+	 * @throws {IncompleteTestError}
+     */
 	markAsIncomplete(message)
 	{
 		throw new IncompleteTestError(message);
 	}
 
+    /**
+     * Mark the test as skipped.
+     * 
+	 * @param  {string}  message
+     * @return {void}
+	 * @throws {SkippedTestError}
+     */
 	markAsSkipped(message)
 	{
 		throw new SkippedTestError(message);
 	}
 
+    /**
+     * Execute an IO test.
+     * 
+	 * @param  {object}  test
+     * @return {Reporter}
+     */
 	async executeIOTest(test)
 	{
         let ioTest = {};
@@ -161,25 +317,11 @@ module.exports = class TestCase
         return ioTestReporter;
 	}
 
-	beforeAssertion()
-	{
-		this.reporter.beforeEachAssertion(this.test);
-	}
-
-	afterAssertion(assertion)
-	{
-		assertion.file = this.test.file;
-		assertion.function = this.test.function;
-
-		this.reporter.afterEachAssertion(assertion);
-
-		if (assertion.pass) {
-			this.reporter.afterEachPassedAssertion(assertion);
-		} else {
-			this.reporter.afterEachFailedAssertion(assertion);
-		}
-	}
-
+    /**
+     * Cleanup some instance properties after each single test method.
+     * 
+     * @return {void}
+     */
 	cleanupAfterSingleTestMethod()
 	{
 		this.expectedException = null;

@@ -1,5 +1,13 @@
 module.exports = class IOTestRunner
 {
+    /**
+     * Create a new IOTestRunner instance.
+     * 
+     * @constructor
+     * 
+     * @param  {array}     tests
+     * @param  {Reporter}  reporter
+     */
 	constructor(tests, reporter)
 	{
 		this.tests = tests;
@@ -26,6 +34,11 @@ module.exports = class IOTestRunner
     	}
 	}
 
+    /**
+     * Execute all IO tests.
+     * 
+     * @return {void}
+     */
 	test()
 	{
 		this.tests.forEach(async test => {
@@ -47,10 +60,14 @@ module.exports = class IOTestRunner
         		this.reporter.afterEachIOTest(ioTest);
         	}
         });
-
-        return this.pass;
 	}
 
+    /**
+     * Execute a single IO test.
+     * 
+	 * @param  {IOTest}  ioTest
+     * @return {void}
+     */
 	async runTest(ioTest)
 	{
 		let mainTestPassed = null;

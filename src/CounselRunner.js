@@ -134,8 +134,8 @@ module.exports = class CounselRunner
     /**
      * Register a binding with the container.
      * 
-     * @param  {string}  abstract  
-     * @param  {object}  $concrete
+     * @param  {string}  abstract
+     * @param  {object}  concrete
      * @return {void}
      */
     bind(abstract, concrete = null)
