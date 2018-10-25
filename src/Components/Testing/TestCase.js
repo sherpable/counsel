@@ -299,15 +299,16 @@ module.exports = class TestCase
         ioTestReporter.silent = true;
 
         let parentTestReporter = Assertions.reporter;
-        let parentTest = Assertions.test;
+		let parentTest = Assertions.test;
+		// When the IOTest will resolve the reporter this line can be removed
         Assertions.setReporter(ioTestReporter);
-        let ioTestRunner = new (counsel().resolve('IOTestRunner'))([ioTest], ioTestReporter);
+        let ioTestRunner = new (counsel().resolve('IOTestRunner'))([
+			new (counsel().resolve('IOTest'))(ioTest)
+		], ioTestReporter);
 
         ioTestReporter.beforeTest();
 
-        await ioTestRunner.runTest(
-			new (counsel().resolve('IOTest'))(ioTest)
-		);
+        await ioTestRunner.test();
 
         ioTestReporter.afterTest();
 

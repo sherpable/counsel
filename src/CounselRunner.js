@@ -478,10 +478,10 @@ module.exports = class CounselRunner
                 return false;
             }
 
-            let ioTest = {
+            let ioTest = new (this.resolve('IOTest'))({
                 filename,
                 test,
-            };
+            });
 
             this.ioTests.push(ioTest);
 
@@ -712,7 +712,7 @@ module.exports = class CounselRunner
 
         this.IOTestRunner = this.instantiateIOTestRunner();
 
-        this.IOTestRunner.test();
+        await this.IOTestRunner.test();
 
         await this.reporter.afterIOTest();
     }
