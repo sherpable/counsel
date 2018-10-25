@@ -21,7 +21,7 @@ module.exports = class VueComponentTestCase extends TestCase
      * It will return a Proxy with the VueComponentTester
      * instance as it's target.
      * 
-	 * @param  {string}  template
+     * @param  {string}  template
      * @param  {object}  props
      * @return {Proxy}
      */
@@ -64,12 +64,12 @@ module.exports = class VueComponentTestCase extends TestCase
     /**
      * Assert that the contents will exists in the html presentation from the component.
      * This is an alias method for the assertContains assertion.
-	 * When the given regex is a string it will be converter into
-	 * a RegExp instance with flags 'gim'.
+     * When the given regex is a string it will be converter into
+     * a RegExp instance with flags 'gim'.
      * 
-	 * @param  {string|RegExp}  regex
-	 * @param  {string}   		contents
-	 * @param  {string}  		message
+     * @param  {string|RegExp}  regex
+     * @param  {string}   		contents
+     * @param  {string}  		message
      * @return {void}
      */
     assertSee(regex, contents, message)
@@ -80,12 +80,12 @@ module.exports = class VueComponentTestCase extends TestCase
     /**
      * Assert that the contents not exists in the html presentation from the component.
      * This is an alias method for the assertNotContains assertion.
-	 * When the given regex is a string it will be converter into
-	 * a RegExp instance with flags 'gim'.
+     * When the given regex is a string it will be converter into
+     * a RegExp instance with flags 'gim'.
      * 
-	 * @param  {string|RegExp}  regex
-	 * @param  {string}   		contents
-	 * @param  {string}  		message
+     * @param  {string|RegExp}  regex
+     * @param  {string}   		contents
+     * @param  {string}  		message
      * @return {void}
      */
     assertNotSee(regex, contents, message)

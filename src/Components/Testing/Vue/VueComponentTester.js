@@ -235,10 +235,9 @@ module.exports = class VueComponentTester
 
     /**
      * Assert that the contents will exists in the html presentation from the component.
-	 * When the given regex is a string it will be converter into
-	 * a RegExp instance with flags 'gim'.
+     * When the given regex is a string it will be converter into a RegExp instance with flags 'gim'.
      * 
-	 * @param  {string|RegExp}  expression
+     * param  {string|RegExp}  expression
      * @return {this}
      */
     assertSee(expression)
@@ -259,7 +258,7 @@ module.exports = class VueComponentTester
     /**
      * Alias method for assertSee.
      * 
-	 * @param  {string|RegExp}  expression
+     * @param  {string|RegExp}  expression
      * @return {this}
      */
     andSee(expression)
@@ -270,7 +269,7 @@ module.exports = class VueComponentTester
     /**
      * Alias method for assertSee.
      * 
-	 * @param  {string|RegExp}  expression
+     * @param  {string|RegExp}  expression
      * @return {this}
      */
     see(expression)
@@ -280,10 +279,9 @@ module.exports = class VueComponentTester
 
     /**
      * Assert that the contents not exists in the html presentation from the component.
-	 * When the given regex is a string it will be converter into
-	 * a RegExp instance with flags 'gim'.
+     * When the given regex is a string it will be converter into a RegExp instance with flags 'gim'.
      * 
-	 * @param  {string|RegExp}  expression
+     * @param  {string|RegExp}  expression
      * @return {this}
      */
     assertNotSee(expression)
@@ -300,7 +298,7 @@ module.exports = class VueComponentTester
     /**
      * Alias method for assertNotSee.
      * 
-	 * @param  {string|RegExp}  expression
+     * @param  {string|RegExp}  expression
      * @return {this}
      */
     andNotSee(expression)
@@ -311,7 +309,7 @@ module.exports = class VueComponentTester
     /**
      * Alias method for assertNotSee.
      * 
-	 * @param  {string|RegExp}  expression
+     * @param  {string|RegExp}  expression
      * @return {this}
      */
     notSee(expression)
@@ -322,7 +320,7 @@ module.exports = class VueComponentTester
     /**
      * Assert that the text is visible in the current component state.
      * 
-	 * @param  {string}  text
+     * @param  {string}  text
      * @return {this}
      */
     async assertVisible(text)
@@ -343,7 +341,7 @@ module.exports = class VueComponentTester
     /**
      * Assert that the text is not visible in the current component state.
      * 
-	 * @param  {string}  text
+     * @param  {string}  text
      * @return {this}
      */
     async assertNotVisible(text)
@@ -364,7 +362,7 @@ module.exports = class VueComponentTester
     /**
      * Alias method for assertNotVisible.
      * 
-	 * @param  {string}  text
+     * @param  {string}  text
      * @return {this}
      */
     async assertHidden(text)
@@ -375,7 +373,7 @@ module.exports = class VueComponentTester
     /**
      * Simulate a click operation on the element find by the selector.
      * 
-	 * @param  {string}  selector
+     * @param  {string}  selector
      * @return {void}
      */
     click(selector)
@@ -386,7 +384,7 @@ module.exports = class VueComponentTester
     /**
      * Simulate typing a value into the element find by the selector.
      * 
-	 * @param  {string}  selector
+     * @param  {string}  selector
      * @param  {mixed}   value
      * @return {void}
      */
@@ -401,7 +399,7 @@ module.exports = class VueComponentTester
     /**
      * Find the element with the given selector.
      * 
-	 * @param  {string}  selector
+     * @param  {string}  selector
      * @return {Wrapper}
      */
     find(selector)
