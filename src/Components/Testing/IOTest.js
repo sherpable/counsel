@@ -35,6 +35,12 @@ module.exports = class IOTest
 		this.failedAssertions = [];
 		this.passedAssertions = [];
 		this.process = {};
+
+		this.process = {
+			command: null,
+			arguments: [],
+			options: {},
+		};
 	}
 
     /**
@@ -61,6 +67,57 @@ module.exports = class IOTest
 		return this.platform.includes(process.platform);
 	}
 
+	parseCommand()
+	{
+		this.process.command = this.process.arguments.splice(0, 1)[0];
+	}
+
+	parseArguments()
+	{
+		this.process.arguments = this.perform.split(' ');
+	}
+
+	parseOptions()
+	{
+		let cwd = process.cwd();
+
+		if (this.cwd) {
+			cwd = this.root + this.cwd.trim();
+		}
+
+		this.process.options.cwd = cwd;
+
+
+		let options = {
+			cwd,
+		};
+
+		if (process.platform == 'win32') {
+			this.process.options.shell = true;
+		}
+	}
+
+	parseProcess()
+	{
+		this.parseOptions();
+		this.parseArguments();
+		this.parseCommand();
+
+
+		if (this.process.command.startsWith('src/counsel.js') && this.process.arguments.includes('--as-io-test')) {
+			this.process.arguments.push('--io-test-filename');
+			this.process.arguments.push(this.filename);
+		}
+
+		if (this.process.command.endsWith('.js') && process.platform == 'win32') {
+			this.process.command = 'node ' + this.process.command;
+		}
+
+		// dd(this.process);
+
+		return this.process;
+	}
+
     /**
      * Execute the IO test.
      * 
@@ -80,35 +137,13 @@ module.exports = class IOTest
 
 		let spawn = require('child_process').spawnSync;
 
-		let cwd = process.cwd();
+		let process = this.parseProcess();
 
-		if (test.cwd) {
-			cwd = this.root + test.cwd.trim();
-		}
-
-		// Parse arguments
-		let args = test.perform.split(' ');
-		let options = {
-			cwd,
-		};
-		let command = args.splice(0, 1)[0];
-
-		if (command.startsWith('src/counsel.js') && args.includes('--as-io-test')) {
-			args.push('--io-test-filename');
-			args.push(this.filename);
-		}
-
-		if (command.endsWith('.js') && process.platform == 'win32') {
-			command = 'node ' + command;
-		}
-
-		if (process.platform == 'win32') {
-			options.shell = true;
-		}
-
-		let counselProcess = spawn(command, args, options);
-
-		let executeInformation = {command, args, options};
+		let counselProcess = spawn(
+			this.process.command,
+			this.process.arguments,
+			this.process.options
+		);
 
 		// Process IO results
 		let result = '';
@@ -182,7 +217,7 @@ module.exports = class IOTest
 		    // Main test
 		    actual = result.join('\n');
 
-		    Assertions.setTest({ name: test.test, file: testFile, function: 'main test', io: true, executeInformation });
+		    Assertions.setTest({ name: test.test, file: testFile, function: 'main test', io: true, executeInformation: this.process });
 		    test.expect = test.expect.trim();
 		    actual = actual.trim();
 		    Assertions.assertEquals(test.expect, actual);
@@ -193,7 +228,7 @@ module.exports = class IOTest
 		    	mainTestPassed = false;
 		    }
 		} else {
-			Assertions.setTest({ name: test.test, file: testFile, function: 'main test', io: true, executeInformation });
+			Assertions.setTest({ name: test.test, file: testFile, function: 'main test', io: true, executeInformation: this.process });
 
 			if (test.expect == 'undefined') {
 				test.expect = undefined;
@@ -204,7 +239,7 @@ module.exports = class IOTest
 					`No result received from command "${test.perform}".`
 				);
 
-				this.process = {command, args, options};
+				// this.process = {command, args, options};
 				this.reporter.afterEachIOTestWithoutResults(this);
 
 				mainTestPassed = false;
@@ -221,7 +256,7 @@ module.exports = class IOTest
 
 	    if (result && test.assertions && Object.keys(test.assertions).length) {
 		    for (let assertion in test.assertions) {
-				Assertions.setTest({ name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true, executeInformation });
+				Assertions.setTest({ name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true, executeInformation: this.process });
 		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);
 
 		        if (test.assertions[assertion] === counselResults[assertion]) {
@@ -245,7 +280,7 @@ module.exports = class IOTest
 		this.mainTestPassed = mainTestPassed;
 		this.failedAssertions = failedAssertions;
 		this.passedAssertions = passedAssertions;
-		this.process = {command, args, options};
+		// this.process = {command, args, options};
 
 
 	  	if (mainTestPassed && assertionsPassed) {
