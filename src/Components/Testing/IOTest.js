@@ -137,7 +137,7 @@ module.exports = class IOTest
 
 		let spawn = require('child_process').spawnSync;
 
-		let process = this.parseProcess();
+		this.parseProcess();
 
 		let counselProcess = spawn(
 			this.process.command,
