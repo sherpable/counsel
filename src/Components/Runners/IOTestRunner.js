@@ -16,8 +16,6 @@ module.exports = class IOTestRunner
 		this.pass = true;
 		this.fail = false;
 
-		this.currentTestFail = false;
-
 		this.yaml = require('js-yaml');
 		this.chalk = require('chalk');
 		this.figures = require('figures');

@@ -32,10 +32,11 @@ module.exports = class IOTest
 
 		this.actual = null;
 		this.mainTestPassed = null;
-		this.failedAssertions = [];
-		this.passedAssertions = [];
-		this.process = {};
-
+		this.failedAssertions = {};
+		this.passedAssertions = {};
+		this.assertionsPassed = null;
+		this.assertionsResult = {};
+		
 		this.process = {
 			command: null,
 			arguments: [],
@@ -113,76 +114,71 @@ module.exports = class IOTest
 			this.process.command = 'node ' + this.process.command;
 		}
 
-		// dd(this.process);
-
 		return this.process;
 	}
+	
+	executeProcess()
+	{
+		let spawn = require('child_process').spawnSync;
 
+		return spawn(
+			this.process.command,
+			this.process.arguments,
+			this.process.options
+		);
+	}
+	
+	parseExecutedProcess(ioProcess)
+	{
+		if (ioProcess.stdout) {
+			this.process.output = ioProcess.stdout.toString();
+			this.process.rawOutput = this.process.output;
+			
+			if (this.process.output.trim()) {
+				this.process.hasOutput = true;
+			}
+		}
+
+		if (ioProcess.stderr) {
+			this.process.error = ioProcess.stderr.toString();
+		}
+		
+		this.process.status = ioProcess.status;
+		this.process.signal = ioProcess.signal;
+		
+		this.assertionsResult.status = this.process.status;
+		this.assertionsResult.signal = this.process.signal;
+	}
+	
     /**
      * Execute the IO test.
      * 
      * @return {void}
      */
-	async run()
+	run()
 	{
-		let mainTestPassed = null;
-
-		this.currentTestFail = false;
-
-		let childParentMessage = false;
-
-		let testFile = this.filename;
-
-		let test = this.test.test;
-
-		let spawn = require('child_process').spawnSync;
-
 		this.parseProcess();
 
-		let counselProcess = spawn(
-			this.process.command,
-			this.process.arguments,
-			this.process.options
-		);
+		let ioProcess = this.executeProcess();
+		
+		this.parseExecutedProcess(ioProcess);
 
-		// Process IO results
-		let result = '';
-		let actual;
-		let error;
-		let failedAssertions = {};
-		let passedAssertions = {};
-		let assertionsPassed = true;
-
-		if (counselProcess.stdout) {
-			result = counselProcess.stdout.toString();
-		}
-
-		if (counselProcess.stderr) {
-			error = counselProcess.stderr.toString();
-		}
+		this.assertionsPassed = true;
 
 		let data = {};
 
-		// Run IO assertions
-	    let counselResults = {
-	        status: counselProcess.status,
-	        signal: counselProcess.signal,
-	    };
-
-	    let cleanResult = result.trim();
-
-		if (cleanResult) {
-			result = result.split('\n').map(line => {
+		if (this.process.hasOutput) {
+			this.process.output = this.process.output.split('\n').map(line => {
 				// Maybe need to remove the trim() call
 				// and don't replace tabs with spaces.
 				// Because of manipulating the output.
 				return line.trim().replace('\t', ' ');
 			});
 
-			let childParentMessageStart = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
-			let childParentMessageEnd = result.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
+			let childParentMessageStart = this.process.output.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
+			let childParentMessageEnd = this.process.output.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
 
-			var childParentMessages = result.splice(childParentMessageStart, childParentMessageEnd - 2);
+			var childParentMessages = this.process.output.splice(childParentMessageStart, childParentMessageEnd - 2);
 			childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2); // Remove closing item
 
 			// Convert raw child messages into an object
@@ -195,80 +191,79 @@ module.exports = class IOTest
 		        let itemValue = data[item];
 		        // Also assign child parent items to the assertions results
 		        // so we can assert against the version number for example
-		        counselResults[item] = (parseInt(itemValue) === NaN)
+		        this.assertionsResult[item] = (parseInt(itemValue) === NaN)
 		        	? itemValue
 		        	: parseInt(itemValue);
 
 		        // Replace directory seperator '/' with '\' when running in Windows
-		        if (process.platform == 'win32' && test.expect.includes('{{root}}')) {
+		        if (process.platform == 'win32' && this.expect.includes('{{root}}')) {
 			        let pathRegex = new RegExp('{{root}}*.*', 'g');
-			        let paths = test.expect.match(pathRegex);
+			        let paths = this.expect.match(pathRegex);
 			        paths.forEach(path => {
 			        	let replaceDirectorySeperatorRegex = new RegExp('/', 'g');
 			        	let windowsPath = path.replace(replaceDirectorySeperatorRegex, '\\');
-			        	test.expect = test.expect.replace(path, windowsPath);
+			        	this.expect = this.expect.replace(path, windowsPath);
 			        });
 		    	}
 
 		        let regex = new RegExp(`\{\{${item}\}\}`, 'g');
-		        test.expect = test.expect.replace(regex, itemValue);
+		        this.expect = this.expect.replace(regex, itemValue);
 		    }
 
 		    // Main test
-		    actual = result.join('\n');
+		    this.actual = this.process.output.join('\n');
 
-		    Assertions.setTest({ name: test.test, file: testFile, function: 'main test', io: true, executeInformation: this.process });
-		    test.expect = test.expect.trim();
-		    actual = actual.trim();
-		    Assertions.assertEquals(test.expect, actual);
+		    Assertions.setTest({ name: this.name, file: this.filename, function: 'main test', io: true, executeInformation: this.process });
+		    this.expect = this.expect.trim();
+		    this.actual = this.actual.trim();
+		    Assertions.assertEquals(this.expect, this.actual);
 
-		    if (actual === test.expect) {
-		    	mainTestPassed = true;
+		    if (this.actual === this.expect) {
+		    	this.mainTestPassed = true;
 		    } else {
-		    	mainTestPassed = false;
+		    	this.mainTestPassed = false;
 		    }
 		} else {
-			Assertions.setTest({ name: test.test, file: testFile, function: 'main test', io: true, executeInformation: this.process });
+			Assertions.setTest({ name: this.name, file: this.filename, function: 'main test', io: true, executeInformation: this.process });
 
-			if (test.expect == 'undefined') {
-				test.expect = undefined;
+			if (this.expect == 'undefined') {
+				this.expect = undefined;
 			}
 
-			if (actual == undefined) {
+			if (this.actual == undefined) {
 				Assertions.fail(
-					`No result received from command "${test.perform}".`
+					`No result received from command "${this.perform}".`
 				);
 
-				// this.process = {command, args, options};
 				this.reporter.afterEachIOTestWithoutResults(this);
 
-				mainTestPassed = false;
+				this.mainTestPassed = false;
 			} else {
 				Assertions.assertEquals(
-					test.expect, actual
+					tethist.expect, this.actual
 				);
 
-				if (test.expect != actual) {
-					mainTestPassed = false;
+				if (this.expect != this.actual) {
+					this.mainTestPassed = false;
 				}
 			}
 		}
 
-	    if (result && test.assertions && Object.keys(test.assertions).length) {
-		    for (let assertion in test.assertions) {
-				Assertions.setTest({ name: test.test, file: testFile, function: `assertion "${assertion}"`, io: true, executeInformation: this.process });
-		        Assertions.assertEquals(test.assertions[assertion], counselResults[assertion]);
+	    if (this.process.output && this.assertions && Object.keys(this.assertions).length) {
+		    for (let assertion in this.assertions) {
+				Assertions.setTest({ name: this.name, file: this.filename, function: `assertion "${assertion}"`, io: true, executeInformation: this.process });
+		        Assertions.assertEquals(this.assertions[assertion], this.assertionsResult[assertion]);
 
-		        if (test.assertions[assertion] === counselResults[assertion]) {
-		        	passedAssertions[assertion] = {
-		        		actual: counselResults[assertion],
+		        if (this.assertions[assertion] === this.assertionsResult[assertion]) {
+		        	this.passedAssertions[assertion] = {
+		        		actual: this.assertionsResult[assertion],
 		        	};
 		        } else {
-		        	assertionsPassed = false;
-		            let assertionExpected = test.assertions[assertion];
-		            let assertionActual = counselResults[assertion];
+		        	this.assertionsPassed = false;
+		            let assertionExpected = this.assertions[assertion];
+		            let assertionActual = this.assertionsResult[assertion];
 
-		        	failedAssertions[assertion] = {
+		        	this.failedAssertions[assertion] = {
 		        		actual: assertionActual,
 		        		expected: assertionExpected,
 		        	};
@@ -276,14 +271,7 @@ module.exports = class IOTest
 		    }
 		}
 
-		this.actual = actual;
-		this.mainTestPassed = mainTestPassed;
-		this.failedAssertions = failedAssertions;
-		this.passedAssertions = passedAssertions;
-		// this.process = {command, args, options};
-
-
-	  	if (mainTestPassed && assertionsPassed) {
+	  	if (this.mainTestPassed && this.assertionsPassed) {
 	  		this.reporter.afterEachPassedIOTest(this);
 	  		this.reporter.afterEachIOTest(this);
 	  	} else {
