@@ -20,7 +20,7 @@ module.exports = class IOTestTest extends TestCase
             ],
             command: 'src/counsel.js',
             options: {
-                cwd: '/Users/Timon/Projects/counsel/foo',
+                cwd: `${process.cwd()}/foo`,
             },
         }, ioTest.process);
     }
@@ -33,9 +33,22 @@ module.exports = class IOTestTest extends TestCase
             test: ioTestContent2
         });
 
+        let ioTestReporter = new (require('../../src/Components/Reporters/DotReporter'));
+        ioTestReporter.forceColor = new (counsel().serviceProviders.chalk).constructor({enabled: false, level: 0});
+        ioTestReporter.silent = true;
+
+        let parentTestReporter = Assertions.reporter;
+        let parentTest = Assertions.test;
+        Assertions.setReporter(ioTestReporter);
+
         ioTest.parseProcess();
-        
+
+        ioTest.reporter = ioTestReporter;
+
         ioTest.run();
+
+        Assertions.setReporter(parentTestReporter);
+        Assertions.setTest(parentTest);
         
         this.assertEquals(
             ioTest.expect,

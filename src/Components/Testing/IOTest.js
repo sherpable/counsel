@@ -272,11 +272,11 @@ module.exports = class IOTest
 		}
 
 	  	if (this.mainTestPassed && this.assertionsPassed) {
-	  		this.reporter.afterEachPassedIOTest(this);
-	  		this.reporter.afterEachIOTest(this);
+			this.reporter.afterEachPassedIOTest(this);
+			this.reporter.afterEachIOTest(this);
 	  	} else {
-	  		this.reporter.afterEachFailedIOTest(this);
-	  		this.reporter.afterEachIOTest(this);
+			this.reporter.afterEachFailedIOTest(this);
+			this.reporter.afterEachIOTest(this);
 	  	}
 	}
 }

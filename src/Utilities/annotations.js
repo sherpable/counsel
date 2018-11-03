@@ -21,7 +21,7 @@ var linetypes = {
   fnsig7              : { pattern: /^\s*(var|let|const)\s+(\w+)\s*=\s*\(.*?\)\s*=>/, returns: { name:2 } },
   fnsig8              : { pattern: /^\s?module.exports\s*=\s*{/, returns: { name:'module' } },
   es6asyncfn          : { pattern: /async\s(\w+)\s?/, returns: { name:1 } },
-  es6fn               : { pattern: /\s?(\w+)\s?/, returns: { name:1 } },
+  es6fn               : { pattern: /\s?(\w+)\(*.*\)\s?/, returns: { name:1 } },
 };
 
 function trim(str) {
