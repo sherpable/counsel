@@ -68,16 +68,31 @@ module.exports = class IOTest
 		return this.platform.includes(process.platform);
 	}
 
+    /**
+     * Parse the command who will be executed.
+     * 
+     * @return {void}
+     */
 	parseCommand()
 	{
 		this.process.command = this.process.arguments.splice(0, 1)[0];
 	}
 
+    /**
+     * Parse the process arguments.
+     * 
+     * @return {void}
+     */
 	parseArguments()
 	{
 		this.process.arguments = this.perform.split(' ');
 	}
 
+    /**
+     * Parse the process options.
+     * 
+     * @return {void}
+     */
 	parseOptions()
 	{
 		let cwd = process.cwd();
@@ -88,16 +103,16 @@ module.exports = class IOTest
 
 		this.process.options.cwd = cwd;
 
-
-		let options = {
-			cwd,
-		};
-
 		if (process.platform == 'win32') {
 			this.process.options.shell = true;
 		}
 	}
 
+    /**
+     * Parse the process who will be executed.
+     * 
+     * @return {object}
+     */
 	parseProcess()
 	{
 		this.parseOptions();
@@ -117,6 +132,11 @@ module.exports = class IOTest
 		return this.process;
 	}
 	
+    /**
+     * Execute the process.
+     * 
+     * @return {object}
+     */
 	executeProcess()
 	{
 		let spawn = require('child_process').spawnSync;
@@ -128,6 +148,12 @@ module.exports = class IOTest
 		);
 	}
 	
+    /**
+     * Parse the executed process his output.
+     * 
+     * @param  {object}  ioProcess
+	 * @return {void}
+     */
 	parseExecutedProcess(ioProcess)
 	{
 		if (ioProcess.stdout) {
@@ -148,108 +174,101 @@ module.exports = class IOTest
 		
 		this.assertionsResult.status = this.process.status;
 		this.assertionsResult.signal = this.process.signal;
+
+		if (this.process.hasOutput) {
+			this.processOutput();
+
+		}
 	}
-	
+
     /**
-     * Execute the IO test.
+     * Process the executed process his output.
      * 
      * @return {void}
      */
-	run()
+	processOutput()
 	{
-		this.parseProcess();
+		this.process.output = this.process.output.split('\n').map(line => {
+			return line.trim().replace('\t', ' ');
+		});
 
-		let ioProcess = this.executeProcess();
-		
-		this.parseExecutedProcess(ioProcess);
+		let processVariables = this.getProcessVariables();
 
+		this.processExpectation(processVariables);
+
+		// Main test
+		this.actual = this.process.output.join('\n');
+	}
+
+    /**
+     * Process the expectation from this test.
+	 * This will replace all "placeholders" with
+	 * it's actual value from the io process.
+     * 
+     * @param  {object}  processVariables
+	 * @return {void}
+     */
+	processExpectation(processVariables)
+	{
+		for (let variable in processVariables) {
+			let value = processVariables[variable];
+			// Also assign child parent items to the assertions results
+			// so we can assert against the version number for example
+			this.assertionsResult[variable] = (parseInt(value) === NaN)
+				? value
+				: parseInt(value);
+
+			// Replace directory seperator '/' with '\' when running in Windows
+			if (process.platform == 'win32' && this.expect.includes('{{root}}')) {
+				let pathRegex = new RegExp('{{root}}*.*', 'g');
+				let paths = this.expect.match(pathRegex);
+				paths.forEach(path => {
+					let replaceDirectorySeperatorRegex = new RegExp('/', 'g');
+					let windowsPath = path.replace(replaceDirectorySeperatorRegex, '\\');
+					this.expect = this.expect.replace(path, windowsPath);
+				});
+			}
+
+			let regex = new RegExp(`\{\{${variable}\}\}`, 'g');
+			this.expect = this.expect.replace(regex, value);
+		}
+	}
+
+    /**
+     * Retrieve the variables who are send-back to the parent process
+	 * from within the child (IO) process.
+     * 
+     * @return {object}
+     */
+	getProcessVariables()
+	{
+		let childParentMessageStart = this.process.output.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
+		let childParentMessageEnd = this.process.output.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
+
+		let childParentMessages = this.process.output.splice(childParentMessageStart, childParentMessageEnd - 2);
+		childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2); // Remove closing item
+
+		let variables = {};
+
+		// Convert raw child messages into an object
+		childParentMessages.forEach(rawMessage => {
+			let value = rawMessage.split('=');
+			variables[value[0]] = value[1];
+		});
+
+		return variables;
+	}
+
+    /**
+     * Run the assertions from this IO test.
+     * 
+     * @return {void}
+     */
+	runAssertions()
+	{
 		this.assertionsPassed = true;
 
-		let data = {};
-
-		if (this.process.hasOutput) {
-			this.process.output = this.process.output.split('\n').map(line => {
-				// Maybe need to remove the trim() call
-				// and don't replace tabs with spaces.
-				// Because of manipulating the output.
-				return line.trim().replace('\t', ' ');
-			});
-
-			let childParentMessageStart = this.process.output.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:START');
-			let childParentMessageEnd = this.process.output.indexOf('COUNSEL-CHILD-PARENT-MESSAGE:END');
-
-			var childParentMessages = this.process.output.splice(childParentMessageStart, childParentMessageEnd - 2);
-			childParentMessages = childParentMessages.splice(1, childParentMessages.length - 2); // Remove closing item
-
-			// Convert raw child messages into an object
-			childParentMessages.forEach(rawMessage => {
-				let value = rawMessage.split('=');
-				data[value[0]] = value[1];
-			});
-
-		    for (let item in data) {
-		        let itemValue = data[item];
-		        // Also assign child parent items to the assertions results
-		        // so we can assert against the version number for example
-		        this.assertionsResult[item] = (parseInt(itemValue) === NaN)
-		        	? itemValue
-		        	: parseInt(itemValue);
-
-		        // Replace directory seperator '/' with '\' when running in Windows
-		        if (process.platform == 'win32' && this.expect.includes('{{root}}')) {
-			        let pathRegex = new RegExp('{{root}}*.*', 'g');
-			        let paths = this.expect.match(pathRegex);
-			        paths.forEach(path => {
-			        	let replaceDirectorySeperatorRegex = new RegExp('/', 'g');
-			        	let windowsPath = path.replace(replaceDirectorySeperatorRegex, '\\');
-			        	this.expect = this.expect.replace(path, windowsPath);
-			        });
-		    	}
-
-		        let regex = new RegExp(`\{\{${item}\}\}`, 'g');
-		        this.expect = this.expect.replace(regex, itemValue);
-		    }
-
-		    // Main test
-		    this.actual = this.process.output.join('\n');
-
-		    Assertions.setTest({ name: this.name, file: this.filename, function: 'main test', io: true, executeInformation: this.process });
-		    this.expect = this.expect.trim();
-		    this.actual = this.actual.trim();
-		    Assertions.assertEquals(this.expect, this.actual);
-
-		    if (this.actual === this.expect) {
-		    	this.mainTestPassed = true;
-		    } else {
-		    	this.mainTestPassed = false;
-		    }
-		} else {
-			Assertions.setTest({ name: this.name, file: this.filename, function: 'main test', io: true, executeInformation: this.process });
-
-			if (this.expect == 'undefined') {
-				this.expect = undefined;
-			}
-
-			if (this.actual == undefined) {
-				Assertions.fail(
-					`No result received from command "${this.perform}".`
-				);
-
-				this.reporter.afterEachIOTestWithoutResults(this);
-
-				this.mainTestPassed = false;
-			} else {
-				Assertions.assertEquals(
-					tethist.expect, this.actual
-				);
-
-				if (this.expect != this.actual) {
-					this.mainTestPassed = false;
-				}
-			}
-		}
-
-	    if (this.process.output && this.assertions && Object.keys(this.assertions).length) {
+	    if (this.assertions && Object.keys(this.assertions).length) {
 		    for (let assertion in this.assertions) {
 				Assertions.setTest({ name: this.name, file: this.filename, function: `assertion "${assertion}"`, io: true, executeInformation: this.process });
 		        Assertions.assertEquals(this.assertions[assertion], this.assertionsResult[assertion]);
@@ -269,6 +288,99 @@ module.exports = class IOTest
 		        	};
 		        }
 		    }
+		}
+	}
+
+    /**
+     * Run the main test from this IO test.
+	 * Basically check if the actual and expected value are equal.
+     * 
+     * @return {void}
+     */
+	runMainTest()
+	{
+		this.expect = this.expect.trim();
+		this.actual = this.actual.trim();
+		Assertions.assertEquals(this.expect, this.actual);
+
+		if (this.actual === this.expect) {
+			this.mainTestPassed = true;
+		} else {
+			this.mainTestPassed = false;
+		}
+	}
+
+    /**
+     * Notify about an IO test without output.
+     * 
+     * @return {void}
+     */
+	notifyAboutNoTestResults()
+	{
+		Assertions.fail(
+			`No result received from command "${this.perform}".`
+		);
+
+		this.reporter.afterEachIOTestWithoutResults(this);
+
+		this.mainTestPassed = false;
+	}
+
+    /**
+     * Process the results from an IO test without output.
+     * 
+     * @return {void}
+     */
+	processWithoutTestResults()
+	{
+		if (this.expect == 'undefined') {
+			this.expect = undefined;
+		}
+
+		if (this.actual == undefined) {
+			this.notifyAboutNoTestResults();
+		} else {
+			Assertions.assertEquals(
+				tethist.expect, this.actual
+			);
+
+			if (this.expect != this.actual) {
+				this.mainTestPassed = false;
+			}
+		}
+	}
+
+    /**
+     * Set the IO test as current test within the Assertions instance.
+     * 
+     * @return {void}
+     */
+	setTest()
+	{
+		Assertions.setTest({ name: this.name, file: this.filename, function: 'main test', io: true, executeInformation: this.process });
+	}
+
+    /**
+     * Execute the IO test.
+     * 
+     * @return {void}
+     */
+	run()
+	{
+		this.parseProcess();
+
+		let ioProcess = this.executeProcess();
+		
+		this.parseExecutedProcess(ioProcess);
+
+		this.setTest();
+
+		if (this.process.hasOutput) {
+			this.runMainTest();
+			
+			this.runAssertions();
+		} else {
+			this.processWithoutTestResults();
 		}
 
 	  	if (this.mainTestPassed && this.assertionsPassed) {
