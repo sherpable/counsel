@@ -27,8 +27,6 @@ module.exports = class DotReporter extends Reporter
      */
     beforeTest()
     {
-        super.beforeTest();
-
         if (this.testsCount > 0) {
             return;
         }
@@ -46,8 +44,6 @@ module.exports = class DotReporter extends Reporter
      */
     afterEachFailedTest(test)
     {
-        super.afterEachFailedTest(test);
-
         this.appendLog(this.forceColor.red('x'));
     }
 
@@ -59,8 +55,6 @@ module.exports = class DotReporter extends Reporter
      */
     afterEachPassedTest(test)
     {
-        super.afterEachPassedTest(test);
-
         this.appendLog(this.forceColor.green('.'));
     }
 
@@ -72,8 +66,6 @@ module.exports = class DotReporter extends Reporter
      */
     afterEachIncompleteTest(test)
     {
-        super.afterEachIncompleteTest(test);
-
         this.appendLog(this.forceColor.yellow('I'));
     }
 
@@ -85,8 +77,6 @@ module.exports = class DotReporter extends Reporter
      */
     afterEachSkippedTest(test)
     {
-        super.afterEachSkippedTest(test);
-
         this.appendLog(this.forceColor.blue('S'));
     }
 
@@ -121,8 +111,6 @@ module.exports = class DotReporter extends Reporter
      */
     afterEachFailedIOTest(ioTest)
     {
-        super.afterEachFailedIOTest(ioTest);
-
         this.appendLog(this.forceColor.red('x'));
     }
 
@@ -134,20 +122,7 @@ module.exports = class DotReporter extends Reporter
      */
     afterEachPassedIOTest(ioTest)
     {
-        super.afterEachPassedIOTest(ioTest);
-
         this.appendLog(this.forceColor.green('.'));
-    }
-
-    /**
-     * After each IO test without results.
-     * 
-     * @param  {IOTest}  test
-     * @return {void}
-     */
-    afterEachIOTestWithoutResults(ioTest)
-    {
-        super.afterEachIOTestWithoutResults(ioTest);
     }
 
     /**
@@ -158,8 +133,6 @@ module.exports = class DotReporter extends Reporter
      */
     afterEachTest(test)
     {
-        super.afterEachTest(test);
-
         if (! this.fullRun) {
             return;
         }
@@ -192,8 +165,6 @@ module.exports = class DotReporter extends Reporter
         }
 
         this.appendLog('\n');
-
-        super.afterTest();
     }
 
     /**

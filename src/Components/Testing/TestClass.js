@@ -30,18 +30,18 @@ module.exports = class TestClass
      */
 	async runTests()
 	{
-		await this.reporter.beforeEachTestClass(this);
+		await this.reporter.emit('beforeEachTestClass', [this]);
 
 		await this.runTestsInClass();
 
 		let testFailuresCount = this.reporter.testFailures[this.filePath]['count'];
 
-		await this.reporter.afterEachTestClass(this);
+		await this.reporter.emit('afterEachTestClass', [this]);
 
 		if (testFailuresCount > 0) {
-			await this.reporter.afterEachFailedTestClass(this);
+			await this.reporter.emit('afterEachFailedTestClass', [this]);
 		} else {
-			await this.reporter.afterEachPassedTestClass(this);
+			await this.reporter.emit('afterEachPassedTestClass', [this]);
 		}
 	}
 
@@ -55,7 +55,7 @@ module.exports = class TestClass
 		let test = new (counsel().resolve('Test'))(this.filePath, method);
 
 		try {
-			await this.reporter.beforeEachTest(test);
+			await this.reporter.emit('beforeEachTest', [test]);
 
 			// Run the test
 			await this.testClass[method]();
@@ -70,11 +70,11 @@ module.exports = class TestClass
 			test.results = this.reporter.results[this.filePath];
 
 			if (test.failuresCount > 0) {
-				await this.reporter.afterEachFailedTest(test);
+				await this.reporter.emit('afterEachFailedTest', [test]);
 			} else if (! test.incomplete && ! test.skipped) {
-				await this.reporter.afterEachPassedTest(test);
+				await this.reporter.emit('afterEachPassedTest', [test]);
 			}
-			await this.reporter.afterEachTest(test);
+			await this.reporter.emit('afterEachTest', [test]);
 
 			if (this.testClass.expectedException) {
 				Assertions.setTest(this.testClass.test);
@@ -116,11 +116,11 @@ module.exports = class TestClass
 					test.failuresCount = testFailuresCount;
 					test.results = this.reporter.results[this.filePath];
 					if (testFailuresCount > 0) {
-						await this.reporter.afterEachFailedTest(test);
+						await this.reporter.emit('afterEachFailedTest', [test]);
 					} else {
-						await this.reporter.afterEachPassedTest(test);
+						await this.reporter.emit('afterEachPassedTest', [test]);
 					}
-					await this.reporter.afterEachTest(test);
+					await this.reporter.emit('afterEachTest', [test]);
 				} else {
 					if (error instanceof IncompleteTestError) {
 						let incompleteTest = this.testClass.test;
@@ -132,8 +132,8 @@ module.exports = class TestClass
 
 						incompleteTest.message = error.message;
 
-						this.reporter.afterEachIncompleteTest(incompleteTest);
-						this.reporter.afterEachTest(test);
+						this.reporter.emit('afterEachIncompleteTest', [incompleteTest]);
+						this.reporter.emit('afterEachTest', [test]);
 					} else if (error instanceof SkippedTestError) {
 						let skippedTest = this.testClass.test;
 						skippedTest.className = skippedTest.file;
@@ -144,8 +144,8 @@ module.exports = class TestClass
 
 						skippedTest.message = error.message;
 
-						this.reporter.afterEachSkippedTest(skippedTest);
-						this.reporter.afterEachTest(test);
+						this.reporter.emit('afterEachSkippedTest', [skippedTest]);
+						this.reporter.emit('afterEachTest', [test]);
 					} else {
 						throw error;
 					}
@@ -216,8 +216,8 @@ module.exports = class TestClass
 
                 incompleteTest.message = error.message;
 
-                this.reporter.afterEachIncompleteTest(incompleteTest);
-                this.reporter.afterEachTest(this.testClass.test);
+                this.reporter.emit('afterEachIncompleteTest', [incompleteTest]);
+                this.reporter.emit('afterEachTest', [this.testClass.test]);
 
                 return;
             } else if (error instanceof SkippedTestError) {
@@ -228,8 +228,8 @@ module.exports = class TestClass
 
                 skippedTest.message = error.message;
 
-                this.reporter.afterEachSkippedTest(skippedTest);
-                this.reporter.afterEachTest(this.testClass.test);
+                this.reporter.emit('afterEachSkippedTest', [skippedTest]);
+                this.reporter.emit('afterEachTest', [this.testClass.test]);
 
                 return;
             } else {

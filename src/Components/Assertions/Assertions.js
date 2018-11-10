@@ -169,16 +169,16 @@ module.exports = class Assertions
 			this.reporter
 		);
 
-		this.reporter.beforeEachAssertion(assertion);
+		this.reporter.emit('beforeEachAssertion', [assertion]);
 
 		assertion.execute();
 
-	    this.reporter.afterEachAssertion(assertion);
+	    this.reporter.emit('afterEachAssertion', [assertion]);
 
 	    if (assertion.passed()) {
-	    	this.reporter.afterEachPassedAssertion(assertion);
+	    	this.reporter.emit('afterEachPassedAssertion', [assertion]);
 	    } else {
-	    	this.reporter.afterEachFailedAssertion(assertion);
+	    	this.reporter.emit('afterEachFailedAssertion', [assertion]);
 	    }
 
 	    return assertion;

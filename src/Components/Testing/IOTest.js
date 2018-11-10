@@ -321,7 +321,7 @@ module.exports = class IOTest
 			`No result received from command "${this.perform}".`
 		);
 
-		this.reporter.afterEachIOTestWithoutResults(this);
+		this.reporter.emit('afterEachIOTestWithoutResults', [this]);
 
 		this.mainTestPassed = false;
 	}
@@ -384,11 +384,11 @@ module.exports = class IOTest
 		}
 
 	  	if (this.mainTestPassed && this.assertionsPassed) {
-			this.reporter.afterEachPassedIOTest(this);
-			this.reporter.afterEachIOTest(this);
+			this.reporter.emit('afterEachPassedIOTest', [this]);
+			this.reporter.emit('afterEachIOTest', [this]);
 	  	} else {
-			this.reporter.afterEachFailedIOTest(this);
-			this.reporter.afterEachIOTest(this);
+			this.reporter.emit('afterEachFailedIOTest', [this]);
+			this.reporter.emit('afterEachIOTest', [this]);
 	  	}
 	}
 }

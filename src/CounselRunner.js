@@ -461,7 +461,7 @@ module.exports = class CounselRunner
         
         this.loadCustomErrorClasses();
 
-        await this.reporter.beforeBoot();
+        await this.reporter.emit('beforeBoot');
 
         // Parse IO (yaml) tests
         this.serviceProviders.nodeHook.hook('.yaml', (source, filename) => {
@@ -548,7 +548,7 @@ module.exports = class CounselRunner
 
         await this.booted();
 
-        await this.reporter.afterBoot();
+        await this.reporter.emit('afterBoot');
     }
 
     /**
@@ -667,7 +667,7 @@ module.exports = class CounselRunner
      */
     async test()
     {
-        await this.reporter.beforeTest();
+        await this.reporter.emit('beforeTest');
 
         try {
             for (let location in this.locations) {
@@ -684,7 +684,7 @@ module.exports = class CounselRunner
             await this.runIOTests();
         }
 
-        await this.reporter.afterTest();
+        await this.reporter.emit('afterTest');
     }
 
     /**
@@ -708,13 +708,13 @@ module.exports = class CounselRunner
             return;
         }
 
-        await this.reporter.beforeIOTest();
+        await this.reporter.emit('beforeIOTest');
 
         this.IOTestRunner = this.instantiateIOTestRunner();
 
         await this.IOTestRunner.test();
 
-        await this.reporter.afterIOTest();
+        await this.reporter.emit('afterIOTest');
     }
 
     /**

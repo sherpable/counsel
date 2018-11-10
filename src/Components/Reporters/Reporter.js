@@ -28,6 +28,7 @@ module.exports = class Reporter
         this.reporterDate = Date;
 
         this.results = {};
+        this.customResults = {};
         this.passesResults = {};
         this.failuresResults = {};
         this.errorContent = '';
@@ -43,6 +44,7 @@ module.exports = class Reporter
         this.testsIncompleteCount = 0;
         this.testsSkippedCount = 0;
 
+        this.noTestsExecuted = null;
         this.totalTests = 0;
 
         this.assertionsCount = 0;
@@ -57,6 +59,143 @@ module.exports = class Reporter
         this.progress = 0;
 
         this.indentation = 1;
+
+        this.events = this.registerEvents();
+    }
+
+    /**
+     * Register result data who will be available when in the parent process.
+     * 
+     * @param  {string}  name
+     * @param  {mixed}   value
+     * @return {void}
+     */
+    addResult(name, value)
+    {
+        this.customResults[name] = value;
+    }
+
+    /**
+     * Register the events.
+     * 
+     * @return {void}
+     */
+    registerEvents()
+    {
+        return {
+            beforeBoot: [
+                'beforeBoot',
+            ],
+            afterBoot: [
+                'afterBoot',
+            ],
+            beforeTest: [
+                'recordTestStaringTime',
+                'beforeTest',
+            ],
+            afterTest: [
+                'afterTestCalculations',
+                'afterTest',
+                'reportTestOverview',
+                'reportToParentProcess',
+            ],
+            beforeIOTest: [
+                'beforeIOTest',
+            ],
+            afterIOTest: [
+                'afterIOTest',
+            ],
+            beforeEachIOTest: [
+                'beforeEachIOTest',
+            ],
+            afterEachIOTest: [
+                'afterEachIOTestCalculations',
+                'afterEachIOTest',
+            ],
+            afterEachFailedIOTest: [
+                'afterEachFailedIOTestCalculations',
+                'afterEachFailedIOTest',
+            ],
+            afterEachPassedIOTest: [
+                'afterEachPassedIOTestCalculations',
+                'afterEachPassedIOTest',
+            ],
+            afterEachIncompleteTest: [
+                'afterEachIncompleteTestCalculations',
+                'afterEachIncompleteTest',
+            ],
+            afterEachSkippedTest: [
+                'afterEachSkippedTestCalculations',
+                'afterEachSkippedTest',
+            ],
+            afterEachIOTestWithoutResults: [
+                'afterEachIOTestWithoutResults',
+            ],
+            beforeEachTestClass: [
+                'beforeEachTestClassCalculations',
+                'beforeEachTestClass',
+            ],
+            afterEachTestClass: [
+                'afterEachTestClass',
+            ],
+            afterEachFailedTestClass: [
+                'afterEachFailedTestClass',
+            ],
+            afterEachPassedTestClass: [
+                'afterEachPassedTestClass',
+            ],
+            beforeEachTest: [
+                'beforeEachTestCalculations',
+                'beforeEachTest',
+            ],
+            afterEachTest: [
+                'afterEachTestCalculations',
+                'afterEachTest',
+            ],
+            afterEachFailedTest: [
+                'afterEachFailedTestCalculations',
+                'afterEachFailedTest',
+            ],
+            afterEachPassedTest: [
+                'afterEachPassedTestCalculations',
+                'afterEachPassedTest',
+            ],
+            beforeEachAssertion: [
+                'beforeEachAssertionCalculations',
+                'beforeEachAssertion',
+            ],
+            afterEachAssertion: [
+                'afterEachAssertionCalculations',
+                'afterEachAssertion',
+            ],
+            afterEachFailedAssertion: [
+                'afterEachFailedAssertionCalculations',
+                'afterEachFailedAssertion',
+            ],
+            afterEachPassedAssertion: [
+                'afterEachPassedAssertionCalculations',
+                'afterEachPassedAssertion',
+            ],
+        };
+    }
+
+    /**
+     * Emit the given event.
+     * 
+     * @param  {string}  event
+     * @param  {object}  payload
+     * @return {void} 
+     */
+    emit(event, payload = [])
+    {
+        if (! this.events[event]) {
+            console.log('');
+            console.error(counsel().serviceProviders.chalk.red(`  ${counsel().serviceProviders.figures.cross} event [${event}] don't exists on the Reporter class.`));
+        }
+
+        this.events[event].forEach(functionName => {
+            this[functionName](...payload);
+        });
     }
 
     /**
@@ -78,6 +217,7 @@ module.exports = class Reporter
             assertionsFailuresCount: this.assertionsFailuresCount,
 
             progress: this.progress,
+            ...this.customResults,
         }
     }
 
@@ -102,13 +242,42 @@ module.exports = class Reporter
     }
 
     /**
+     * Record that starting time before the tests will be triggered.
+     * 
+     * @return {void}
+     */
+    recordTestStaringTime()
+    {
+        this.startTime = new this.reporterDate();
+    }
+
+    /**
      * Before the tests will be triggered.
      * 
      * @return {void}
      */
     beforeTest()
     {
-        this.startTime = new this.reporterDate();
+        
+    }
+
+    /**
+     * Perform the necessary calculations after all tests have been executed.
+     * 
+     * @return {void}
+     */
+    afterTestCalculations()
+    {
+        if (this.assertionsCount == 0 && this.testsCount == 0) {
+            this.noTestsExecuted = true;
+            return;
+        }
+        
+        this.noTestsExecuted = false;
+
+        this.endTime = new this.reporterDate();
+        this.executionTime = this.endTime - this.startTime;
+        this.executionTimeFormatted = this.formatTime(this.executionTime);
     }
 
     /**
@@ -118,22 +287,20 @@ module.exports = class Reporter
      */
     afterTest()
     {
-        if (this.assertionsCount == 0 && this.testsCount == 0) {
+
+    }
+
+    /**
+     * Report the test overview results.
+     * 
+     * @return {void}
+     */
+    reportTestOverview()
+    {
+        if (this.noTestsExecuted) {
             this.log(this.forceColor.yellow(`No tests executed.`));
             return;
         }
-
-        this.endTime = new this.reporterDate();
-        this.executionTime = this.endTime - this.startTime;
-        this.executionTimeFormatted = this.formatTime(this.executionTime);
-
-        counsel().reportToParentProcess({
-            root: counsel().root,
-            version: counsel().version,
-            executionTimeFormatted: this.executionTimeFormatted,
-            executionTime: this.executionTime,
-            ...this.testResults(),
-        });
 
         this.appendLog('\n');
 
@@ -141,8 +308,6 @@ module.exports = class Reporter
             this.log(this.errorContent);
         }
 
-        // let memoryUsage = process.memoryUsage().heapUsed / 1024 / 1024;
-        // this.log(this.forceColor.dim(`Time: ${this.executionTimeFormatted}, Memory: ${memoryUsage.toFixed(2)}MB`));
         this.log(this.forceColor.dim(`Time: ${this.executionTimeFormatted}`));
         this.appendLog('\n');
 
@@ -155,53 +320,79 @@ module.exports = class Reporter
         }
 
         if (this.testsIncompleteCount > 0 || this.testsSkippedCount > 0) {
-            let incompleteTestsOverview = '';
-            let skippedTestsOverview = '';
-
-            let warningMessage = '';
-
-            if (this.assertionsFailuresCount == 0) {
-                warningMessage += this.forceColor.yellow(`OK, but `);
-            }
-
-            if (this.testsIncompleteCount > 0) {
-                warningMessage += this.forceColor.yellow(`${this.testsIncompleteCount} incomplete`);
-
-                if (counsel().arguments.verbose) {
-                    for (let incompleteTest in this.incompleteTests) {
-                        incompleteTestsOverview += '\n';
-                        incompleteTestsOverview += incompleteTest;
-                        incompleteTestsOverview += '\n';
-                        incompleteTestsOverview += this.forceColor.dim(this.incompleteTests[incompleteTest]);
-                    }
-                }
-            }
-
-            if (this.testsSkippedCount > 0) {
-                if (this.testsIncompleteCount > 0) {
-                    warningMessage += this.forceColor.yellow(`, `);
-                }
-
-                warningMessage += this.forceColor.yellow(`${this.testsSkippedCount} skipped`);
-
-                if (counsel().arguments.verbose) {
-                    for (let skippedTest in this.skippedTests) {
-                        skippedTestsOverview += '\n';
-                        skippedTestsOverview += skippedTest;
-                        skippedTestsOverview += '\n';
-                        skippedTestsOverview += this.forceColor.dim(this.skippedTests[skippedTest]);
-                    }
-                }
-            }
-
-            this.log(warningMessage);
-
-            this.log(incompleteTestsOverview);
-
-            this.log(skippedTestsOverview);
-
-            this.log('');
+            this.reportAboutIncompleteAndSkippedTests();
         }
+    }
+
+    /**
+     * Report variables from the child process back to the parent process.
+     * 
+     * @return {void}
+     */
+    reportToParentProcess()
+    {
+        counsel().reportToParentProcess({
+            root: counsel().root,
+            version: counsel().version,
+            executionTimeFormatted: this.executionTimeFormatted,
+            executionTime: this.executionTime,
+            ...this.testResults(),
+        });
+    }
+
+    /**
+     * Report about incomplete and skipped test results.
+     * 
+     * @return {void}
+     */
+    reportAboutIncompleteAndSkippedTests()
+    {
+        let incompleteTestsOverview = '';
+        let skippedTestsOverview = '';
+
+        let warningMessage = '';
+
+        if (this.assertionsFailuresCount == 0) {
+            warningMessage += this.forceColor.yellow(`OK, but `);
+        }
+
+        if (this.testsIncompleteCount > 0) {
+            warningMessage += this.forceColor.yellow(`${this.testsIncompleteCount} incomplete`);
+
+            if (counsel().arguments.verbose) {
+                for (let incompleteTest in this.incompleteTests) {
+                    incompleteTestsOverview += '\n';
+                    incompleteTestsOverview += incompleteTest;
+                    incompleteTestsOverview += '\n';
+                    incompleteTestsOverview += this.forceColor.dim(this.incompleteTests[incompleteTest]);
+                }
+            }
+        }
+
+        if (this.testsSkippedCount > 0) {
+            if (this.testsIncompleteCount > 0) {
+                warningMessage += this.forceColor.yellow(`, `);
+            }
+
+            warningMessage += this.forceColor.yellow(`${this.testsSkippedCount} skipped`);
+
+            if (counsel().arguments.verbose) {
+                for (let skippedTest in this.skippedTests) {
+                    skippedTestsOverview += '\n';
+                    skippedTestsOverview += skippedTest;
+                    skippedTestsOverview += '\n';
+                    skippedTestsOverview += this.forceColor.dim(this.skippedTests[skippedTest]);
+                }
+            }
+        }
+
+        this.log(warningMessage);
+
+        this.log(incompleteTestsOverview);
+
+        this.log(skippedTestsOverview);
+
+        this.log('');
     }
 
     /**
@@ -221,7 +412,7 @@ module.exports = class Reporter
      */
     afterIOTest()
     {
-
+        
     }
 
     /**
@@ -232,7 +423,18 @@ module.exports = class Reporter
      */
     beforeEachIOTest(ioTest)
     {
+        
+    }
 
+    /**
+     * Perform the necessary calculations after each IO test have been triggered.
+     * 
+     * @param  {IOTest}  ioTest
+     * @return {void}
+     */
+    afterEachIOTestCalculations(ioTest)
+    {
+        this.testsCount++;
     }
 
     /**
@@ -243,7 +445,18 @@ module.exports = class Reporter
      */
     afterEachIOTest(ioTest)
     {
-        this.testsCount++;
+        
+    }
+
+    /**
+     *  Perform the necessary calculations after each failed IO test.
+     * @param  {IOTest}  ioTest
+     * 
+     * @return {void}
+     */
+    afterEachFailedIOTestCalculations(ioTest)
+    {
+        this.testsFailuresCount++;
     }
 
     /**
@@ -254,7 +467,18 @@ module.exports = class Reporter
      */
     afterEachFailedIOTest(ioTest)
     {
-        this.testsFailuresCount++;
+        
+    }
+
+    /**
+     * Perform the necessary calculations after each passed IO test.
+     * 
+     * @param  {IOTest}  ioTest
+     * @return {void}
+     */
+    afterEachPassedIOTestCalculations(ioTest)
+    {
+        this.testsPassesCount++;
     }
 
     /**
@@ -265,16 +489,16 @@ module.exports = class Reporter
      */
     afterEachPassedIOTest(ioTest)
     {
-        this.testsPassesCount++;
+        
     }
 
     /**
-     * After each incomplete test.
+     * Perform the necessary calculations after each incomplete test.
      * 
      * @param  {IOTest|Test}  test
      * @return {void}
      */
-    afterEachIncompleteTest(test)
+    afterEachIncompleteTestCalculations(test)
     {
         this.testsIncompleteCount++;
 
@@ -286,12 +510,23 @@ module.exports = class Reporter
     }
 
     /**
-     * After each skipped test.
+     * After each incomplete test.
      * 
      * @param  {IOTest|Test}  test
      * @return {void}
      */
-    afterEachSkippedTest(test)
+    afterEachIncompleteTest(test)
+    {
+        
+    }
+
+    /**
+     * Perform the necessary calculations after each skipped test.
+     * 
+     * @param  {IOTest|Test}  test
+     * @return {void}
+     */
+    afterEachSkippedTestCalculations(test)
     {
         this.testsSkippedCount++;
 
@@ -300,6 +535,17 @@ module.exports = class Reporter
         } else {
             this.skippedTests[`${test.className}`] = test.message;
         }
+    }
+
+    /**
+     * After each skipped test.
+     * 
+     * @param  {IOTest|Test}  test
+     * @return {void}
+     */
+    afterEachSkippedTest(test)
+    {
+        
     }
 
     /**
@@ -314,12 +560,12 @@ module.exports = class Reporter
     }
 
     /**
-     * Before each test class will be triggered.
+     * Perform the necessary calculations before each test class will be triggered.
      * 
      * @param  {TestClass}  testClass
      * @return {void}
      */
-    beforeEachTestClass(testClass)
+    beforeEachTestClassCalculations(testClass)
     {
         if (! this.testFailures[testClass.filePath]) {
             this.testFailures[testClass.filePath] = {};
@@ -332,6 +578,16 @@ module.exports = class Reporter
     }
 
     /**
+     * Before each test class will be triggered.
+     * 
+     * @param  {TestClass}  testClass
+     * @return {void}
+     */
+    beforeEachTestClass(testClass)
+    {
+        
+    }
+    /**
      * After each test class have been triggered.
      * 
      * @param  {TestClass}  testClass
@@ -339,7 +595,7 @@ module.exports = class Reporter
      */
     afterEachTestClass(testClass)
     {
-
+        
     }
 
     /**
@@ -350,7 +606,7 @@ module.exports = class Reporter
      */
     afterEachFailedTestClass(testClass)
     {
-
+        
     }
 
     /**
@@ -361,16 +617,16 @@ module.exports = class Reporter
      */
     afterEachPassedTestClass(testClass)
     {
-
+        
     }
 
     /**
-     * Before each test will be triggered.
+     * Perform the necessary calculations before each test will be triggered.
      * 
      * @param  {Test}  test
      * @return {void}
      */
-    beforeEachTest(test)
+    beforeEachTestCalculations(test)
     {
         if (! this.testFailures[test.className]) {
             this.testFailures[test.className] = {};
@@ -388,12 +644,23 @@ module.exports = class Reporter
     }
 
     /**
-     * After each test have been triggered.
+     * Before each test will be triggered.
      * 
      * @param  {Test}  test
      * @return {void}
      */
-    afterEachTest(test)
+    beforeEachTest(test)
+    {
+        
+    }
+
+    /**
+     * Perform the necessary calculations after each test have been triggered.
+     * 
+     * @param  {Test}  test
+     * @return {void}
+     */
+    afterEachTestCalculations(test)
     {
         this.testsCount++;
 
@@ -405,6 +672,28 @@ module.exports = class Reporter
     }
 
     /**
+     * After each test have been triggered.
+     * 
+     * @param  {Test}  test
+     * @return {void}
+     */
+    afterEachTest(test)
+    {
+        
+    }
+
+    /**
+     * Perform the necessary calculations after each failed test.
+     * 
+     * @param  {Test}  test
+     * @return {void}
+     */
+    afterEachFailedTestCalculations(test)
+    {
+        this.testsFailuresCount++;
+    }
+
+    /**
      * After each failed test.
      * 
      * @param  {Test}  test
@@ -412,7 +701,18 @@ module.exports = class Reporter
      */
     afterEachFailedTest(test)
     {
-        this.testsFailuresCount++;
+        
+    }
+
+    /**
+     * After each passed test.
+     * 
+     * @param  {Test}  test
+     * @return {void}
+     */
+    afterEachPassedTestCalculations(test)
+    {
+        this.testsPassesCount++;
     }
 
     /**
@@ -423,16 +723,16 @@ module.exports = class Reporter
      */
     afterEachPassedTest(test)
     {
-        this.testsPassesCount++;
+        
     }
 
     /**
-     * Before each assertion will be triggered.
+     * Perform the necessary calculations before each assertion will be triggered.
      * 
      * @param  {Assertion}  assertion
      * @return {void}
      */
-    beforeEachAssertion(assertion)
+    beforeEachAssertionCalculations(assertion)
     {
         if (! this.testFailures[assertion.test.file]) {
             this.testFailures[assertion.test.file] = {};
@@ -450,12 +750,23 @@ module.exports = class Reporter
     }
 
     /**
-     * After each assertion have been triggered.
+     * Before each assertion will be triggered.
      * 
      * @param  {Assertion}  assertion
      * @return {void}
      */
-    afterEachAssertion(assertion)
+    beforeEachAssertion(assertion)
+    {
+        
+    }
+
+    /**
+     * Perform the necessary calculations after each assertion have been triggered.
+     * 
+     * @param  {Assertion}  assertion
+     * @return {void}
+     */
+    afterEachAssertionCalculations(assertion)
     {
         this.assertionsCount++;
 
@@ -477,6 +788,36 @@ module.exports = class Reporter
     }
 
     /**
+     * After each assertion have been triggered.
+     * 
+     * @param  {Assertion}  assertion
+     * @return {void}
+     */
+    afterEachAssertion(assertion)
+    {
+        
+    }
+
+    /**
+     * Perform the necessary calculations after each failed assertion.
+     * 
+     * @param  {Assertion}  assertion
+     * @return {void}
+     */
+    afterEachFailedAssertionCalculations(assertion)
+    {
+        if (! this.testFailures[assertion.test.file]) {
+            this.testFailures[assertion.test.file] = {};
+            this.testFailures[assertion.test.file]['functions'] = [];
+        }
+
+        this.testFailures[assertion.test.file]['count']++;
+        this.testFailures[assertion.test.file]['functions'][assertion.test.function]['count']++;
+
+        this.assertionsFailuresCount++;
+    }
+
+    /**
      * After each failed assertion.
      * 
      * @param  {Assertion}  assertion
@@ -487,16 +828,6 @@ module.exports = class Reporter
         let name;
         let errorLocation;
         let additionalInformation = '';
-
-        if (! this.testFailures[assertion.test.file]) {
-            this.testFailures[assertion.test.file] = {};
-            this.testFailures[assertion.test.file]['functions'] = [];
-        }
-
-        this.testFailures[assertion.test.file]['count']++;
-        this.testFailures[assertion.test.file]['functions'][assertion.test.function]['count']++;
-
-        this.assertionsFailuresCount++;
 
         if (assertion.test.io) {
             name = `${assertion.test.name} -> ${assertion.test.function}`;
@@ -538,6 +869,17 @@ module.exports = class Reporter
     }
 
     /**
+     * Perform the necessary calculations after each passed assertion.
+     * 
+     * @param  {Assertion}  assertion
+     * @return {void}
+     */
+    afterEachPassedAssertionCalculations(assertion)
+    {
+        this.assertionsPassesCount++;
+    }
+
+    /**
      * After each passed assertion.
      * 
      * @param  {Assertion}  assertion
@@ -545,7 +887,7 @@ module.exports = class Reporter
      */
     afterEachPassedAssertion(assertion)
     {
-        this.assertionsPassesCount++;
+        
     }
 
     /**

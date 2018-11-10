@@ -306,11 +306,11 @@ module.exports = class TestCase
 			new (counsel().resolve('IOTest'))(ioTest)
 		], ioTestReporter);
 
-        ioTestReporter.beforeTest();
+        ioTestReporter.emit('beforeTest');
 
         await ioTestRunner.test();
 
-        ioTestReporter.afterTest();
+		ioTestReporter.emit('afterTest');
 
         Assertions.setReporter(parentTestReporter);
         Assertions.setTest(parentTest);

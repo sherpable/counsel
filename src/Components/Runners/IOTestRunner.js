@@ -33,21 +33,21 @@ module.exports = class IOTestRunner
 			let ioTest = this.tests[ioTestIndex];
 
 			if (ioTest.needToRun()) {
-				await this.reporter.beforeEachIOTest(ioTest);
+				await this.reporter.emit('beforeEachIOTest', [ioTest]);
 
 				// Resolve it in the IOTest itself
 				ioTest.reporter = this.reporter;
             	await ioTest.run();
         	} else {
-        		await this.reporter.beforeEachIOTest(ioTest);
+        		await this.reporter.emit('beforeEachIOTest', [ioTest]);
 
         		// Nicer to implement like this:
         		// throw new TestSkippedError('IO test is skipped.');
 				// Instead of this:
 				ioTest.message = 'IO test is skipped.';
-        		this.reporter.afterEachSkippedTest(ioTest);
+        		this.reporter.emit('afterEachSkippedTest', [ioTest]);
 
-        		this.reporter.afterEachIOTest(ioTest);
+				this.reporter.emit('afterEachIOTest', [ioTest]);
         	}
 		}
 	}
