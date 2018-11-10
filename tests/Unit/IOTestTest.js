@@ -12,16 +12,24 @@ module.exports = class IOTestTest extends TestCase
 
         ioTest.parseProcess();
 
+        let command = (process.platform == 'win32' ? 'node ' : '') + 'src/counsel.js';
+
+        let options = {
+            cwd: require('path').normalize(`${process.cwd()}/foo`),
+        };
+
+        if (process.platform == 'win32') {
+          options.shell = true;
+        }
+
         this.assertEquals({
             arguments: [
                 '--config',
                 'io-tests/configs/dot-reporter-true-false-error-reporting-test.js',
                 '--is-io-test',
             ],
-            command: 'src/counsel.js',
-            options: {
-                cwd: `${process.cwd()}/foo`,
-            },
+            command: command,
+            options: options,
         }, ioTest.process);
     }
     
