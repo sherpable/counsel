@@ -1,7 +1,7 @@
-module.exports = class CounselRunner
+module.exports = class App
 {
     /**
-     * Create a new CounselRunner instance.
+     * Create a new App instance.
      * 
      * @constructor
      */
@@ -33,6 +33,7 @@ module.exports = class CounselRunner
             TestClass: './Components/Testing/TestClass',
             Reporter: './Components/Reporters/Reporter',
             TestCase: './Components/Testing/TestCase',
+            TestRunner: './Components/Runners/TestRunner',
             IOTestRunner: './Components/Runners/IOTestRunner',
         };
 
@@ -100,10 +101,10 @@ module.exports = class CounselRunner
     }
 
     /**
-     * Assign a CounselRunner instance the current instance.
+     * Assign an App instance the current instance.
      * 
-     * @param  {CounselRunner} app
-     * @return {CounselRunner}
+     * @param  {App} app
+     * @return {App}
      */
     static instantiate(app = null)
     {
@@ -119,7 +120,34 @@ module.exports = class CounselRunner
         
         return app;
     }
-    
+
+    /**
+     * Parse the incomming arguments.
+     * 
+     * @return {void}
+     */
+    parseArguments()
+    {
+        this.optimist = require('optimist');
+
+        return this.optimist
+            .boolean('is-io-test')
+            .alias('h', 'help').describe('h', 'Show some help.')
+            .alias('v', 'version').describe('v', 'Show counsel\'s verion number.')
+            .alias('c', 'config').describe('c', 'Specify a custom config file.')
+            .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
+            .alias('s', 'suite').describe('s', 'Filter which suite to run.')
+            .alias('ls', 'list-suites').describe('ls', 'Show available test suites.')
+            .describe('verbose', 'Show more verbose information.')
+            .describe('coverage', 'Generate code coverage report. Supported report types: clover, cobertura, html, json-summary, json, lcov, lcovonly, none, teamcity, text-lcov, text-summary, text. Default will be text-summary.')
+            .describe('silent', 'Run in silent mode, this will not display anything. Usefull for running through a test coverage tool.')
+            .describe('is-io-test', 'Mark the current process as an IO test.')
+            .describe('as-io-test', 'Run tests normal, but output as if it is an IO test.')
+            .describe('io-test-filename', 'Specify the filename from the current IO test.')
+            .describe('skip-io-tests', 'Skip all IO tests.')
+            .argv;
+    }
+
     /**
      * Load the helpers.js file.
      * This will also make the helpers globally available.
@@ -190,72 +218,6 @@ module.exports = class CounselRunner
     {
         return this.serviceProviders[abstract];
     }
-    
-    /**
-     * Run the code coverage tool.
-     * 
-     * @param  {string}  reporterType
-     * @return {void}
-     */
-    runCodeCoverage(reporterType)
-    {
-        if (! String(reporterType) || typeof reporterType != 'string') {
-            reporterType = 'text-summary';
-        }
-
-        let root = require('path').normalize(
-            process.cwd()
-        );
-
-        let spawn = require('child_process').spawnSync;
-
-        this.reporter.log(`Running test coverage tool Istanbul: https://istanbul.js.org/.`);
-
-        let nycFile = '/node_modules/.bin/nyc';
-        let options = {};
-        if (process.platform == 'win32') {
-            root = `node ${root}`;
-            nycFile = '\\node_modules\\nyc\\bin\\nyc.js';
-            options.shell = true;
-        }
-
-        let coverageProcess = spawn(`${root}${nycFile}`, [
-            '--reporter', reporterType,
-            'src/counsel.js',
-            '--silent'
-        ], options);
-
-        let result = null;
-        let error = null;
-
-        if (coverageProcess.stdout) {
-            result = coverageProcess.stdout.toString();
-        }
-
-        if (coverageProcess.stderr) {
-            error = coverageProcess.stderr.toString();
-        }
-
-        this.reporter.log(result);
-
-        if (! coverageProcess.stderr) {
-            this.reporter.log(`Test coverage completed.`);
-        }
-
-        if (reporterType == 'html') {
-            let coverageIndexFilePath = '/coverage/index.html';
-
-            if (process.platform == 'win32') {
-                coverageIndexFilePath = '\\coverage\\index.html'
-            }
-            this.reporter.log(`View results: file://${root}${coverageIndexFilePath}`);
-        }
-
-        if (error) {
-            this.reporter.log('Error');
-            this.reporter.log(error);
-        }
-    }
 
     /**
      * The this will run right after the app is fully loaded and booted.
@@ -291,33 +253,6 @@ module.exports = class CounselRunner
 
             process.exit();
         }
-    }
-
-    /**
-     * Parse the incomming arguments.
-     * 
-     * @return {void}
-     */
-    parseArguments()
-    {
-        this.optimist = require('optimist');
-
-        return this.optimist
-            .boolean('is-io-test')
-            .alias('h', 'help').describe('h', 'Show some help.')
-            .alias('v', 'version').describe('v', 'Show counsel\'s verion number.')
-            .alias('c', 'config').describe('c', 'Specify a custom config file.')
-            .alias('f', 'filter').describe('f', 'Filter which tests you want to run.')
-            .alias('s', 'suite').describe('s', 'Filter which suite to run.')
-            .alias('ls', 'list-suites').describe('ls', 'Show available test suites.')
-            .describe('verbose', 'Show more verbose information.')
-            .describe('coverage', 'Generate code coverage report. Supported report types: clover, cobertura, html, json-summary, json, lcov, lcovonly, none, teamcity, text-lcov, text-summary, text. Default will be text-summary.')
-            .describe('silent', 'Run in silent mode, this will not display anything. Usefull for running through a test coverage tool.')
-            .describe('is-io-test', 'Mark the current process as an IO test.')
-            .describe('as-io-test', 'Run tests normal, but output as if it is an IO test.')
-            .describe('io-test-filename', 'Specify the filename from the current IO test.')
-            .describe('skip-io-tests', 'Skip all IO tests.')
-            .argv;
     }
 
     /**
@@ -660,268 +595,17 @@ module.exports = class CounselRunner
         );
     }
 
-    /**
-     * Run all tests.
-     * 
-     * @return {void}
-     */
-    async test()
-    {
-        await this.reporter.emit('beforeTest');
-
-        try {
-            for (let location in this.locations) {
-                await this.runTestsInLocation(location);
-            }
-        } catch (error) {
-            console.error('\n' + this.serviceProviders.chalk.red(`  ${this.serviceProviders.figures.cross} counsel error`));
-            console.error(error);
-
-            process.exit(2);
-        }
-
-        if(! this.isIOTestProcess && ! this.skipIOTests) {
-            await this.runIOTests();
-        }
-
-        await this.reporter.emit('afterTest');
-    }
 
     /**
-     * Retrieve a new instance from the IO test runner.
+     * Retrieve an absolute path for this application.
+     * As the first parameter it is possible to add an additional relative path.
      * 
-     * @return {IOTestRunner}
+     * @param  {string}  additionalPath
+     * @return {string}
      */
-    instantiateIOTestRunner()
+    path(additionalPath)
     {
-        return new this.serviceProviders.IOTestRunner(this.ioTests, this.reporter);
-    }
-
-    /**
-     * Run all IO tests.
-     * 
-     * @return {void}
-     */
-    async runIOTests()
-    {
-        if (this.isIOTestProcess) {
-            return;
-        }
-
-        await this.reporter.emit('beforeIOTest');
-
-        this.IOTestRunner = this.instantiateIOTestRunner();
-
-        await this.IOTestRunner.test();
-
-        await this.reporter.emit('afterIOTest');
-    }
-
-    /**
-     * Exit the app with the proper status code.
-     * 
-     * @return {void}
-     */
-    exit()
-    {
-        let statusCode = counsel().reporter.assertionsFailuresCount ? 2 : 0;
-
-        process.exit(statusCode);
-    }
-
-    /**
-     * Run all tests found within a given location.
-     * 
-     * @param  {string}   location
-     * @param  {boolean}  reportingTests
-     * @return {void}
-     */
-    async runTestsInLocation(location, reportingTests = false)
-    {
-        let testFiles = this.getTestFilesInLocation(this.locations[location]);
-
-        let testClasses = this.parseTestClasses(testFiles, location);
-
-        if (! reportingTests) {
-            this.reporter.totalTests = this.getTotalTests(testClasses);
-        }
-
-        for (let filePath in testFiles) {
-            if (! testClasses[filePath]) {
-                continue;
-            }
-
-            let testClass = new (this.resolve('TestClass'))(
-                new testFiles[filePath](),
-                filePath,
-                testClasses[filePath]
-            );
-
-            await testClass.runTests();
-        }
-    }
-
-    /**
-     * Parse the given test files. This will check which test files need to be executed
-     * according to the given filters.
-     * 
-     * @param  {object}  testFiles
-     * @param  {string}  location
-     * @return {object}
-     */
-    parseTestClasses(testFiles, location)
-    {
-        let testClasses = [];
-
-        for (let filePath in testFiles) {
-
-            let testClass = testFiles[filePath];
-            let testsInTestClass = this.parseTestClass(testClass, filePath, location);
-
-            if (testsInTestClass.length > 0) {
-                testClasses[filePath] = testsInTestClass;
-            }
-        }
-
-        return testClasses;
-    }
-
-    /**
-     * Parse a single test file. This will check if the test file need to be executed
-     * according to the given filters.
-     * 
-     * @param  {string}  testClassName
-     * @param  {string}  path
-     * @param  {string}  location
-     * @return {object}
-     */
-    parseTestClass(testClassName, path, location)
-    {
-        let tests = [];
-
-        let annotations = this.serviceProviders.annotations.getSync(this.path(`${location}/${path}.js`));
-
-        let possibleTestMethods = [];
-
-        for (let possibleTestMethod in annotations) {
-            possibleTestMethods.push(possibleTestMethod);
-        }
-
-        for (let index in possibleTestMethods) {
-            let name = possibleTestMethods[index];
-
-            let hasCorrectAnnotation = false;
-
-            if (typeof annotations[name] == 'object') {
-                hasCorrectAnnotation = annotations[name][this.annotationFilter] === true;
-            }
-
-            // Default filters:
-            // 1. Skip constructor
-            // 2. Only call methods with a 'test' prefix or a correct annotation, by default this will be 'test'
-            if (name == 'constructor' || (! name.startsWith('test') && ! hasCorrectAnnotation)) {
-                continue;
-            }
-
-            // If a custom annotation filter is specified,
-            // only run tests with that specific annotation.
-            // This will skip tests with prefix 'test'.
-            if (this.annotationFilter != 'test' && ! hasCorrectAnnotation) {
-                continue;
-            }
-
-            // Apply cli filter
-            if (this.filter && name != this.filter && ! path.toLowerCase().includes(this.filter.toLowerCase())) {
-                continue;
-            }
-
-            tests.push(name);
-        }
-
-        return tests;
-    }
-
-    /**
-     * Get the total tests that need to be executed, including IO tests.
-     * 
-     * @param  {object}  testClasses
-     * @return {number}
-     */
-    getTotalTests(testClasses)
-    {
-        let totalTests = 0;
-
-
-        for (let testClass in testClasses) {
-            totalTests += testClasses[testClass].filter(functionName => functionName != 'test').length;
-        }
-
-        totalTests += this.getTotalIOTests();
-
-        return totalTests;
-    }
-
-    /**
-     * Get the total IO tests that need to be executed.
-     * 
-     * @return {number}
-     */
-    getTotalIOTests()
-    {
-        let totalIOTests = 0;
-
-        for (let ioTestIndex in this.ioTests) {
-            totalIOTests++;
-        }
-
-        return totalIOTests;
-    }
-
-    /**
-     * Check if a specific IO test need to be executed inside the current platform.
-     * 
-     * @param  {object}  testContext
-     * @return {boolean}
-     */
-    ioTestIsForCurrentPlatform(testContext)
-    {
-        if (! testContext.test.platform) {
-            return true;
-        }
-
-        return testContext.test.platform.includes(process.platform);
-    }
-
-    /**
-     * Format the test files object into a flat array.
-     * 
-     * @param  {object}  object
-     * @return {object}
-     */
-    getTestFilesInLocation(object)
-    {
-        let testFilePaths = {};
-
-        for (let i in object) {
-            if (! object.hasOwnProperty(i)) continue;
-
-            if ((typeof object[i]) == 'object') {
-                let flatObject = this.getTestFilesInLocation(object[i]);
-                for (let x in flatObject) {
-                    if (! flatObject.hasOwnProperty(x)) continue;
-
-                    if (x.toLowerCase().endsWith('test')) {
-                        testFilePaths[i + '/' + x] = flatObject[x];
-                    }
-                }
-            } else {
-                if (i.toLowerCase().endsWith('test')) {
-                    testFilePaths[i] = object[i];
-                }
-            }
-        }
-
-        return testFilePaths;
+        return this.root + additionalPath;
     }
 
     /**
@@ -955,18 +639,6 @@ module.exports = class CounselRunner
         });
 
         return this.locations;
-    }
-
-    /**
-     * Retrieve an absolute path for this application.
-     * As the first parameter it is possible to add an additional relative path.
-     * 
-     * @param  {string}  additionalPath
-     * @return {string}
-     */
-    path(additionalPath)
-    {
-        return this.root + additionalPath;
     }
 
     /**
@@ -1022,5 +694,77 @@ module.exports = class CounselRunner
         }
 
         console.log(`COUNSEL-CHILD-PARENT-MESSAGE:START${data}\nCOUNSEL-CHILD-PARENT-MESSAGE:END`);
+    }
+
+    /**
+     * Retrieve a new instance from the IO test runner.
+     * 
+     * @return {TestRunner}
+     */
+    instantiateTestRunner()
+    {
+        return new this.serviceProviders.TestRunner(this.reporter, this.config, this.arguments);
+    }
+
+    /**
+     * Retrieve a new instance from the IO test runner.
+     * 
+     * @return {IOTestRunner}
+     */
+    instantiateIOTestRunner()
+    {
+        return new this.serviceProviders.IOTestRunner(this.ioTests, this.reporter);
+    }
+
+    /**
+     * Run all tests.
+     * 
+     * @return {void}
+     */
+    async test()
+    {
+        this.testRunner = this.instantiateTestRunner();
+
+        await this.reporter.emit('beforeTest');
+
+        await this.testRunner.test();
+
+        if(! this.isIOTestProcess && ! this.skipIOTests) {
+            await this.runIOTests();
+        }
+
+        await this.reporter.emit('afterTest');
+    }
+
+    /**
+     * Run all IO tests.
+     * 
+     * @return {void}
+     */
+    async runIOTests()
+    {
+        if (this.isIOTestProcess) {
+            return;
+        }
+
+        await this.reporter.emit('beforeIOTest');
+
+        this.IOTestRunner = this.instantiateIOTestRunner();
+
+        await this.IOTestRunner.test();
+
+        await this.reporter.emit('afterIOTest');
+    }
+
+    /**
+     * Exit the app with the proper status code.
+     * 
+     * @return {void}
+     */
+    exit()
+    {
+        let statusCode = this.reporter.assertionsFailuresCount ? 2 : 0;
+
+        process.exit(statusCode);
     }
 }

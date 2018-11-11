@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 (async () => {
-    let app = require('./CounselRunner').instantiate();
+    let app = require('./App').instantiate();
     let chalk = resolve('chalk');
     let figures = resolve('figures');
     
