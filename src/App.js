@@ -757,6 +757,72 @@ module.exports = class App
     }
 
     /**
+     * Run the code coverage tool.
+     * 
+     * @param  {string}  reporterType
+     * @return {void}
+     */
+    runCodeCoverage(reporterType)
+    {
+        if (! String(reporterType) || typeof reporterType != 'string') {
+            reporterType = 'text-summary';
+        }
+
+        let root = require('path').normalize(
+            process.cwd()
+        );
+
+        let spawn = require('child_process').spawnSync;
+
+        this.reporter.log(`Running test coverage tool Istanbul: https://istanbul.js.org/.`);
+
+        let nycFile = '/node_modules/.bin/nyc';
+        let options = {};
+        if (process.platform == 'win32') {
+            root = `node ${root}`;
+            nycFile = '\\node_modules\\nyc\\bin\\nyc.js';
+            options.shell = true;
+        }
+
+        let coverageProcess = spawn(`${root}${nycFile}`, [
+            '--reporter', reporterType,
+            'src/counsel.js',
+            '--silent',
+        ], options);
+
+        let result = null;
+        let error = null;
+
+        if (coverageProcess.stdout) {
+            result = coverageProcess.stdout.toString();
+        }
+
+        if (coverageProcess.stderr) {
+            error = coverageProcess.stderr.toString();
+        }
+
+        this.reporter.log(result);
+
+        if (! coverageProcess.stderr) {
+            this.reporter.log(`Test coverage completed.`);
+        }
+
+        if (reporterType == 'html') {
+            let coverageIndexFilePath = '/coverage/index.html';
+
+            if (process.platform == 'win32') {
+                coverageIndexFilePath = '\\coverage\\index.html'
+            }
+            this.reporter.log(`View results: file://${root}${coverageIndexFilePath}`);
+        }
+
+        if (error) {
+            this.reporter.log('Error');
+            this.reporter.log(error);
+        }
+    }
+
+    /**
      * Exit the app with the proper status code.
      * 
      * @return {void}
