@@ -7,7 +7,7 @@ expect: |
 
   I
 
-  Time: {{executionTimeFormatted}}
+  Time: {{formattedExecutionTime}}
 
   OK, but 1 incomplete
 

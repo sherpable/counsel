@@ -210,7 +210,7 @@ expect: |
   - 'foo'
   + 'bar'
 
-  Time: {{executionTimeFormatted}}
+  Time: {{formattedExecutionTime}}
 
   13 failed, 13 tests
 assertions:

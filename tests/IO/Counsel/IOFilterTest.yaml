@@ -7,7 +7,7 @@ expect: |
 
   .
 
-  Time: {{executionTimeFormatted}}
+  Time: {{formattedExecutionTime}}
 
   9 passed, 1 tests
 assertions:

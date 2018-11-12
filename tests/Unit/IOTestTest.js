@@ -99,7 +99,7 @@ expect: |
 
   true
 
-  Time: {{executionTimeFormatted}}
+  Time: {{formattedExecutionTime}}
 
   2 failed, 2 tests
 assertions:
@@ -145,7 +145,7 @@ expect: |
 
   true
 
-  Time: {{executionTimeFormatted}}
+  Time: {{formattedExecutionTime}}
 
   2 failed, 2 tests
 assertions:

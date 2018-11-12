@@ -54,7 +54,7 @@ module.exports = class Reporter
         this.startTime = null;
         this.endTime = null;
         this.executionTime = null;
-        this.executionTimeFormatted = null;
+        this.formattedExecutionTime = null;
 
         this.progress = 0;
 
@@ -277,7 +277,7 @@ module.exports = class Reporter
 
         this.endTime = new this.reporterDate();
         this.executionTime = this.endTime - this.startTime;
-        this.executionTimeFormatted = this.formatTime(this.executionTime);
+        this.formattedExecutionTime = this.formatTime(this.executionTime);
     }
 
     /**
@@ -308,7 +308,7 @@ module.exports = class Reporter
             this.log(this.errorContent);
         }
 
-        this.log(this.forceColor.dim(`Time: ${this.executionTimeFormatted}`));
+        this.log(this.forceColor.dim(`Time: ${this.formattedExecutionTime}`));
         this.appendLog('\n');
 
         if (this.assertionsPassesCount > 0) {
@@ -334,7 +334,7 @@ module.exports = class Reporter
         counsel().reportToParentProcess({
             root: counsel().root,
             version: counsel().version,
-            executionTimeFormatted: this.executionTimeFormatted,
+            formattedExecutionTime: this.formattedExecutionTime,
             executionTime: this.executionTime,
             ...this.testResults(),
         });

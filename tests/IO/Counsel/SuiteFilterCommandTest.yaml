@@ -7,7 +7,7 @@ expect: |
 
   ..................        18 / 18 (100%)
 
-  Time: {{executionTimeFormatted}}
+  Time: {{formattedExecutionTime}}
 
   32 passed, 18 tests
 assertions:
