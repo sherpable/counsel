@@ -85,7 +85,32 @@ module.exports = class IOTest
      */
 	parseArguments()
 	{
+		let cliFilterWithinQuotes = null;
+
+		// Check if cli filter within quotes exists
+		if (this.perform.includes('\'')) {
+			cliFilterWithinQuotes = this.perform.match(/'([^']+)'/);
+		} else if (this.perform.includes('"')) {
+			cliFilterWithinQuotes = this.perform.match(/"([^']+)"/);
+		}
+
+		// Strip the cli filter within quotes from the perform action
+		if (cliFilterWithinQuotes) {
+			this.perform = this.perform.replace(` ${cliFilterWithinQuotes[0]}`, '');
+		}
+
 		this.process.arguments = this.perform.split(' ');
+
+		// Insert the cli filter without at the correct position back into the arguments list
+		if (cliFilterWithinQuotes) {
+			let filterOptionIndex = 1;
+
+			if (this.process.arguments.includes('--filter')) {
+				filterOptionIndex = this.process.arguments.indexOf('--filter') + 1;
+			}
+
+			this.process.arguments.splice(filterOptionIndex, 0, cliFilterWithinQuotes[1]);
+		}
 	}
 
     /**
