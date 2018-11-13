@@ -41,7 +41,7 @@ module.exports = class IOTestTest extends TestCase
             test: ioTestContent2
         });
 
-        let ioTestReporter = new (require('../../src/Components/Reporters/DotReporter'));
+        let ioTestReporter = new (require('../../../src/Components/Reporters/DotReporter'));
         ioTestReporter.forceColor = new (counsel().serviceProviders.chalk).constructor({enabled: false, level: 0});
         ioTestReporter.silent = true;
 

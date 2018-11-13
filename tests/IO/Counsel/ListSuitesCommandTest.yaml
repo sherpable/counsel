@@ -3,7 +3,7 @@ test:
 perform:
   src/counsel.js --list-suites
 expect: |
-  Counsel 0.0.1
+  Counsel {{version}}
 
   Available test suite(s):
   - all
