@@ -97,6 +97,27 @@ module.exports = class App
     }
 
     /**
+     * Assign an App instance the current instance.
+     * 
+     * @param  {App} app
+     * @return {App}
+     */
+    static instantiate(app = null)
+    {
+        if (! app) {
+            app = new this;
+        }
+        
+        this.instance = app;
+        
+        app.loadHelpers();
+        
+        app.loadServiceProviders();
+        
+        return app;
+    }
+
+    /**
      * Parse the given CLI filter.
      * 
      * @return {string|null}
@@ -116,35 +137,18 @@ module.exports = class App
         if (filter.startsWith('\'')) {
             // Fix for windows for CLI filter within single quotes
             filter = [filter].concat(this.arguments._).join(' ');
-            filter = filter.substring(1);
+            
+        }
 
-            if (filter.endsWith('\'')) {
-                filter = filter.slice(0, -1);
-            }
+        if (filter.startsWith('\'') || filter.startsWith('"')) {
+            filter = filter.substring(1);
+        }
+
+        if (filter.endsWith('\'') || filter.endsWith('"')) {
+            filter = filter.slice(0, -1);
         }
 
         return filter;
-    }
-
-    /**
-     * Assign an App instance the current instance.
-     * 
-     * @param  {App} app
-     * @return {App}
-     */
-    static instantiate(app = null)
-    {
-        if (! app) {
-            app = new this;
-        }
-        
-        this.instance = app;
-        
-        app.loadHelpers();
-        
-        app.loadServiceProviders();
-        
-        return app;
     }
 
     /**
