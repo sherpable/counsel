@@ -109,7 +109,7 @@ module.exports = class IOTest
 				filterOptionIndex = this.process.arguments.indexOf('--filter') + 1;
 			}
 
-			this.process.arguments.splice(filterOptionIndex, 0, `"${cliFilterWithinQuotes[1]}"`);
+			this.process.arguments.splice(filterOptionIndex, 0, cliFilterWithinQuotes[1]);
 		}
 	}
 

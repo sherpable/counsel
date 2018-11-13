@@ -83,7 +83,15 @@ module.exports = class App
         this.filter = this.arguments.filter;
 
         if (! this.filter) {
-            this.filter = this.arguments._[0];
+            this.filter = this.arguments._.join(' ');
+        }
+
+        if (this.filter.startsWith('\'')) {
+            this.filter = [this.filter].concat(this.arguments._).join(' ');
+        }
+
+        if (typeof this.filter == 'array') {
+            this.filter = this.filter.join(' ');
         }
 
         if (! this.filter) {
