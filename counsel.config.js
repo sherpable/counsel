@@ -25,13 +25,4 @@ module.exports = {
     instantiateClasses: {
         TestInstantiateClassFile: 'tests/TestInstantiateClassFile.js',
     },
-    // assertionMacros: {
-    //     assertNull: (actual, message) => {
-    //         return new Assertion({
-    //             pass: actual == null,
-    //             message,
-    //         });
-    //     }
-    // },
-    // assertionMacros: './macros'
 }
