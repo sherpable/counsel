@@ -1,4 +1,4 @@
-use('TestCase');
+counselUse('TestCase');
 
 module.exports = class TearDownTest extends TestCase
 {

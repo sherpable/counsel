@@ -2,8 +2,8 @@
 
 (async () => {
     let app = require('./App').instantiate();
-    let chalk = resolve('chalk');
-    let figures = resolve('figures');
+    let chalk = counselResolve('chalk');
+    let figures = counselResolve('figures');
     
     /**
      * Boot counsel, basically this will read the config file "counsel.config.js".

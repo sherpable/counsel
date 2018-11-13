@@ -1,4 +1,4 @@
-use('VueComponentTestCase');
+counselUse('VueComponentTestCase');
 
 module.exports = class TodoListTest extends VueComponentTestCase
 {

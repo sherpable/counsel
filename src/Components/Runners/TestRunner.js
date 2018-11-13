@@ -11,9 +11,9 @@ module.exports = class TestRunner
         this.config = config;
         this.arguments = args;
 
-        this.annotations = resolve('annotations');
-        this.chalk = resolve('chalk');
-        this.figures = resolve('figures');
+        this.annotations = counsel().resolve('annotations');
+        this.chalk = counsel().resolve('chalk');
+        this.figures = counsel().resolve('figures');
 
     }
 
@@ -58,7 +58,7 @@ module.exports = class TestRunner
                 continue;
             }
 
-            let testClass = new (resolve('TestClass'))(
+            let testClass = new (counsel().resolve('TestClass'))(
                 new testFiles[filePath](),
                 filePath,
                 testClasses[filePath]

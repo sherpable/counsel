@@ -1,11 +1,11 @@
-use('TestCase');
+counselUse('TestCase');
 
 module.exports = class IOTestTest extends TestCase
 {
     /** @test */
     it_will_parse_the_io_test_process_proper()
     {
-        let ioTest = new (resolve('IOTest'))({
+        let ioTest = new (counsel().resolve('IOTest'))({
             filename: 'Foo.yaml',
             test: ioTestContent
         });
@@ -36,7 +36,7 @@ module.exports = class IOTestTest extends TestCase
     /** @test */
     it_is_able_to_run_a_specific_io_test()
     {
-        let ioTest = new (resolve('IOTest'))({
+        let ioTest = new (counsel().resolve('IOTest'))({
             filename: 'Foo.yaml',
             test: ioTestContent2
         });
@@ -65,7 +65,7 @@ module.exports = class IOTestTest extends TestCase
     }
 }
 
-const ioTestContent = resolve('yaml').safeLoad(
+const ioTestContent = counsel().resolve('yaml').safeLoad(
     `test:
   Dot reporter error true and false output
 perform:
@@ -113,7 +113,7 @@ assertions:
   progress: 100`
 );
 
-const ioTestContent2 = resolve('yaml').safeLoad(
+const ioTestContent2 = counsel().resolve('yaml').safeLoad(
     `test:
   Dot reporter error true and false output
 perform:

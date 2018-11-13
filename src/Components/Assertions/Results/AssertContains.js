@@ -1,4 +1,4 @@
-use('Assertion');
+counselUse('Assertion');
 
 module.exports = class AssertContains extends Assertion
 {

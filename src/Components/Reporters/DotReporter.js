@@ -1,4 +1,4 @@
-use('Reporter');
+counselUse('Reporter');
 
 module.exports = class DotReporter extends Reporter
 {

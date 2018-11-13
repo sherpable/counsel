@@ -1,4 +1,4 @@
-use('TestCase');
+counselUse('TestCase');
 
 module.exports = class AppTest extends TestCase
 {
@@ -23,7 +23,7 @@ module.exports = class AppTest extends TestCase
     /** @test */
     it_is_possible_use_a_binding_and_assign_it_to_the_global_object()
     {
-        use('foo');
+        counselUse('foo');
 
         this.assertEquals(
             this.foo,
