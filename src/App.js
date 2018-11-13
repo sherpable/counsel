@@ -80,19 +80,7 @@ module.exports = class App
 
         this.rawFilter = process.env.npm_lifecycle_script;
 
-        this.filter = this.arguments.filter;
-
-        if (! this.filter) {
-            this.filter = this.arguments._.join(' ');
-        }
-
-        if (this.filter.startsWith('\'')) {
-            this.filter = [this.filter].concat(this.arguments._).join(' ');
-        }
-
-        if (typeof this.filter == 'array') {
-            this.filter = this.filter.join(' ');
-        }
+        this.filter = this.parseFilter();
 
         if (! this.filter) {
             this.fullRun = true;
@@ -106,6 +94,36 @@ module.exports = class App
             this.annotationFilter = this.filter.replace('@', '');
             this.filter = '';
         }
+    }
+
+    /**
+     * Parse the given CLI filter.
+     * 
+     * @return {string|null}
+     */
+    parseFilter()
+    {
+        // Fetch filter from the filter argument, like this
+        // counsel --filter AppTest
+        let filter = this.arguments.filter;
+
+        if (! filter) {
+            // Fetch filter from the first argument, like this
+            // counsel AppTest
+            filter = this.arguments._.join(' ');
+        }
+
+        if (filter.startsWith('\'')) {
+            // Fix for windows for CLI filter within single quotes
+            filter = [filter].concat(this.arguments._).join(' ');
+            filter = filter.substring(1);
+
+            if (filter.endsWith('\'')) {
+                filter = filter.slice(0, -1);
+            }
+        }
+
+        return filter;
     }
 
     /**
