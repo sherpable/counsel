@@ -1,0 +1,26 @@
+test:
+  Reporter one incomplete test run test output
+perform:
+  src/counsel.js OneIncompleteTestRunTest --suite unit --verbose --is-io-test
+expect: |
+  Counsel {{version}}
+
+  I
+
+  Time: {{formattedExecutionTime}}
+
+  OK, but 1 incomplete
+
+  OneIncompleteTestRunTest
+  This test is incomplete.
+assertions:
+  status: 0
+  assertionsCount: 0
+  assertionsFailuresCount: 0
+  assertionsPassesCount: 0
+  testsCount: 1
+  testsFailuresCount: 0
+  testsPassesCount: 0
+  testsIncompleteCount: 1
+  testsSkippedCount: 0
+  progress: 0

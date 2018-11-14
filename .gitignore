@@ -1,2 +1,7 @@
-node_modules
+/dest
+/coverage.lcov
+/.nyc_output
+/coverage
+/node_modules
 npm-debug.log
+yarn-error.log

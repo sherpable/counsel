@@ -1,0 +1,12 @@
+test: |
+  "ls" command test
+cwd: tests/doubles/ls-dir
+perform: |
+  ls
+expect: |
+  bar.txt
+  baz.txt
+  foo.txt
+  sub-1
+assertions:
+  status: 0

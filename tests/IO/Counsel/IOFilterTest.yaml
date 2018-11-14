@@ -1,0 +1,14 @@
+test:
+  Counsel CLI IO filter feature
+perform:
+  src/counsel.js --filter DotReporterSuccessReportingTest --as-io-test
+expect: |
+  Counsel {{version}}
+
+  .
+
+  Time: {{formattedExecutionTime}}
+
+  9 passed, 1 tests
+assertions:
+  status: 0

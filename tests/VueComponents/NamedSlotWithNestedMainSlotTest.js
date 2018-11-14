@@ -1,3 +1,5 @@
+counsel_use('VueComponentTestCase');
+
 module.exports = class NamedSlotTest extends VueComponentTestCase
 {
     /** @test */

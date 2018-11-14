@@ -1,3 +1,5 @@
+counsel_use('TestCase');
+
 module.exports = class ExceptionsTest extends TestCase
 {
 	/** @test */

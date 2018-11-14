@@ -1,0 +1,14 @@
+test:
+  Counsel shorthand CLI filter feature
+perform:
+  src/counsel.js CountdownTest --is-io-test
+expect: |
+  Counsel {{version}}
+
+  ......
+
+  Time: {{formattedExecutionTime}}
+
+  14 passed, 6 tests
+assertions:
+  status: 0

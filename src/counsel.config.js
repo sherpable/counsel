@@ -1,12 +1,15 @@
 module.exports = {
-    reporter: './reporters/DotReporter',
-	vue: {
-        require: () => {
-            return require('vue');
-        },
-        referenceName: 'Vue'
-    },
-	files: [
-		"tests"
-	]
+    reporter: './Components/Reporters/DotReporter',
+	locations: [
+		'tests',
+	],
+    patterns: [
+        'Test.js$',
+        'test.js$',
+        'Test.yaml$',
+        'test.yaml$',
+    ],
+    env: {
+        'APP_ENV': 'testing',
+    }
 }

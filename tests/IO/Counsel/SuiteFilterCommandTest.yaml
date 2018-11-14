@@ -1,0 +1,14 @@
+test:
+  Counsel suite filter command test
+perform:
+  src/counsel.js --suite vue-components --is-io-test
+expect: |
+  Counsel {{version}}
+
+  ..................        18 / 18 (100%)
+
+  Time: {{formattedExecutionTime}}
+
+  32 passed, 18 tests
+assertions:
+  status: 0

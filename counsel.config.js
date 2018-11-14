@@ -1,22 +1,28 @@
 module.exports = {
-    reporter: './reporters/DotReporter',
-	bootstrap: 'bootstrap',
-	vue: {
+    reporter: './Components/Reporters/DotReporter',
+    vue: {
         require: () => {
             return require('vue');
         },
-        referenceName: "Vue"
+        referenceName: 'Vue'
     },
-	files: [
-		"tests"
+	bootstrap: 'bootstrap',
+	locations: [
+		'tests',
 	],
-    // assertionMacros: {
-    //     assertNull: (actual, message) => {
-    //         return new Assertion({
-    //             pass: actual == null,
-    //             message,
-    //         });
-    //     }
-    // },
-    // assertionMacros: './macros'
+    suites: {
+        all: 'tests',
+        unit: 'tests/Unit',
+        io: 'tests/IO',
+        'vue-components': 'tests/VueComponents',
+    },
+    autoloadFiles: [
+        'tests/TestAutoloadFile.js',
+    ],
+    autoloadClasses: {
+        TestAutoloadClassFile: 'tests/TestAutoloadClassFile.js',
+    },
+    instantiateClasses: {
+        TestInstantiateClassFile: 'tests/TestInstantiateClassFile.js',
+    },
 }

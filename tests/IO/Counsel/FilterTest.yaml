@@ -1,0 +1,14 @@
+test:
+  Counsel CLI filter feature
+perform:
+  src/counsel.js --filter FilterTest --is-io-test
+expect: |
+  Counsel {{version}}
+
+  ..
+
+  Time: {{formattedExecutionTime}}
+
+  2 passed, 2 tests
+assertions:
+  status: 0

@@ -1,0 +1,19 @@
+test: |
+  "find" command test
+skip:
+  true
+platform:
+  - linux
+cwd: doubles/ls-dir
+perform: |
+  find . -maxdepth 2
+expect: |
+  .
+  ./baz.txt
+  ./foo.txt
+  ./bar.txt
+  ./sub-1
+  ./sub-1/sub1-bar.txt
+  ./sub-1/sub-sub-1
+assertions:
+  status: 0
