@@ -49,6 +49,7 @@
         "js-yaml": "^3.12.0",
         "jsdom": "^13.0.0",
         "jsdom-global": "^3.0.2",
+        "cryptiles": ">=4.1.2",
         "moment": "^2.22.2",
         "node-hook": "^1.0.0",
         "nyc": "^12.0.2",
