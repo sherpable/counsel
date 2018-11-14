@@ -1,4 +1,4 @@
-counselUse('TestCase');
+counsel_use('TestCase');
 
 module.exports = class OneSkippedTestRunTest extends TestCase
 {

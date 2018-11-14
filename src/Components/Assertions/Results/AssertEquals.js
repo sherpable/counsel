@@ -1,4 +1,4 @@
-counselUse('Assertion');
+counsel_use('Assertion');
 
 module.exports = class AssertEquals extends Assertion
 {

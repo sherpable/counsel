@@ -1,4 +1,4 @@
-counselUse('VueComponentTestCase');
+counsel_use('VueComponentTestCase');
 
 module.exports = class MenuTest extends VueComponentTestCase
 {

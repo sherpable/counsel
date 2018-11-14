@@ -22,9 +22,9 @@ global.counsel = (abstract = null, parameters = []) =>
  * @param  string  abstract
  * @return mixed
  */
-global.counselUse = (abstract) =>
+global.counsel_use = (abstract) =>
 {
-    require('./App').instance.use(abstract);
+    counsel().use(abstract);
 }
 
 /**
@@ -33,7 +33,7 @@ global.counselUse = (abstract) =>
  * @param  string  abstract
  * @return mixed
  */
-global.counselResolve = (abstract) =>
+global.counsel_resolve = (abstract) =>
 {
-    return require('./App').instance.resolve(abstract);
+    return counsel().resolve(abstract);
 }
