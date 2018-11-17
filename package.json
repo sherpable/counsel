@@ -1,5 +1,5 @@
 {
-    "name": "@sherpa/counsel",
+    "name": "@sherpajs/counsel",
     "version": "0.1.0",
     "description": "Elegant testing framework for JavaScript and Vue.js.",
     "author": "Timon Schenzel",
