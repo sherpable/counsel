@@ -16,6 +16,12 @@
     <a href="https://codecov.io/gh/timonschenzel/counsel">
         <img src="https://codecov.io/gh/timonschenzel/counsel/branch/master/graph/badge.svg" alt="Codecov">
     </a>
+    <a href="https://github.com/timonschenzel/counsel/releases">
+        <img src="https://img.shields.io/npm/v/@sherpajs/counsel.svg" alt="Latest Release">
+    </a>
+    <a href="https://github.com/timonschenzel/counsel/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/timonschenzel/counsel.svg" alt="License: MIT">
+    </a>
 </p>
 
 ------
