@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
 (async () => {
+    require("@babel/register")({
+        only: [
+            /tests\/*.*\/ES/,
+            /TestCase/,
+        ]
+    });
+    require("@babel/polyfill");
+
     let app = require('./App').instantiate();
     let chalk = counsel_resolve('chalk');
     let figures = counsel_resolve('figures');
