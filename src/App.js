@@ -7,8 +7,6 @@ module.exports = class App
      */
     constructor()
     {
-        require('jsdom-global')();
-
         this.configFile = 'counsel.config.js';
 
         this.serviceProviders = {};
@@ -454,6 +452,8 @@ module.exports = class App
         });
 
         if (this.config.vue) {
+            require('jsdom-global')();
+            
             // Parse .vue files
             this.serviceProviders.nodeHook.hook('.vue', (source, filename) => {
                 let rawComponent = this.serviceProviders.cheerio.load(source);
