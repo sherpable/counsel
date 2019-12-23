@@ -5,68 +5,63 @@ perform:
   src/counsel.js --config io-tests/configs/dot-reporter-error-reporting-test.js --is-io-test
 expect: |
   Counsel {{version}}
-
+  
   xxxxxxxxxxxxx             13 / 13 (100%)
-
-
+  
   x 1) CoreAssertionsTest -> it_is_able_to_assert_true
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:14
-
-  13|     {
-  14|         this.assertTrue(false);
-  15|     }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:8
+  
+  7|     {
+  8|         this.assertTrue(false);
+  9|     }
+  
   Value is not truthy:
-
+  
   false
-
+  
   x 2) CoreAssertionsTest -> it_is_able_to_assert_false
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:20
-
-  19|     {
-  20|         this.assertFalse(true);
-  21|     }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:14
+  
+  13|     {
+  14|         this.assertFalse(true);
+  15|     }
+  
   Value is not falsy:
-
+  
   true
-
+  
   x 3) CoreAssertionsTest -> it_is_able_to_assert_equals_with_strings
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:26
-
-  25|     {
-  26|         this.assertEquals('Hello jsUnit', 'Hello World');
-  27|     }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:20
+  
+  19|     {
+  20|         this.assertEquals('Hello jsUnit', 'Hello World');
+  21|     }
+  
   --- Expected
   +++ Actual
   @@ @@
-  -   'Hello.jsUnit'
-  +   'Hello.World'
+  ---
+  Hello jsUnit
+  +++
+  Hello World
   Difference
-  - 'Hello.World'
-  + 'Hello.jsUnit'
-
+  - 'Hello World'
+  + 'Hello jsUnit'
+  
   x 4) CoreAssertionsTest -> it_is_able_to_assert_equals_with_arrays
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:32
-
-  31|     {
-  32|         this.assertEquals([1, 2, 3], [2, 3, 4]);
-  33|     }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:26
+  
+  25|     {
+  26|         this.assertEquals([1, 2, 3], [2, 3, 4]);
+  27|     }
+  
   --- Expected
   +++ Actual
   @@ @@
-  -   Array [
-  1,
-  2,
-  3,
-  ]
-  +   Array [
-  2,
-  3,
-  4,
-  ]
+  ---
+  1,2,3
+  +++
+  2,3,4
   Difference
   [
   +   1,
@@ -74,27 +69,21 @@ expect: |
   3,
   -   4,
   ]
-
+  
   x 5) CoreAssertionsTest -> it_is_able_to_assert_equals_with_objects
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:38
-
-  37|     {
-  38|         this.assertEquals({a: 1, b: 2, c: 3}, {b: 2, c: 3, d: 4});
-  39|     }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:32
+  
+  31|     {
+  32|         this.assertEquals({a: 1, b: 2, c: 3}, {b: 2, c: 3, d: 4});
+  33|     }
+  
   --- Expected
   +++ Actual
-  @@.@@
-  -   Object {
-  a: 1,
-  b: 2,
-  c: 3,
-  }
-  +   Object {
-  b: 2,
-  c: 3,
-  d: 4,
-  }
+  @@ @@
+  ---
+  [object Object]
+  +++
+  [object Object]
   Difference
   {
   +   a: 1,
@@ -102,116 +91,102 @@ expect: |
   c: 3,
   -   d: 4,
   }
-
+  
   x 6) CoreAssertionsTest -> it_is_able_to_assert_not_equals_with_strings
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:44
-
-  43|     {
-  44|         this.assertNotEquals('Hello.jsUnit', 'Hello.jsUnit');
-  45|     }
-
-  Failed asserting that   'Hello jsUnit' is not equal to   'Hello jsUnit'.
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:38
+  
+  37|     {
+  38|         this.assertNotEquals('Hello jsUnit', 'Hello jsUnit');
+  39|     }
+  
+  Failed asserting that Hello jsUnit is not equal to Hello jsUnit.
+  
   x 7) CoreAssertionsTest -> it_is_able_to_assert_not_equals_with_arrays
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:50
-
-  49|     {
-  50|         this.assertNotEquals([1, 2, 3], [1, 2, 3]);
-  51|     }
-
-  Failed asserting that   Array [
-  1,
-  2,
-  3,
-  ] is not equal to   Array [
-  1,
-  2,
-  3,
-  ]
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:44
+  
+  43|     {
+  44|         this.assertNotEquals([1, 2, 3], [1, 2, 3]);
+  45|     }
+  
+  Failed asserting that 1,2,3 is not equal to 1,2,3.
+  
   x 8) CoreAssertionsTest -> it_is_able_to_assert_not_equals_with_objects
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:56
-
-  55|     {
-  56|         this.assertNotEquals({a: 1, b: 2, c: 3}, {a: 1, b: 2, c: 3});
-  57|     }
-
-  Failed asserting.that   Object {
-  a: 1,
-  b: 2,
-  c: 3,
-  } is.not equal to   Object {
-  a: 1,
-  b: 2,
-  c: 3,
-  }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:50
+  
+  49|     {
+  50|         this.assertNotEquals({a: 1, b: 2, c: 3}, {a: 1, b: 2, c: 3});
+  51|     }
+  
+  Failed asserting that [object Object] is not equal to [object Object].
+  
   x 9) CoreAssertionsTest -> it_is_able_to_assert_the_count_from_an_array
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:64
-
-  63|
-  64|         this.assertCount(4,.array);
-  65|     }
-
-  Failed.asserting that expected size   4 matches actual size   3.
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:58
+  
+  57|
+  58|         this.assertCount(4, array);
+  59|     }
+  
+  Failed asserting that expected size 4 matches actual size 3.
+  
   x 10) CoreAssertionsTest -> it_is_able_to_assert_the_count_from_an_object
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:72
-
-  71|
-  72|         this.assertCount(3, object);
-  73|     }
-
-  Failed asserting that expected size   3 matches actual size   2.
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:66
+  
+  65|
+  66|         this.assertCount(3, object);
+  67|     }
+  
+  Failed asserting that expected size 3 matches actual size 2.
+  
   x 11) CoreAssertionsTest -> it_is_able_assert_that_a_string_contains_some_string
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:78
-
-  77|     {
-  78|         this.assertContains('bar', 'baz');
-  79|     }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:72
+  
+  71|     {
+  72|         this.assertContains('bar', 'baz');
+  73|     }
+  
   Value must match expression:
-
-  'baz'
-
+  
+  baz
+  
   Regular expression:
-
+  
   /bar/gim
-
+  
   x 12) CoreAssertionsTest -> it_is_able_assert_that_a_string_not_contains_some_string
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:84
-
-  83|     {
-  84|         this.assertNotContains('foo', 'foobar');
-  85|     }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:78
+  
+  77|     {
+  78|         this.assertNotContains('foo', 'foobar');
+  79|     }
+  
   Value must not match expression:
-
-  'foobar'
-
+  
+  foobar
+  
   Regular expression:
-
+  
   /foo/gim
-
+  
   x 13) CoreAssertionsTest -> it_is_able_to_run_async_await_code
-  /home/timon/Projects/counsel/io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:92
-
-  91|
-  92|         this.assertEquals('bar', promiseResult);
-  93|     }
-
+  {{root}}io-tests/dot-reporter-error-reporting-test/CoreAssertionsTest.js:86
+  
+  85|
+  86|         this.assertEquals('bar', promiseResult);
+  87|     }
+  
   --- Expected
   +++ Actual
   @@ @@
-  -   'bar'
-  +   'foo'
+  ---
+  bar
+  +++
+  foo
   Difference
   - 'foo'
   + 'bar'
-
-  Time: {{formattedExecutionTime}}
-
+  
+  Time: 43ms
+  
   13 failed, 13 tests
 assertions:
   status: 2
