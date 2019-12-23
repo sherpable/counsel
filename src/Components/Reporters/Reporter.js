@@ -13,6 +13,7 @@ module.exports = class Reporter
         this.highlight = require('cli-highlight').highlight;
         this.prettier = require('prettier');
         this.isHtml = require('is-html');
+        this.stripAnsi = require('strip-ansi');
 
         if (counsel().isIOTestProcess) {
             this.forceColor = new (counsel().serviceProviders.chalk).constructor({enabled: false, level: 0});
@@ -1027,9 +1028,15 @@ module.exports = class Reporter
             expected = this.highlight(expected, {language: 'html', ignoreIllegals: true, theme: this.theme.htmlDumpTheme});
         }
 
-        return this.indent(
+        let difference = this.indent(
             this.concordance.diff(actual, expected, {plugins: [], theme: this.theme.dumpTheme}), 2
         );
+
+        if (counsel().isIOTestProcess) {
+            return this.stripAnsi(difference);
+        }
+
+        return difference;
     }
 
     /**

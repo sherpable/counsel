@@ -1,6 +1,5 @@
 test:
   Dot reporter error output
-skip: true
 perform:
   src/counsel.js --config io-tests/configs/dot-reporter-error-reporting-test.js --is-io-test
 expect: |
@@ -185,7 +184,7 @@ expect: |
   - 'foo'
   + 'bar'
   
-  Time: 43ms
+  Time: {{formattedExecutionTime}}
   
   13 failed, 13 tests
 assertions:
