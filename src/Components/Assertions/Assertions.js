@@ -219,11 +219,7 @@ module.exports = class Assertions
 	{
 		let assertionFileName = type.charAt(0).toUpperCase() + type.substr(1);
 
-		let rootFolder = counsel().serviceProviders.path.normalize(
-		    process.cwd() + '/'
-		);
-
-		let assertionFileLocation = `${rootFolder}src/Components/Assertions/Results/${assertionFileName}.js`;
+		let assertionFileLocation = `${__dirname}/Results/${assertionFileName}.js`;
 
 		if (counsel().serviceProviders.fs.existsSync(assertionFileLocation)) {
 			return require(assertionFileLocation);
