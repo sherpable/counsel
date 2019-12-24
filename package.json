@@ -22,7 +22,7 @@
     },
     "homepage": "https://timonschenzel.github.io/counsel/",
     "publishConfig": {
-        "registry": "https://npm.pkg.github.com/"
+        "registry": "https://npm.pkg.github.com/sherpajs"
     },
     "main": "src/counsel.js",
     "bin": {
