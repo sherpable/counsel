@@ -21,9 +21,6 @@
         "url": "https://github.com/timonschenzel/counsel/issues"
     },
     "homepage": "https://timonschenzel.github.io/counsel/",
-    "publishConfig": {
-        "registry": "https://npm.pkg.github.com/@sherpajs"
-    },
     "main": "src/counsel.js",
     "bin": {
         "counsel": "./src/counsel.js"
