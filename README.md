@@ -25,4 +25,4 @@
 
 ## Documentation
 
-For documentation, visit [https://sherpable.github.io/counsel/](https://timonschenzel.github.io/counsel/).
+For documentation, visit [https://sherpable.github.io/counsel/](https://sherpable.github.io/counsel/).
