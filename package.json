@@ -1,5 +1,5 @@
 {
-    "name": "@sherpajs/counsel",
+    "name": "@sherpable/counsel",
     "version": "0.1.1",
     "description": "Elegant testing framework for JavaScript and Vue.js.",
     "author": "Timon Schenzel",
@@ -15,12 +15,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git://github.com/timonschenzel/counsel.git"
+        "url": "git://github.com/sherpable/counsel.git"
     },
     "bugs": {
-        "url": "https://github.com/timonschenzel/counsel/issues"
+        "url": "https://github.com/sherpable/counsel/issues"
     },
-    "homepage": "https://timonschenzel.github.io/counsel/",
+    "homepage": "https://sherpable.github.io/counsel/",
     "main": "src/counsel.js",
     "bin": {
         "counsel": "./src/counsel.js"
