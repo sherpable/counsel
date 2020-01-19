@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>The command line test runner | Counsel</title>
+    <meta name="description" content="Elegant testing framework for JS and Vue.js. Without callbacks.">
+    <link rel="shortcut icon" type="image/x-icon" href="/counsel/favicon.ico">
+    
+    <link rel="preload" href="/counsel/assets/css/0.styles.438710f3.css" as="style"><link rel="preload" href="/counsel/assets/js/app.a127d63a.js" as="script"><link rel="preload" href="/counsel/assets/js/3.1b2334ec.js" as="script"><link rel="preload" href="/counsel/assets/js/1.495e6c9c.js" as="script"><link rel="preload" href="/counsel/assets/js/16.c99b3a0b.js" as="script"><link rel="prefetch" href="/counsel/assets/js/10.866ea890.js"><link rel="prefetch" href="/counsel/assets/js/11.c317e7c6.js"><link rel="prefetch" href="/counsel/assets/js/12.5e7d9ff1.js"><link rel="prefetch" href="/counsel/assets/js/13.dedc360d.js"><link rel="prefetch" href="/counsel/assets/js/14.8865fa27.js"><link rel="prefetch" href="/counsel/assets/js/15.0237d87f.js"><link rel="prefetch" href="/counsel/assets/js/17.54b8905b.js"><link rel="prefetch" href="/counsel/assets/js/18.7ad6160d.js"><link rel="prefetch" href="/counsel/assets/js/19.4f886394.js"><link rel="prefetch" href="/counsel/assets/js/20.e2b84365.js"><link rel="prefetch" href="/counsel/assets/js/21.43d3d262.js"><link rel="prefetch" href="/counsel/assets/js/4.c7c43ef4.js"><link rel="prefetch" href="/counsel/assets/js/5.20efe2d6.js"><link rel="prefetch" href="/counsel/assets/js/6.8d26741f.js"><link rel="prefetch" href="/counsel/assets/js/7.e4afa71c.js"><link rel="prefetch" href="/counsel/assets/js/8.e6d78b6a.js"><link rel="prefetch" href="/counsel/assets/js/9.02cf8a77.js">
+    <link rel="stylesheet" href="/counsel/assets/css/0.styles.438710f3.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/counsel/" class="home-link router-link-active"><!----> <span class="site-name">Counsel</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/counsel/" class="nav-link">Home</a></div><div class="nav-item"><a href="/counsel/guide/" class="nav-link router-link-active">Guide</a></div> <a href="https://github.com/sherpable/counsel" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/counsel/" class="nav-link">Home</a></div><div class="nav-item"><a href="/counsel/guide/" class="nav-link router-link-active">Guide</a></div> <a href="https://github.com/sherpable/counsel" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><a href="/counsel/guide/" class="sidebar-link">Introduction</a></li><li><a href="/counsel/guide/getting-started.html" class="sidebar-link">Getting Started</a></li><li><a href="/counsel/guide/writing-tests.html" class="sidebar-link">Writing tests</a></li><li><a href="/counsel/guide/writing-io-tests.html" class="sidebar-link">Writing IO tests</a></li><li><a href="/counsel/guide/writing-vue-component-tests.html" class="sidebar-link">Writing Vue component tests</a></li><li><a href="/counsel/guide/the-command-line-test-runner.html" class="active sidebar-link">The command line test runner</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/counsel/guide/the-command-line-test-runner.html#command-line-options" class="sidebar-link">Command line options</a></li></ul></li><li><a href="/counsel/guide/fixtures.html" class="sidebar-link">Fixtures</a></li><li><a href="/counsel/guide/incomplete-and-skipped-tests.html" class="sidebar-link">Incomplete and skipped tests</a></li><li><a href="/counsel/guide/code-coverage.html" class="sidebar-link">Code coverage</a></li><li><a href="/counsel/guide/reporting.html" class="sidebar-link">Reporting</a></li><li><a href="/counsel/guide/assertions.html" class="sidebar-link">Assertions</a></li><li><a href="/counsel/guide/annotations.html" class="sidebar-link">Annotations</a></li><li><a href="/counsel/guide/the-configuration-file.html" class="sidebar-link">The configuration file</a></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="the-command-line-test-runner"><a href="#the-command-line-test-runner" class="header-anchor">#</a> The command line test runner</h1> <p>The Counsel command-line test runner can be invoked through the <code>counsel</code> command. The following example shows how to run tests with the counsel command-line test runner:</p> <div class="language-bash extra-class"><pre class="language-bash"><code>$ counsel ArrayTest
+Counsel <span class="token punctuation">{</span>version<span class="token punctuation">}</span>
+
+<span class="token punctuation">..</span><span class="token punctuation">..</span>
+
+Time: 55ms
+
+<span class="token number">6</span> passed, <span class="token number">4</span> tests
+</code></pre></div><p>When invoked as shown above, the Counsel command-line test runner will look for a ArrayTest.js sourcefile, by default in the tests folder within the current working directory. It will load the file, and expect to find a ArrayTest test case class. Than It will execute the tests within that class.</p> <p>For each test run, the Counsel command-line tool prints one character to indicate progress:</p> <p><code>.</code></p> <p>Printed when the test succeeds.</p> <p><code>x</code></p> <p>Printed when an assertion fails while running the test method.</p> <p><code>S</code></p> <p>Printed when the test has been skipped (see Incomplete and Skipped Tests).</p> <p><code>I</code></p> <p>Printed when the test is marked as being incomplete or not yet implemented (see Incomplete and Skipped Tests).</p> <h2 id="command-line-options"><a href="#command-line-options" class="header-anchor">#</a> Command line options</h2> <p>The command line test runner provide some useful options:</p> <div class="language-bash extra-class"><pre class="language-bash"><code>$ counsel --help
+
+ Counsel <span class="token punctuation">{</span>version<span class="token punctuation">}</span>.
+ 
+ Options:
+   -h, --help         	Show some help.
+
+   -v, --version        Show counsel's verion number.
+
+   -c, --config         Specify a custom config file.
+
+   -f, --filter         Filter <span class="token function">which</span> tests you want to run.
+
+   -s, --suite          Filter <span class="token function">which</span> suite to run.
+
+   --ls, --list-suites  Show available <span class="token builtin class-name">test</span> suites.
+
+   --verbose            Show <span class="token function">more</span> verbose information.
+
+   --coverage           Generate code coverage report. Supported report types:
+   						clover, cobertura, html, json-summary, json, lcov,
+   						lcovonly,non e, teamcity, text-lcov, text-summary, text.
+    					Default will be text-summary.
+
+   --silent             Run <span class="token keyword">in</span> silent mode, this will not display anything.
+   						Usefull <span class="token keyword">for</span> running through a <span class="token builtin class-name">test</span> coverage tool.
+
+   --is-io-test         Mark the current process as an IO test.
+
+   --as-io-test         Run tests normal, but output as <span class="token keyword">if</span> it is an IO test.
+
+   --io-test-filename   Specify the filename from the current IO test.
+
+   --skip-io-tests      Skip all IO tests.
+</code></pre></div></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/sherpable/counsel-docs/edit/master/guide/the-command-line-test-runner.md" target="_blank" rel="noopener noreferrer">Edit this page on GitHub</a> <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></div> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">11/17/2018, 7:47:46 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/counsel/guide/writing-vue-component-tests.html" class="prev">Writing Vue component tests</a></span> <span class="next"><a href="/counsel/guide/fixtures.html">Fixtures</a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/counsel/assets/js/app.a127d63a.js" defer></script><script src="/counsel/assets/js/3.1b2334ec.js" defer></script><script src="/counsel/assets/js/1.495e6c9c.js" defer></script><script src="/counsel/assets/js/16.c99b3a0b.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Incomplete and skipped tests | Counsel</title>
+    <meta name="description" content="Elegant testing framework for JS and Vue.js. Without callbacks.">
+    <link rel="shortcut icon" type="image/x-icon" href="/counsel/favicon.ico">
+    
+    <link rel="preload" href="/counsel/assets/css/0.styles.438710f3.css" as="style"><link rel="preload" href="/counsel/assets/js/app.a127d63a.js" as="script"><link rel="preload" href="/counsel/assets/js/3.1b2334ec.js" as="script"><link rel="preload" href="/counsel/assets/js/1.495e6c9c.js" as="script"><link rel="preload" href="/counsel/assets/js/14.8865fa27.js" as="script"><link rel="prefetch" href="/counsel/assets/js/10.866ea890.js"><link rel="prefetch" href="/counsel/assets/js/11.c317e7c6.js"><link rel="prefetch" href="/counsel/assets/js/12.5e7d9ff1.js"><link rel="prefetch" href="/counsel/assets/js/13.dedc360d.js"><link rel="prefetch" href="/counsel/assets/js/15.0237d87f.js"><link rel="prefetch" href="/counsel/assets/js/16.c99b3a0b.js"><link rel="prefetch" href="/counsel/assets/js/17.54b8905b.js"><link rel="prefetch" href="/counsel/assets/js/18.7ad6160d.js"><link rel="prefetch" href="/counsel/assets/js/19.4f886394.js"><link rel="prefetch" href="/counsel/assets/js/20.e2b84365.js"><link rel="prefetch" href="/counsel/assets/js/21.43d3d262.js"><link rel="prefetch" href="/counsel/assets/js/4.c7c43ef4.js"><link rel="prefetch" href="/counsel/assets/js/5.20efe2d6.js"><link rel="prefetch" href="/counsel/assets/js/6.8d26741f.js"><link rel="prefetch" href="/counsel/assets/js/7.e4afa71c.js"><link rel="prefetch" href="/counsel/assets/js/8.e6d78b6a.js"><link rel="prefetch" href="/counsel/assets/js/9.02cf8a77.js">
+    <link rel="stylesheet" href="/counsel/assets/css/0.styles.438710f3.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/counsel/" class="home-link router-link-active"><!----> <span class="site-name">Counsel</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/counsel/" class="nav-link">Home</a></div><div class="nav-item"><a href="/counsel/guide/" class="nav-link router-link-active">Guide</a></div> <a href="https://github.com/sherpable/counsel" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/counsel/" class="nav-link">Home</a></div><div class="nav-item"><a href="/counsel/guide/" class="nav-link router-link-active">Guide</a></div> <a href="https://github.com/sherpable/counsel" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><a href="/counsel/guide/" class="sidebar-link">Introduction</a></li><li><a href="/counsel/guide/getting-started.html" class="sidebar-link">Getting Started</a></li><li><a href="/counsel/guide/writing-tests.html" class="sidebar-link">Writing tests</a></li><li><a href="/counsel/guide/writing-io-tests.html" class="sidebar-link">Writing IO tests</a></li><li><a href="/counsel/guide/writing-vue-component-tests.html" class="sidebar-link">Writing Vue component tests</a></li><li><a href="/counsel/guide/the-command-line-test-runner.html" class="sidebar-link">The command line test runner</a></li><li><a href="/counsel/guide/fixtures.html" class="sidebar-link">Fixtures</a></li><li><a href="/counsel/guide/incomplete-and-skipped-tests.html" class="active sidebar-link">Incomplete and skipped tests</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/counsel/guide/incomplete-and-skipped-tests.html#incomplete-tests" class="sidebar-link">Incomplete tests</a></li><li class="sidebar-sub-header"><a href="/counsel/guide/incomplete-and-skipped-tests.html#incomplete-test-example" class="sidebar-link">Incomplete test example</a></li><li class="sidebar-sub-header"><a href="/counsel/guide/incomplete-and-skipped-tests.html#skipping-tests" class="sidebar-link">Skipping tests</a></li><li class="sidebar-sub-header"><a href="/counsel/guide/incomplete-and-skipped-tests.html#skipping-test-example" class="sidebar-link">Skipping test example</a></li></ul></li><li><a href="/counsel/guide/code-coverage.html" class="sidebar-link">Code coverage</a></li><li><a href="/counsel/guide/reporting.html" class="sidebar-link">Reporting</a></li><li><a href="/counsel/guide/assertions.html" class="sidebar-link">Assertions</a></li><li><a href="/counsel/guide/annotations.html" class="sidebar-link">Annotations</a></li><li><a href="/counsel/guide/the-configuration-file.html" class="sidebar-link">The configuration file</a></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="incomplete-and-skipped-tests"><a href="#incomplete-and-skipped-tests" class="header-anchor">#</a> Incomplete and skipped tests</h1> <h2 id="incomplete-tests"><a href="#incomplete-tests" class="header-anchor">#</a> Incomplete tests</h2> <p>When working on a new feature, it is possible to write out the behavior within a new test case class. Your first instinct might be to write empty test methods with the new test case class. But the problem is that Counsel will interpete an empty test method as a successful test. Also calling <code>this-&gt;fail()</code> don't make sence in this case, cause Counsel will interpreted the test as a failure. If you want to keep track of all incomplete tests you need to mark a test specific as being incomplete. You can also think about it as lights. A successful test will be green and a failing test will be red. We need another yellow light to mark tests as incomplete or not implemented yet.</p> <h2 id="incomplete-test-example"><a href="#incomplete-test-example" class="header-anchor">#</a> Incomplete test example</h2> <p>Example 3.1 shows how to mark a test as incomplete. This will be done by calling the method <code>markAsIncomplete()</code>.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">counsel_use</span><span class="token punctuation">(</span><span class="token string">'TestCase'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">class</span> <span class="token class-name">ExampleIncompleteTest</span> <span class="token keyword">extends</span> <span class="token class-name">TestCase</span>
+<span class="token punctuation">{</span>
+    <span class="token comment">/** @test */</span>
+    <span class="token function">new_incomplete_feature</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        <span class="token comment">// Optional: Test anything here, if you want.</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">assertTrue</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token string">'This should already work.'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+		<span class="token comment">// Stop here and mark this test as incomplete.</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">markAsIncomplete</span><span class="token punctuation">(</span>
+            <span class="token string">'This test is not implemented yet.'</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// For example: this assertion will never executed</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">assertTrue</span><span class="token punctuation">(</span><span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>An incomplete test is indicated by an <code>I</code> in the output of the Counsel command-line test runner.</p> <div class="language-bash extra-class"><pre class="language-bash"><code>$ counsel ExampleIncompleteTest --verbose
+Counsel <span class="token punctuation">{</span>version<span class="token punctuation">}</span>
+ 
+.I
+
+Time: 79ms
+
+<span class="token number">1</span> passed, <span class="token number">1</span> tests
+OK, but <span class="token number">1</span> incomplete
+
+ExampleIncompleteTest-<span class="token operator">&gt;</span>new_incomplete_feature
+This <span class="token builtin class-name">test</span> is not implemented yet.
+</code></pre></div><h2 id="skipping-tests"><a href="#skipping-tests" class="header-anchor">#</a> Skipping tests</h2> <p>Not all tests can be run in every environment. Consider, for instance, a database abstraction layer that has several drivers for the different database systems it supports. The tests for the MySQL driver can of course only be run if a MySQL server is available.</p> <h2 id="skipping-test-example"><a href="#skipping-test-example" class="header-anchor">#</a> Skipping test example</h2> <p>Example 3.2 shows a test case class, DatabaseTest, that contains one test method, testConnection(). In the test case class' setUp() template method we check whether the MySQLi extension is available and use the <code>markAsSkipped()</code> method to skip the test if it is not.</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">class</span> <span class="token class-name">ExampleSkippedTest</span> <span class="token keyword">extends</span> <span class="token class-name">TestCase</span>
+<span class="token punctuation">{</span>
+	<span class="token function">setUp</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">setUp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span> databaseConnection<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">markAsSkipped</span><span class="token punctuation">(</span>
+	            <span class="token string">'Database connection not available.'</span>
+	        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
+
+    <span class="token comment">/** @test */</span>
+    <span class="token function">database_connection</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        <span class="token comment">// ..</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>A test that has been skipped is indicated by an <code>S</code> in the output of the Counsel command-line test runner.</p> <div class="language-bash extra-class"><pre class="language-bash"><code>$ counsel ExampleSkippedTest --verbose
+Counsel <span class="token punctuation">{</span>version<span class="token punctuation">}</span>
+ 
+S
+
+Time: 52ms
+
+<span class="token number">0</span> passed, <span class="token number">0</span> tests
+OK, but <span class="token number">1</span> skipped
+ 
+ExampleSkippedTest
+Database connection not available.
+</code></pre></div></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/sherpable/counsel-docs/edit/master/guide/incomplete-and-skipped-tests.md" target="_blank" rel="noopener noreferrer">Edit this page on GitHub</a> <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></div> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">11/17/2018, 7:47:46 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/counsel/guide/fixtures.html" class="prev">Fixtures</a></span> <span class="next"><a href="/counsel/guide/code-coverage.html">Code coverage</a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/counsel/assets/js/app.a127d63a.js" defer></script><script src="/counsel/assets/js/3.1b2334ec.js" defer></script><script src="/counsel/assets/js/1.495e6c9c.js" defer></script><script src="/counsel/assets/js/14.8865fa27.js" defer></script>
+  </body>
+</html>

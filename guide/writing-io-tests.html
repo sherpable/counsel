@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Writing IO tests | Counsel</title>
+    <meta name="description" content="Elegant testing framework for JS and Vue.js. Without callbacks.">
+    <link rel="shortcut icon" type="image/x-icon" href="/counsel/favicon.ico">
+    
+    <link rel="preload" href="/counsel/assets/css/0.styles.438710f3.css" as="style"><link rel="preload" href="/counsel/assets/js/app.a127d63a.js" as="script"><link rel="preload" href="/counsel/assets/js/3.1b2334ec.js" as="script"><link rel="preload" href="/counsel/assets/js/1.495e6c9c.js" as="script"><link rel="preload" href="/counsel/assets/js/18.7ad6160d.js" as="script"><link rel="prefetch" href="/counsel/assets/js/10.866ea890.js"><link rel="prefetch" href="/counsel/assets/js/11.c317e7c6.js"><link rel="prefetch" href="/counsel/assets/js/12.5e7d9ff1.js"><link rel="prefetch" href="/counsel/assets/js/13.dedc360d.js"><link rel="prefetch" href="/counsel/assets/js/14.8865fa27.js"><link rel="prefetch" href="/counsel/assets/js/15.0237d87f.js"><link rel="prefetch" href="/counsel/assets/js/16.c99b3a0b.js"><link rel="prefetch" href="/counsel/assets/js/17.54b8905b.js"><link rel="prefetch" href="/counsel/assets/js/19.4f886394.js"><link rel="prefetch" href="/counsel/assets/js/20.e2b84365.js"><link rel="prefetch" href="/counsel/assets/js/21.43d3d262.js"><link rel="prefetch" href="/counsel/assets/js/4.c7c43ef4.js"><link rel="prefetch" href="/counsel/assets/js/5.20efe2d6.js"><link rel="prefetch" href="/counsel/assets/js/6.8d26741f.js"><link rel="prefetch" href="/counsel/assets/js/7.e4afa71c.js"><link rel="prefetch" href="/counsel/assets/js/8.e6d78b6a.js"><link rel="prefetch" href="/counsel/assets/js/9.02cf8a77.js">
+    <link rel="stylesheet" href="/counsel/assets/css/0.styles.438710f3.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/counsel/" class="home-link router-link-active"><!----> <span class="site-name">Counsel</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/counsel/" class="nav-link">Home</a></div><div class="nav-item"><a href="/counsel/guide/" class="nav-link router-link-active">Guide</a></div> <a href="https://github.com/sherpable/counsel" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/counsel/" class="nav-link">Home</a></div><div class="nav-item"><a href="/counsel/guide/" class="nav-link router-link-active">Guide</a></div> <a href="https://github.com/sherpable/counsel" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><a href="/counsel/guide/" class="sidebar-link">Introduction</a></li><li><a href="/counsel/guide/getting-started.html" class="sidebar-link">Getting Started</a></li><li><a href="/counsel/guide/writing-tests.html" class="sidebar-link">Writing tests</a></li><li><a href="/counsel/guide/writing-io-tests.html" class="active sidebar-link">Writing IO tests</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/counsel/guide/writing-io-tests.html#example" class="sidebar-link">Example</a></li><li class="sidebar-sub-header"><a href="/counsel/guide/writing-io-tests.html#real-world-counsel-io-test-example" class="sidebar-link">Real-world Counsel IO test example</a></li></ul></li><li><a href="/counsel/guide/writing-vue-component-tests.html" class="sidebar-link">Writing Vue component tests</a></li><li><a href="/counsel/guide/the-command-line-test-runner.html" class="sidebar-link">The command line test runner</a></li><li><a href="/counsel/guide/fixtures.html" class="sidebar-link">Fixtures</a></li><li><a href="/counsel/guide/incomplete-and-skipped-tests.html" class="sidebar-link">Incomplete and skipped tests</a></li><li><a href="/counsel/guide/code-coverage.html" class="sidebar-link">Code coverage</a></li><li><a href="/counsel/guide/reporting.html" class="sidebar-link">Reporting</a></li><li><a href="/counsel/guide/assertions.html" class="sidebar-link">Assertions</a></li><li><a href="/counsel/guide/annotations.html" class="sidebar-link">Annotations</a></li><li><a href="/counsel/guide/the-configuration-file.html" class="sidebar-link">The configuration file</a></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="writing-io-tests"><a href="#writing-io-tests" class="header-anchor">#</a> Writing IO tests</h1> <p>Another way we can write tests with Counsel is using Input/Output (IO) tests. The example will show basic conventions and steps for writing IO tests with Counsel:</p> <ol><li><p>IO tests are written in yaml files.</p></li> <li><p>IO test file names need to end with *Test.yaml.</p></li> <li><p>The most basic IO test will require the following fields:</p></li></ol> <ul><li><code>test</code> - a short description about what you want to test</li> <li><code>perform</code> - the input, command to run</li> <li><code>expect</code> - what should be the output</li></ul> <ol start="4"><li>Optional fields for an IO test:</li></ol> <ul><li><code>cwd</code> - specify the current working directory the test</li> <li><code>platform</code> - specify one or more platforms within this test should run</li> <li><code>skip</code> - mark the IO test as skipped</li> <li><code>assertions</code> - specify basic true/false expectations</li></ul> <h2 id="example"><a href="#example" class="header-anchor">#</a> Example</h2> <p>Example 2.1 - Testing the famous <code>ls</code> command with Counsel.</p> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">test</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+  &quot;ls&quot; command test</span>
+<span class="token key atrule">cwd</span><span class="token punctuation">:</span> tests/doubles/ls<span class="token punctuation">-</span>dir
+<span class="token key atrule">perform</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+  ls</span>
+<span class="token key atrule">expect</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+  bar.txt
+  baz.txt
+  foo.txt
+  sub-1</span>
+<span class="token key atrule">assertions</span><span class="token punctuation">:</span>
+  <span class="token key atrule">status</span><span class="token punctuation">:</span> <span class="token number">0</span>
+</code></pre></div><h2 id="real-world-counsel-io-test-example"><a href="#real-world-counsel-io-test-example" class="header-anchor">#</a> Real-world Counsel IO test example</h2> <div class="language-yaml extra-class"><pre class="language-yaml"><code><span class="token key atrule">test</span><span class="token punctuation">:</span>
+  Dot reporter error true and false output
+<span class="token key atrule">perform</span><span class="token punctuation">:</span>
+  src/counsel.js <span class="token punctuation">-</span><span class="token punctuation">-</span>config dot<span class="token punctuation">-</span>reporter<span class="token punctuation">-</span>true<span class="token punctuation">-</span>false<span class="token punctuation">-</span>reporting<span class="token punctuation">-</span>test.js <span class="token punctuation">-</span><span class="token punctuation">-</span>is<span class="token punctuation">-</span>io<span class="token punctuation">-</span>test
+<span class="token key atrule">expect</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+  Counsel {{version}}</span>
+
+  xx                        2 / 2 (100%)
+
+  x 1) CoreAssertionsTest <span class="token punctuation">-</span><span class="token punctuation">&gt;</span> it_is_able_to_assert_true
+  <span class="token punctuation">{</span><span class="token punctuation">{</span>root<span class="token punctuation">}</span><span class="token punctuation">}</span>io<span class="token punctuation">-</span>tests/dot<span class="token punctuation">-</span>reporter<span class="token punctuation">-</span>true<span class="token punctuation">-</span>false<span class="token punctuation">-</span>test/CoreAssertionsTest.js<span class="token punctuation">:</span><span class="token number">6</span>
+
+  5<span class="token punctuation">|</span>     <span class="token punctuation">{</span>
+  6<span class="token punctuation">|</span>         this.assertTrue(false);
+  7<span class="token punctuation">|</span>     <span class="token punctuation">}</span>
+
+  Value is not truthy<span class="token punctuation">:</span>
+
+  <span class="token boolean important">false</span>
+
+  x 2) CoreAssertionsTest <span class="token punctuation">-</span><span class="token punctuation">&gt;</span> it_is_able_to_assert_false
+  <span class="token punctuation">{</span><span class="token punctuation">{</span>root<span class="token punctuation">}</span><span class="token punctuation">}</span>io<span class="token punctuation">-</span>tests/dot<span class="token punctuation">-</span>reporter<span class="token punctuation">-</span>true<span class="token punctuation">-</span>false<span class="token punctuation">-</span>test/CoreAssertionsTest.js<span class="token punctuation">:</span><span class="token number">12</span>
+
+  11<span class="token punctuation">|</span>     <span class="token punctuation">{</span>
+  12<span class="token punctuation">|</span>         this.assertFalse(true);
+  13<span class="token punctuation">|</span>     <span class="token punctuation">}</span>
+
+  Value is not falsy<span class="token punctuation">:</span>
+
+  <span class="token boolean important">true</span>
+
+  <span class="token key atrule">Time</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span>executionTimeFormatted<span class="token punctuation">}</span><span class="token punctuation">}</span>
+
+  2 failed<span class="token punctuation">,</span> 2 tests
+<span class="token key atrule">assertions</span><span class="token punctuation">:</span>
+  <span class="token key atrule">status</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">assertionsCount</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">assertionsFailuresCount</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">assertionsPassesCount</span><span class="token punctuation">:</span> <span class="token number">0</span>
+  <span class="token key atrule">testsCount</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">testsFailuresCount</span><span class="token punctuation">:</span> <span class="token number">2</span>
+  <span class="token key atrule">testsPassesCount</span><span class="token punctuation">:</span> <span class="token number">0</span>
+  <span class="token key atrule">progress</span><span class="token punctuation">:</span> <span class="token number">100</span>
+</code></pre></div></div> <footer class="page-edit"><div class="edit-link"><a href="https://github.com/sherpable/counsel-docs/edit/master/guide/writing-io-tests.md" target="_blank" rel="noopener noreferrer">Edit this page on GitHub</a> <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></div> <div class="last-updated"><span class="prefix">Last Updated:</span> <span class="time">9/23/2018, 10:46:37 PM</span></div></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/counsel/guide/writing-tests.html" class="prev">Writing tests</a></span> <span class="next"><a href="/counsel/guide/writing-vue-component-tests.html">Writing Vue component tests</a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/counsel/assets/js/app.a127d63a.js" defer></script><script src="/counsel/assets/js/3.1b2334ec.js" defer></script><script src="/counsel/assets/js/1.495e6c9c.js" defer></script><script src="/counsel/assets/js/18.7ad6160d.js" defer></script>
+  </body>
+</html>

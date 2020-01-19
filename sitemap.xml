@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+
+<url>
+  <loc>https://timonschenzel.github.io/counsel/</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/getting-started.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/writing-tests.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/writing-io-tests.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/writing-vue-component-tests.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/the-command-line-test-runner.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/fixtures.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/incomplete-and-skipped-tests.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/code-coverage.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/reporting.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/assertions.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/annotations.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://timonschenzel.github.io/counsel/guide/the-configuration-file.html</loc>
+  <lastmod>2018-11-18T19:29:50+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>
