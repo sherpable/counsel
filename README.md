@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://timonschenzel.github.io/counsel/" target="_blank"><img src="https://raw.githubusercontent.com/timonschenzel/counsel/master/art/logo.png"></a>
+    <a href="https://sherpable.github.io/counsel/" target="_blank"><img src="https://raw.githubusercontent.com/timonschenzel/counsel/master/art/logo.png"></a>
 </p>
 
 <p align="center">
