@@ -1,5 +1,5 @@
 <p align="center">
-    <a href="https://sherpable.github.io/counsel/" target="_blank"><img src="https://raw.githubusercontent.com/timonschenzel/counsel/master/art/logo.png"></a>
+    <a href="https://sherpable.github.io/counsel/" target="_blank"><img src="https://raw.githubusercontent.com/sherpable/counsel/master/art/logo.png"></a>
 </p>
 
 <p align="center">
@@ -7,17 +7,17 @@
 </p>
 
 <p align="center">
-    <a href="https://travis-ci.org/timonschenzel/counsel">
-        <img src="https://img.shields.io/travis/timonschenzel/counsel/master.svg" alt="Build Status Travis CI">
+    <a href="https://travis-ci.org/sherpable/counsel">
+        <img src="https://img.shields.io/travis/sherpable/counsel/master.svg" alt="Build Status Travis CI">
     </a>
-    <a href="https://codecov.io/gh/timonschenzel/counsel">
-        <img src="https://codecov.io/gh/timonschenzel/counsel/branch/master/graph/badge.svg" alt="Codecov">
+    <a href="https://codecov.io/gh/sherpable/counsel">
+        <img src="https://codecov.io/gh/sherpable/counsel/branch/master/graph/badge.svg" alt="Codecov">
     </a>
-    <a href="https://github.com/timonschenzel/counsel/releases">
+    <a href="https://github.com/sherpable/counsel/releases">
         <img src="https://img.shields.io/npm/v/@sherpajs/counsel.svg" alt="Latest Release">
     </a>
-    <a href="https://github.com/timonschenzel/counsel/blob/master/LICENSE">
-        <img src="https://img.shields.io/github/license/timonschenzel/counsel.svg" alt="License: MIT">
+    <a href="https://github.com/sherpable/counsel/blob/master/LICENSE">
+        <img src="https://img.shields.io/github/license/sherpable/counsel.svg" alt="License: MIT">
     </a>
 </p>
 
