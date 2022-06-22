@@ -47,7 +47,7 @@
         "indent-string": "^3.2.0",
         "is-html": "^1.1.0",
         "js-yaml": "^3.13.1",
-        "jsdom": "^13.0.0",
+        "jsdom": "^16.5.0",
         "jsdom-global": "^3.0.2",
         "moment": "^2.22.2",
         "node-hook": "^1.0.0",
