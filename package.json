@@ -49,7 +49,7 @@
         "js-yaml": "^3.13.1",
         "jsdom": "^13.0.0",
         "jsdom-global": "^3.0.2",
-        "moment": "^2.22.2",
+        "moment": "^2.29.4",
         "node-hook": "^1.0.0",
         "nyc": "^15.0.0",
         "optimist": "^0.6.1",
