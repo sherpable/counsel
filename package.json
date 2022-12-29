@@ -40,7 +40,7 @@
         "codecov": "^3.6.5",
         "concordance": "^3.0.0",
         "cryptiles": ">=4.1.2",
-        "css-loader": "^1.0.1",
+        "css-loader": "^6.7.3",
         "diff": "^3.5.0",
         "equal-length": "^1.0.1",
         "figures": "^2.0.0",
@@ -59,8 +59,8 @@
         "stack-trace": "0.0.10",
         "strip-ansi": "^6.0.0",
         "vue": "^2.5.17",
-        "vue-loader": "^15.3.0",
+        "vue-loader": "^17.0.1",
         "vue-template-compiler": "^2.5.17",
-        "webpack": "^4.41.4"
+        "webpack": "^5.75.0"
     }
 }
